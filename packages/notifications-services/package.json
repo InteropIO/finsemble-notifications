@@ -1,0 +1,24 @@
+{
+  "name": "notifications-services",
+  "version": "0.0.0",
+  "description": "Finsemble Notifications Services",
+  "homepage": "https://github.com/ChartIQ/finsemble-notifications#readme",
+  "main": "lib/notifications-services.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ChartIQ/finsemble-notifications.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/ChartIQ/finsemble-notifications/issues"
+  }
+}

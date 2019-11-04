@@ -1,0 +1,5 @@
+[
+	"services/notification/notificationService.js",
+	"components/welcome/welcome.js",
+	"preloads/notifications.js"
+]

@@ -2,8 +2,7 @@
   "name": "finsemble-notifications",
   "version": "0.0.1",
   "description": "Notifications services and UI",
-  "scripts": {
-  },
+  "scripts": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ChartIQ/finsemble-notifications.git"
@@ -12,5 +11,8 @@
   "bugs": {
     "url": "https://github.com/ChartIQ/finsemble-notifications/issues"
   },
-  "homepage": "https://github.com/ChartIQ/finsemble-notifications#readme"
+  "homepage": "https://github.com/ChartIQ/finsemble-notifications#readme",
+  "dependencies": {
+    "@types/node": "^12.12.5"
+  }
 }

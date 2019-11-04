@@ -1,7 +1,16 @@
 {
-  "name": "root",
-  "private": true,
-  "devDependencies": {
-    "lerna": "^3.18.3"
-  }
+  "name": "finsemble-notifications",
+  "version": "0.0.1",
+  "description": "Notifications services and UI",
+  "scripts": {
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ChartIQ/finsemble-notifications.git"
+  },
+  "author": "ChartIQ",
+  "bugs": {
+    "url": "https://github.com/ChartIQ/finsemble-notifications/issues"
+  },
+  "homepage": "https://github.com/ChartIQ/finsemble-notifications#readme"
 }

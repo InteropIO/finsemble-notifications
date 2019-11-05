@@ -1,3 +1,8 @@
+import INotificationService from "./types/INotificationService";
+import INotification from "./types/INotification";
+import IAction from "./types/IAction";
+import ISubscription from "./types/ISubscription";
+
 const Finsemble = require("@chartiq/finsemble");
 
 Finsemble.Clients.Logger.start();
@@ -22,20 +27,20 @@ Finsemble.Clients.Logger.log("notification Service starting up");
 /**
  * TODO: Add service description here
  */
-class notificationService extends Finsemble.baseService {
+class notificationService extends Finsemble.baseService implements INotificationService {
 	/**
 	 * Initializes a new instance of the notificationService class.
 	 */
 	constructor() {
 		super({
-			// Declare any service or client dependencies that must be available before your service starts up. 
+			// Declare any service or client dependencies that must be available before your service starts up.
 			startupDependencies: {
-				// If the service is using another service directly via an event listener or a responder, that service 
+				// If the service is using another service directly via an event listener or a responder, that service
 				// should be listed as a service start up dependency.
 				services: [
 					// "assimilationService",
 					// "authenticationService",
-					// "configService", 
+					// "configService",
 					// "hotkeysService",
 					// "loggerService",
 					// "linkerService",
@@ -44,8 +49,8 @@ class notificationService extends Finsemble.baseService {
 					// "windowService",
 					// "workspaceService"
 				],
-				// When ever you use a client API with in the service, it should be listed as a client startup 
-				// dependency. Any clients listed as a dependency must be initialized at the top of this file for your 
+				// When ever you use a client API with in the service, it should be listed as a client startup
+				// dependency. Any clients listed as a dependency must be initialized at the top of this file for your
 				// service to startup.
 				clients: [
 					// "authenticationClient",
@@ -68,33 +73,33 @@ class notificationService extends Finsemble.baseService {
 	}
 
 	/**
-	 * Fired when the service is ready for initialization
-	 * @param {function} callback 
+	 *
+	 * @param {Function} callback
 	 */
-	readyHandler(callback) {
+	readyHandler(callback: Function) {
 		serviceInstance.createRouterEndpoints();
 		Finsemble.Clients.Logger.log("notification Service ready");
 		callback();
 	}
 
 	// Implement service functionality
-	myFunction(data) {
+	myFunction(data: any) {
 		return `Data passed into query: \n${JSON.stringify(data, null, "\t")}`;
 	}
 
 	/**
-	 * Creates a router endpoint for you service. 
-	 * Add query responders, listeners or pub/sub topic as appropriate. 
+	 * Creates a router endpoint for you service.
+	 * Add query responders, listeners or pub/sub topic as appropriate.
 	 */
 	createRouterEndpoints() {
 		// Add responder for myFunction
-		Finsemble.Clients.RouterClient.addResponder("notification.myFunction", (err, message) => {
+		Finsemble.Clients.RouterClient.addResponder("notification.myFunction", (err: any, message: any) => {
 			if (err) {
 				return Finsemble.Clients.Logger.error("Failed to setup notification.myFunction responder", err);
 			}
 
 			Finsemble.Clients.Logger.log('notification Query: ' + JSON.stringify(message));
-			
+
 			try {
 				// Data in query message can be passed as parameters to a method in the service.
 				const data = this.myFunction(message.data);
@@ -105,7 +110,24 @@ class notificationService extends Finsemble.baseService {
 				// If there is an error, send it back to the caller
 				message.sendQueryResponse(e);
 			}
-		});	
+		});
+	}
+
+	subscriptions: ISubscription[];
+
+	broadcastNotifications(notification: INotification[]): void {
+	}
+
+	deleteNotification(id: string): void {
+	}
+
+	handleAction(notification: INotification[], action: IAction): void {
+	}
+
+	notify(notification: INotification[]): void {
+	}
+
+	saveLastUpdatedTime(lastUpdated: Date, notification: INotification): void {
 	}
 }
 

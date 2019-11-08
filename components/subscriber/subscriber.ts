@@ -22,6 +22,7 @@ function init() {
     filter.size = {"gte": 30};
 
     subscription.onNotification = function (notification: INotification) {
+        console.log(notification);
         alert("I got notified");
     };
 

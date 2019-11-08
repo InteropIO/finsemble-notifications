@@ -1,10 +1,13 @@
 /// <reference types="../../services/FSBL" />
 
 import NotificationClient from "../../services/notification/notificationClient";
+import Notification from "../../services/notification/types/Notification";
 
 let nClient: NotificationClient = null;
 let launchTutorial = () => {
-    nClient.notify([{"message": "hi"}]);
+    let not1 = new Notification();
+    not1.details = "blub blub";
+    nClient.notify([not1]);
 };
 
 

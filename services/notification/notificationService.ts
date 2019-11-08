@@ -30,6 +30,7 @@ class notificationService extends Finsemble.baseService implements INotification
             }
         });
 
+        this.representationOfNotifications = [];
         this.subscriptions = [];
 
         this.subscribe = this.subscribe.bind(this);
@@ -97,11 +98,7 @@ class notificationService extends Finsemble.baseService implements INotification
      * @inheritDoc
      */
     broadcastNotifications(notifications: INotification[]): void {
-        this.subscriptions.forEach((subscription) => {
-            notifications.forEach((notification) => {
-                subscription.onNotification(notification);
-            });
-        })
+        Finsemble.Clients.RouterClient.transmit(ROUTER_ENDPOINTS.PREFIX + ROUTER_ENDPOINTS.SUBSCRIBE + ".default", notifications);
     }
 
     /**
@@ -123,7 +120,9 @@ class notificationService extends Finsemble.baseService implements INotification
     notify(notifications: INotification[]): void {
         // Do some things. Store/Modify the notification
         // Call broadcast notifications
-        this.representationOfNotifications.push(notifications);
+        notifications.forEach((notification) => {
+            this.representationOfNotifications.push(notification);
+        });
 
         this.broadcastNotifications(notifications);
     }
@@ -132,8 +131,9 @@ class notificationService extends Finsemble.baseService implements INotification
         let channel = this.getChannel(subscription);
         // TODO: Do some checking on the filters
         subscription.id = "subscription_" + Math.random();
-        Finsemble.Clients.Logger.log("Got subscription", subscription);
-        this.addToSubscription(channel, subscription);
+        Finsemble.Clients.Logger.log("Successfully subscription", subscription);
+        Finsemble.Clients.Logger.log("Sending response... see you on the flip side");
+        // this.addToSubscription(channel, subscription);
         return {
             "id": subscription.id,
             "channel": channel
@@ -148,7 +148,7 @@ class notificationService extends Finsemble.baseService implements INotification
     }
 
     private getChannel(subscription: ISubscription) {
-        return  ROUTER_ENDPOINTS.PREFIX + ROUTER_ENDPOINTS.SUBSCRIBE + ".default";
+        return ROUTER_ENDPOINTS.PREFIX + ROUTER_ENDPOINTS.SUBSCRIBE + ".default";
         // return ROUTER_ENDPOINTS.PREFIX + ROUTER_ENDPOINTS.SUBSCRIBE + ".subscription_" + Math.random();
     }
 

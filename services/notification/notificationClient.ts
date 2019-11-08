@@ -45,25 +45,36 @@ export default class NotificationClient implements INotificationClient {
      * @inheritDoc
      */
     notify(notifications: any[]): void {
-        this.callRouter(ROUTER_ENDPOINTS.NOTIFY, notifications, (error: any, data: any) => {
-
-        });
+        this.queryRouter(ROUTER_ENDPOINTS.NOTIFY, notifications);
     }
 
     /**
      * @inheritDoc
      */
-    subscribe(subscription: ISubscription, onSubscriptionSuccess: Function, onSubscriptionFault: Function): string {
-        this.callRouter(ROUTER_ENDPOINTS.SUBSCRIBE, JSON.parse(JSON.stringify(subscription)), (error, data) => {
-            if (error) {
-                onSubscriptionFault(error);
-            } else {
-                FSBL.Clients.Logger.log("Subscribed successfully. Got back", data);
-                // We should get back a channel from the service. Make sure the subscriptions's onNotify is called for notifications on this channel
-                onSubscriptionSuccess(data);
+    subscribe(subscription: ISubscription, onSubscriptionSuccess?: Function, onSubscriptionFault?: Function): Promise<string> {
+        return new Promise<string>(async (resolve, reject) => {
+            try {
+                let returnValue = await this.queryRouter(ROUTER_ENDPOINTS.SUBSCRIBE, JSON.parse(JSON.stringify(subscription)));
+                this.listenOnChannel(returnValue.channel, subscription);
+                FSBL.Clients.Logger.log("Got some return values", returnValue);
+                if(onSubscriptionSuccess) {
+                    onSubscriptionSuccess(returnValue.channel);
+                }
+                resolve(returnValue.id);
+            } catch (e) {
+                if(onSubscriptionFault){
+                    onSubscriptionFault(e);
+                }
+                reject(e)
             }
         });
-        return "";
+    }
+
+    private async listenOnChannel(channel: string, subscription: ISubscription): Promise<void> {
+        return new Promise((resolve, reject) => {
+            FSBL.Clients.Logger.log("Listening on channel", channel);
+            this.listenRouter(channel, subscription.onNotification)
+        });
     }
 
     /**
@@ -75,14 +86,28 @@ export default class NotificationClient implements INotificationClient {
     private setupRouterEndpoints() {
     }
 
-    private callRouter(channel: string, data: any, callback: Function) {
-        FSBL.Clients.Logger.log(`${channel} called`);
-        FSBL.Clients.Logger.log("Attempting to send", data);
-        FSBL.Clients.RouterClient.query(ROUTER_ENDPOINTS.PREFIX + channel, data, function (error: any, response: any) {
-            FSBL.Clients.Logger.log(`${channel} response: `, response.data);
-            if (callback) {
-                callback(error, response.data);
+    private queryRouter(channel: string, data: any, callback?: Function): Promise<any> {
+        return new Promise<any>(async (resolve, reject) => {
+            FSBL.Clients.Logger.log(`${channel} called`);
+            FSBL.Clients.Logger.log("Attempting to send", data);
+            try {
+                let response = await FSBL.Clients.RouterClient.query(ROUTER_ENDPOINTS.PREFIX + channel, data);
+                FSBL.Clients.Logger.log(`${channel} response: `, response.response.data.data);
+                if(callback) {
+                    callback(null, response.response.data.data);
+                }
+                resolve(response.response.data.data);
+            } catch (e) {
+                FSBL.Clients.Logger.log(`Error: `, e);
+                if(callback) {
+                    callback(e);
+                }
+                reject(e);
             }
         });
+    }
+
+    private listenRouter(channel: string, callback: Function) {
+        FSBL.Clients.RouterClient.addListener(channel, callback);
     }
 }

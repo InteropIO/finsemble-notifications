@@ -14,6 +14,7 @@ declare type Finsemble = {
         LauncherClient: any,
         LinkerClient: any,
         Logger: any,
+        RouterClient: any,
         SearchClient: any,
         StorageClient: any,
         WindowClient: any,

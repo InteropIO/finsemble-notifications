@@ -11,7 +11,7 @@ export default interface INotificationClient {
      * @param {Function} onSubscriptionSuccess called when subscription is successfully created.
      * @param {Function} onSubscriptionFault if there is an error creating the subscription.
      */
-    subscribe(subscription: ISubscription, onSubscriptionSuccess: Function, onSubscriptionFault: Function): string;
+    subscribe(subscription: ISubscription, onSubscriptionSuccess: Function, onSubscriptionFault: Function): Promise<string>;
 
     /**
      * Used to unsubscribe to a notification stream.

@@ -5,63 +5,84 @@ import INotificationClient from "./types/INotificationClient";
 import INotification from "./types/INotification";
 import IFilter from "./types/IFilter";
 import IAction from "./types/IAction";
+import ISubscription from "./types/ISubscription";
+
+export const ROUTER_ENDPOINTS = {
+    PREFIX: "notification.",
+    NOTIFY: "notify",
+    SUBSCRIBE: "subscribe",
+};
 
 
-class NotificationClient implements INotificationClient {
-    broadcastNotifications(notification: INotification[]): void {
+export default class NotificationClient implements INotificationClient {
+
+    constructor() {
+        this.setupRouterEndpoints();
     }
 
+
+    /**
+     * @inheritDoc
+     */
     fetchHistory(since: Date, filter: IFilter): INotification[] {
         return [];
     }
 
+    /**
+     * @inheritDoc
+     */
     getLastUpdatedTime(filter?: IFilter): Date {
         return undefined;
     }
 
+    /**
+     * @inheritDoc
+     */
     markActionHandled(notification: INotification[], action: IAction): void {
     }
 
-    notify(notification: INotification[]): void {
+    /**
+     * @inheritDoc
+     */
+    notify(notifications: any[]): void {
+        this.callRouter(ROUTER_ENDPOINTS.NOTIFY, notifications, (error: any, data: any) => {
+
+        });
     }
 
-    subscribe(filter: IFilter, onNotification: Function, onSubscriptionSuccess: Function, onSubscriptionFault: Function): string {
+    /**
+     * @inheritDoc
+     */
+    subscribe(subscription: ISubscription, onSubscriptionSuccess: Function, onSubscriptionFault: Function): string {
+        this.callRouter(ROUTER_ENDPOINTS.SUBSCRIBE, JSON.parse(JSON.stringify(subscription)), (error, data) => {
+            if (error) {
+                onSubscriptionFault(error);
+            } else {
+                FSBL.Clients.Logger.log("Subscribed successfully. Got back", data);
+                // We should get back a channel from the service. Make sure the subscriptions's onNotify is called for notifications on this channel
+                onSubscriptionSuccess(data);
+            }
+        });
         return "";
     }
 
+    /**
+     * @inheritDoc
+     */
     unsubscribe(subscriptionId: string): void {
     }
 
+    private setupRouterEndpoints() {
+    }
+
+    private callRouter(channel: string, data: any, callback: Function) {
+        FSBL.Clients.Logger.log(`${channel} called`);
+        FSBL.Clients.Logger.log("Attempting to send", data);
+        FSBL.Clients.RouterClient.query(ROUTER_ENDPOINTS.PREFIX + channel, data, function (error: any, response: any) {
+            FSBL.Clients.Logger.log(`${channel} response: `, response.data);
+            if (callback) {
+                callback(error, response.data);
+            }
+        });
+    }
 }
-
-export function myFunction(cb: Function) {
-    FSBL.Clients.Logger.log("notification.myFunction called");
-    FSBL.Clients.RouterClient.query("notification functions", { query: "myFunction" }, function (err: any, response: any) {
-        FSBL.Clients.Logger.log("notification.myFunction response: ", response.data);
-        if (cb) {
-            cb(err, response.data);
-        }
-    });
-}
-
-// Exported functions can be imported into your components as follows:
-// import {myFunction} from '../../services/notification/notificationClient';
-
-// Doing so allows service functions to be used as if they were local, e.g.:
-// myFunction(function(err, response) {
-//     if (err) {
-//         Logger.error("Failed to call myFunction!", err);
-//     } else {
-//         Logger.log("called myFunction: ", response);
-//     }
-// });
-
-// alternatively import the entire class of functions:
-// import * as serviceClient from '../../services/notification/notificationClient'
-// serviceClient.myFunction(function(err, response) {
-//     if (err) {
-//         Logger.error("Failed to call myFunction!", err);
-//     } else {
-//         Logger.log("called myFunction: ", response);
-//     }
-// });

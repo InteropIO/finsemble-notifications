@@ -5,133 +5,162 @@ import ISubscription from "./types/ISubscription";
 
 const Finsemble = require("@chartiq/finsemble");
 
+import {ROUTER_ENDPOINTS} from "./notificationClient";
+
 Finsemble.Clients.Logger.start();
 Finsemble.Clients.Logger.log("notification Service starting up");
 
-// Add and initialize any other clients you need to use (services are initialized by the system, clients are not):
-// Finsemble.Clients.AuthenticationClient.initialize();
-// Finsemble.Clients.ConfigClient.initialize();
-// Finsemble.Clients.DialogManager.initialize();
-// Finsemble.Clients.DistributedStoreClient.initialize();
-// Finsemble.Clients.DragAndDropClient.initialize();
-// Finsemble.Clients.LauncherClient.initialize();
-// Finsemble.Clients.LinkerClient.initialize();
-// Finsemble.Clients.HotkeyClient.initialize();
-// Finsemble.Clients.SearchClient.initialize();
-// Finsemble.Clients.StorageClient.initialize();
-// Finsemble.Clients.WindowClient.initialize();
-// Finsemble.Clients.WorkspaceClient.initialize();
-
-// NOTE: When adding the above clients to a service, be sure to add them to the start up dependencies.
-
-/**
- * TODO: Add service description here
- */
 class notificationService extends Finsemble.baseService implements INotificationService {
-	/**
-	 * Initializes a new instance of the notificationService class.
-	 */
-	constructor() {
-		super({
-			// Declare any service or client dependencies that must be available before your service starts up.
-			startupDependencies: {
-				// If the service is using another service directly via an event listener or a responder, that service
-				// should be listed as a service start up dependency.
-				services: [
-					// "assimilationService",
-					// "authenticationService",
-					// "configService",
-					// "hotkeysService",
-					// "loggerService",
-					// "linkerService",
-					// "searchService",
-					// "storageService",
-					// "windowService",
-					// "workspaceService"
-				],
-				// When ever you use a client API with in the service, it should be listed as a client startup
-				// dependency. Any clients listed as a dependency must be initialized at the top of this file for your
-				// service to startup.
-				clients: [
-					// "authenticationClient",
-					// "configClient",
-					// "dialogManager",
-					// "distributedStoreClient",
-					// "dragAndDropClient",
-					// "hotkeyClient",
-					// "launcherClient",
-					// "linkerClient",
-					// "searchClient
-					// "storageClient",
-					// "windowClient",
-					// "workspaceClient",
-				]
-			}
-		});
+    private representationOfNotifications: any[];
 
-		this.onBaseServiceReady(this.readyHandler);
-	}
+    /**
+     * Initializes a new instance of the notificationService class.
+     */
+    constructor() {
+        super({
+            // Declare any service or client dependencies that must be available before your service starts up.
+            startupDependencies: {
+                // If the service is using another service directly via an event listener or a responder, that service
+                // should be listed as a service start up dependency.
+                services: [],
+                // When ever you use a client API with in the service, it should be listed as a client startup
+                // dependency. Any clients listed as a dependency must be initialized at the top of this file for your
+                // service to startup.
+                clients: []
+            }
+        });
 
-	/**
-	 *
-	 * @param {Function} callback
-	 */
-	readyHandler(callback: Function) {
-		serviceInstance.createRouterEndpoints();
-		Finsemble.Clients.Logger.log("notification Service ready");
-		callback();
-	}
+        this.subscriptions = [];
 
-	// Implement service functionality
-	myFunction(data: any) {
-		return `Data passed into query: \n${JSON.stringify(data, null, "\t")}`;
-	}
+        this.subscribe = this.subscribe.bind(this);
+        this.notify = this.notify.bind(this);
+        this.broadcastNotifications = this.broadcastNotifications.bind(this);
+        this.readyHandler = this.readyHandler.bind(this);
+        this.onBaseServiceReady(this.readyHandler);
+    }
 
-	/**
-	 * Creates a router endpoint for you service.
-	 * Add query responders, listeners or pub/sub topic as appropriate.
-	 */
-	createRouterEndpoints() {
-		// Add responder for myFunction
-		Finsemble.Clients.RouterClient.addResponder("notification.myFunction", (err: any, message: any) => {
-			if (err) {
-				return Finsemble.Clients.Logger.error("Failed to setup notification.myFunction responder", err);
-			}
+    /**
+     *
+     * @param {Function} callback
+     */
+    readyHandler(callback: Function) {
+        this.createRouterEndpoints();
+        Finsemble.Clients.Logger.log("notification Service ready");
+        callback();
+    }
 
-			Finsemble.Clients.Logger.log('notification Query: ' + JSON.stringify(message));
+    /**
+     * Creates a router endpoint for your service.
+     * Add query responders, listeners or pub/sub topic as appropriate.
+     */
+    createRouterEndpoints() {
+        this.setupNotify();
+        this.setupSubscribe();
+    }
 
-			try {
-				// Data in query message can be passed as parameters to a method in the service.
-				const data = this.myFunction(message.data);
+    private setupNotify(): void {
+        this.addResponder(ROUTER_ENDPOINTS.PREFIX + ROUTER_ENDPOINTS.NOTIFY, this.notify);
+    }
 
-				// Send query response to the function call, with optional data, back to the caller.
-				message.sendQueryResponse(null, data);
-			} catch (e) {
-				// If there is an error, send it back to the caller
-				message.sendQueryResponse(e);
-			}
-		});
-	}
+    private setupSubscribe() {
+        this.addResponder(ROUTER_ENDPOINTS.PREFIX + ROUTER_ENDPOINTS.SUBSCRIBE, this.subscribe);
+    }
 
-	subscriptions: ISubscription[];
+    private addResponder(endpoint: string, dataProcessor: Function) {
+        Finsemble.Clients.Logger.log(`Adding responder for endpoint: ${endpoint}`);
+        Finsemble.Clients.RouterClient.addResponder(endpoint, (err: any, message: any) => {
+            Finsemble.Clients.Logger.log(`endpoint called: ${endpoint}`);
+            Finsemble.Clients.Logger.log(message);
+            if (err) {
+                return Finsemble.Clients.Logger.error(`Failed to setup ${endpoint} responder`, err);
+            }
 
-	broadcastNotifications(notification: INotification[]): void {
-	}
+            try {
+                let returnVal = dataProcessor(message.data);
 
-	deleteNotification(id: string): void {
-	}
+                message.sendQueryResponse(null, {"status": "success", "data": returnVal});
+            } catch (e) {
+                message.sendQueryResponse(e);
+            }
+        });
 
-	handleAction(notification: INotification[], action: IAction): void {
-	}
+    }
 
-	notify(notification: INotification[]): void {
-	}
+    private setupBroadcast(): void {
+        let endpoint = ROUTER_ENDPOINTS.PREFIX + ROUTER_ENDPOINTS.SUBSCRIBE;
+        Finsemble.Clients.RouterClient.addPubSubResponder(endpoint, {"notifications": this.representationOfNotifications});
+    }
 
-	saveLastUpdatedTime(lastUpdated: Date, notification: INotification): void {
-	}
+    subscriptions: any;
+
+    /**
+     * @inheritDoc
+     */
+    broadcastNotifications(notifications: INotification[]): void {
+        this.subscriptions.forEach((subscription) => {
+            notifications.forEach((notification) => {
+                subscription.onNotification(notification);
+            });
+        })
+    }
+
+    /**
+     * @inheritDoc
+     */
+    deleteNotification(id: string): void {
+    }
+
+    /**
+     * @inheritDoc
+     */
+    handleAction(notifications: INotification[], action: IAction): void {
+
+    }
+
+    /**
+     * @inheritDoc
+     */
+    notify(notifications: INotification[]): void {
+        // Do some things. Store/Modify the notification
+        // Call broadcast notifications
+        this.representationOfNotifications.push(notifications);
+
+        this.broadcastNotifications(notifications);
+    }
+
+    subscribe(subscription: ISubscription): object {
+        let channel = this.getChannel(subscription);
+        // TODO: Do some checking on the filters
+        subscription.id = "subscription_" + Math.random();
+        Finsemble.Clients.Logger.log("Got subscription", subscription);
+        this.addToSubscription(channel, subscription);
+        return {
+            "id": subscription.id,
+            "channel": channel
+        };
+    }
+
+    private addToSubscription(channel, subscription) {
+        if (this.subscriptions.hasOwnProperty(channel)) {
+            this.subscriptions[channel] = [];
+        }
+        this.subscriptions[channel].push(subscription);
+    }
+
+    private getChannel(subscription: ISubscription) {
+        return  ROUTER_ENDPOINTS.PREFIX + ROUTER_ENDPOINTS.SUBSCRIBE + ".default";
+        // return ROUTER_ENDPOINTS.PREFIX + ROUTER_ENDPOINTS.SUBSCRIBE + ".subscription_" + Math.random();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    saveLastUpdatedTime(lastUpdated: Date, notification: INotification): void {
+    }
 }
 
 const serviceInstance = new notificationService();
 
 serviceInstance.start();
-module.exports = serviceInstance;
+
+export default serviceInstance;

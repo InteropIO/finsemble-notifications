@@ -6,8 +6,8 @@ import INotification from "./INotification";
 import IFilter from "./IFilter";
 
 export default interface ISubscription {
-	id: string;
-	filters: IFilter[];
+    id: string;
+    filters?: IFilter[];
 
-	onNotification: (notification: INotification) => void;
+    onNotification: (notification: INotification) => void;
 }

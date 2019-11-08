@@ -5,9 +5,9 @@ import ISubscription from "./ISubscription";
 export default interface INotificationService {
     /**
      * Creates or updates notifications in Finsemble.
-     * @param {INotification[]} notification from external source to be created or updated in Finsemble.
+     * @param {INotification[]} notifications from external source to be created or updated in Finsemble.
      */
-    notify(notification: INotification[]): void;
+    notify(notifications: INotification[]): void;
 
     /**
      * Delete a notification as part of a purge.
@@ -28,15 +28,22 @@ export default interface INotificationService {
      * Called in response to a user action VIA a NotificationClient router transmit.
      * @private
      */
-    handleAction(notification: INotification[], action: IAction): void;
+    handleAction(notifications: INotification[], action: IAction): void;
 
     /**
      * When incoming notification arrive, lookup matching subscriptions and call necessary
      * callbacks on subscription.
-     * @param {INotification[]} notification of INotification objects to broadcast.
+     * @param {INotification[]} notifications of INotification objects to broadcast.
      * @private
      */
-    broadcastNotifications(notification: INotification[]): void;
+    broadcastNotifications(notifications: INotification[]): void;
+
+    /**
+     *
+     * @param {ISubscription} subscription
+     * @return {string} a router channel on which notifications for this subscription will be sent.
+     */
+    subscribe(subscription: ISubscription): object;
 
     /**
      * Array of subscriptions for a particular set of filters.

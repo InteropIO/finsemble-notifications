@@ -3,7 +3,7 @@
     "components": {
         "NotificationComponent": {
             "window": {
-                "url": "$applicationRoot/components/finsemble-notifications/components/welcome/welcome.html",
+                "url": "$applicationRoot/components/finsemble-notifications/components/notify/notify.html",
                 "affinity": "workspaceComponents",
                 "frame": false,
                 "resizable": true,
@@ -15,8 +15,7 @@
             },
             "component": {
                 "inject": false,
-                "spawnOnStartup": false,
-                "preload": "$applicationRoot/components/finsemble-notifications/preloads/notifications.js"
+                "spawnOnStartup": false
             },
             "foreign": {
                 "services": {
@@ -34,6 +33,45 @@
                         "FSBLHeader": true,
                         "persistWindowState": true,
                         "title": "Notifications"
+                    },
+                    "Toolbar": {
+                        "iconClass": "ff-component"
+                    }
+                }
+            }
+        },
+        "SubscriberComponent": {
+            "window": {
+                "url": "$applicationRoot/components/finsemble-notifications/components/subscriber/subscriber.html",
+                "affinity": "workspaceComponents",
+                "frame": false,
+                "resizable": true,
+                "autoShow": true,
+                "top": "center",
+                "left": "center",
+                "width": 400,
+                "height": 432
+            },
+            "component": {
+                "inject": false,
+                "spawnOnStartup": false
+            },
+            "foreign": {
+                "services": {
+                    "dockingService": {
+                        "canGroup": true,
+                        "isArrangable": true
+                    }
+                },
+                "components": {
+                    "App Launcher": {
+                        "launchableByUser": true
+                    },
+                    "Window Manager": {
+                        "showLinker": true,
+                        "FSBLHeader": true,
+                        "persistWindowState": true,
+                        "title": "Subscriber"
                     },
                     "Toolbar": {
                         "iconClass": "ff-component"

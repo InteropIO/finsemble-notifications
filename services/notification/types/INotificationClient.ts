@@ -1,6 +1,7 @@
 import IFilter from "./IFilter";
 import INotification from "./INotification";
 import IAction from "./IAction";
+import ISubscription from "./ISubscription";
 
 export default interface INotificationClient {
     /**
@@ -10,7 +11,7 @@ export default interface INotificationClient {
      * @param {Function} onSubscriptionSuccess called when subscription is successfully created.
      * @param {Function} onSubscriptionFault if there is an error creating the subscription.
      */
-    subscribe(filter: IFilter, onNotification: Function, onSubscriptionSuccess: Function, onSubscriptionFault: Function): string;
+    subscribe(subscription: ISubscription, onSubscriptionSuccess: Function, onSubscriptionFault: Function): string;
 
     /**
      * Used to unsubscribe to a notification stream.
@@ -32,12 +33,6 @@ export default interface INotificationClient {
      * @returns {INotification[]} array of notifications.
      */
     fetchHistory(since: Date, filter: IFilter): INotification[];
-
-    /**
-     * When incoming notification arrives, lookup matching subscriptions and call necessary callbacks on subscription.
-     * @param {INotification[]} notification Array of INotification objects to broadcast.
-     */
-    broadcastNotifications(notification: INotification[]): void;
 
     /**
      * Creates or updates notifications in Finsemble.

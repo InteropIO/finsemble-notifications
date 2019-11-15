@@ -4,6 +4,12 @@ import ISubscription from "./ISubscription";
 
 export default interface INotificationService {
     /**
+     * Array of subscriptions for a particular set of filters.
+     * @private
+     */
+    subscriptions: ISubscription[];
+
+    /**
      * Creates or updates notifications in Finsemble.
      * @param {INotification[]} notifications from external source to be created or updated in Finsemble.
      */
@@ -44,10 +50,4 @@ export default interface INotificationService {
      * @return {string} a router channel on which notifications for this subscription will be sent.
      */
     subscribe(subscription: ISubscription): object;
-
-    /**
-     * Array of subscriptions for a particular set of filters.
-     * @private
-     */
-    subscriptions: ISubscription[];
 }

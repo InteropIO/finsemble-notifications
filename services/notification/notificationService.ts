@@ -11,6 +11,7 @@ Finsemble.Clients.Logger.start();
 Finsemble.Clients.Logger.log("notification Service starting up");
 
 class notificationService extends Finsemble.baseService implements INotificationService {
+    subscriptions: ISubscription[];
     private representationOfNotifications: any[];
 
     /**
@@ -59,6 +60,77 @@ class notificationService extends Finsemble.baseService implements INotification
         this.setupSubscribe();
     }
 
+    /**
+     * @inheritDoc
+     */
+    broadcastNotifications(notifications: INotification[]): void {
+        this.subscriptions.forEach((subscription) => {
+            for(let k in notifications) {
+                if (this.filtersMatch(subscription, notifications[k])) {
+                    this.expectResponse(subscription);
+                    Finsemble.Clients.RouterClient.query(
+                        subscription.channel,
+                        notifications[k],
+                        (error, response) => {
+                            this.setReceivedReceipt(subscription, error, response);
+                        }
+                    );
+                }
+            }
+        });
+    }
+
+
+
+    /**
+     * @inheritDoc
+     */
+    deleteNotification(id: string): void {
+    }
+
+    /**
+     * @inheritDoc
+     */
+    handleAction(notifications: INotification[], action: IAction): void {
+
+    }
+
+    /**
+     * @inheritDoc
+     */
+    notify(notifications: INotification[]): void {
+        // Do some things. Store/Modify the notification
+        // Call broadcast notifications
+        notifications.forEach((notification) => {
+            this.representationOfNotifications.push(notification);
+        });
+        this.broadcastNotifications(notifications);
+    }
+
+    subscribe(subscription: ISubscription): object {
+        let channel = this.getChannel(subscription);
+        // TODO: Do some checking on the filters
+        subscription.id = "subscription_" + Math.random();
+        Finsemble.Clients.Logger.log("Successfully subscription", subscription);
+        Finsemble.Clients.Logger.log("Sending response... see you on the flip side");
+        subscription.channel = channel;
+        this.addToSubscription(subscription);
+        return {
+            "id": subscription.id,
+            "channel": channel
+        };
+    }
+
+    private filtersMatch(subscription: ISubscription, notification: INotification): boolean {
+        return true;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    saveLastUpdatedTime(lastUpdated: Date, notification: INotification): void {
+    }
+
     private setupNotify(): void {
         this.addResponder(ROUTER_ENDPOINTS.PREFIX + ROUTER_ENDPOINTS.NOTIFY, this.notify);
     }
@@ -84,7 +156,6 @@ class notificationService extends Finsemble.baseService implements INotification
                 message.sendQueryResponse(e);
             }
         });
-
     }
 
     private setupBroadcast(): void {
@@ -92,70 +163,22 @@ class notificationService extends Finsemble.baseService implements INotification
         Finsemble.Clients.RouterClient.addPubSubResponder(endpoint, {"notifications": this.representationOfNotifications});
     }
 
-    subscriptions: any;
-
-    /**
-     * @inheritDoc
-     */
-    broadcastNotifications(notifications: INotification[]): void {
-        Finsemble.Clients.RouterClient.transmit(ROUTER_ENDPOINTS.PREFIX + ROUTER_ENDPOINTS.SUBSCRIBE + ".default", notifications);
+    private expectResponse(subscription: ISubscription) {
+        // We're expecting a received receipt on the channel from the client
     }
 
-    /**
-     * @inheritDoc
-     */
-    deleteNotification(id: string): void {
+    private setReceivedReceipt(subscription: ISubscription, error, response) {
+        Finsemble.Clients.Logger.log(`Got a receipt on: ${subscription.channel}`);
+        // We've received a response from the client. Process it and set the correct value
     }
 
-    /**
-     * @inheritDoc
-     */
-    handleAction(notifications: INotification[], action: IAction): void {
-
-    }
-
-    /**
-     * @inheritDoc
-     */
-    notify(notifications: INotification[]): void {
-        // Do some things. Store/Modify the notification
-        // Call broadcast notifications
-        notifications.forEach((notification) => {
-            this.representationOfNotifications.push(notification);
-        });
-
-        this.broadcastNotifications(notifications);
-    }
-
-    subscribe(subscription: ISubscription): object {
-        let channel = this.getChannel(subscription);
-        // TODO: Do some checking on the filters
-        subscription.id = "subscription_" + Math.random();
-        Finsemble.Clients.Logger.log("Successfully subscription", subscription);
-        Finsemble.Clients.Logger.log("Sending response... see you on the flip side");
-        // this.addToSubscription(channel, subscription);
-        return {
-            "id": subscription.id,
-            "channel": channel
-        };
-    }
-
-    private addToSubscription(channel, subscription) {
-        if (this.subscriptions.hasOwnProperty(channel)) {
-            this.subscriptions[channel] = [];
-        }
-        this.subscriptions[channel].push(subscription);
+    private addToSubscription(subscription) {
+        this.subscriptions.push(subscription);
     }
 
     private getChannel(subscription: ISubscription) {
-        return ROUTER_ENDPOINTS.PREFIX + ROUTER_ENDPOINTS.SUBSCRIBE + ".default";
+        return ROUTER_ENDPOINTS.PREFIX + ROUTER_ENDPOINTS.SUBSCRIBE + `.${Math.random()}`;
         // return ROUTER_ENDPOINTS.PREFIX + ROUTER_ENDPOINTS.SUBSCRIBE + ".subscription_" + Math.random();
-    }
-
-    /**
-     * @inheritDoc
-     */
-    saveLastUpdatedTime(lastUpdated: Date, notification: INotification): void {
     }
 }
 

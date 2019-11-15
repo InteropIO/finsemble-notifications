@@ -6,8 +6,7 @@ import ISubscription from "./ISubscription";
 export default interface INotificationClient {
     /**
      * Subscribe to a notification stream given a set of name/value pair filters. Returns subscriptionId
-     * @param {IFilter} filter with name value pair used to match on.
-     * @param {Function} onNotification called whenever a notification matching a specific filter is received in the NotificationService.
+     * @param {ISubscription} subscription with name value pair used to match on.
      * @param {Function} onSubscriptionSuccess called when subscription is successfully created.
      * @param {Function} onSubscriptionFault if there is an error creating the subscription.
      */

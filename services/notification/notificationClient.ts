@@ -55,7 +55,7 @@ export default class NotificationClient implements INotificationClient {
         return new Promise<string>(async (resolve, reject) => {
             try {
                 let returnValue = await this.queryRouter(ROUTER_ENDPOINTS.SUBSCRIBE, JSON.parse(JSON.stringify(subscription)));
-                this.listenOnChannel(returnValue.channel, subscription);
+                await this.monitorChannel(returnValue.channel, subscription);
                 FSBL.Clients.Logger.log("Got some return values", returnValue);
                 if(onSubscriptionSuccess) {
                     onSubscriptionSuccess(returnValue.channel);
@@ -70,10 +70,25 @@ export default class NotificationClient implements INotificationClient {
         });
     }
 
-    private async listenOnChannel(channel: string, subscription: ISubscription): Promise<void> {
-        return new Promise((resolve, reject) => {
+    /**
+     * Listens on a channel to execute the subscriptions onNofitication callback and send receipt
+     *
+     * @param {string} channel
+     * @param {ISubscription} subscription
+     */
+    private monitorChannel(channel: string, subscription: ISubscription): Promise<void> {
+        return new Promise((resolve) => {
             FSBL.Clients.Logger.log("Listening on channel", channel);
-            this.listenRouter(channel, subscription.onNotification)
+            FSBL.Clients.RouterClient.addResponder(channel, (error, queryMessage) => {
+                FSBL.Clients.Logger.log("Found on channel", queryMessage);
+                try {
+                    subscription.onNotification(queryMessage.data);
+                    queryMessage.sendQueryResponse(null, {"message": "success"});
+                } catch (e) {
+                    queryMessage.sendQueryResponse(e);
+                }
+            });
+            resolve();
         });
     }
 
@@ -86,6 +101,12 @@ export default class NotificationClient implements INotificationClient {
     private setupRouterEndpoints() {
     }
 
+    /**
+     *
+     * @param {string} channel
+     * @param data
+     * @param {Function} callback
+     */
     private queryRouter(channel: string, data: any, callback?: Function): Promise<any> {
         return new Promise<any>(async (resolve, reject) => {
             FSBL.Clients.Logger.log(`${channel} called`);

@@ -6,8 +6,10 @@ import Notification from "../../services/notification/types/Notification";
 let nClient: NotificationClient = null;
 let launchTutorial = () => {
     let not1 = new Notification();
+    let not2 = new Notification();
     not1.details = "blub blub";
-    nClient.notify([not1]);
+    not2.details = "pemberton";
+    nClient.notify([not1, not2]);
 };
 
 

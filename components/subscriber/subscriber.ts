@@ -4,6 +4,7 @@ import NotificationClient from "../../services/notification/notificationClient";
 import Subscription from "../../services/notification/types/Subscription";
 import INotification from "../../services/notification/types/INotification";
 import Filter from "../../services/notification/types/Filter";
+import Action from "../../services/notification/types/Action";
 
 let nClient: NotificationClient = null;
 
@@ -18,12 +19,14 @@ function init() {
     nClient = new NotificationClient();
     let subscription = new Subscription();
 
+    let action = new Action();
+    action.buttonText = "sdf";
+
     let filter = new Filter();
     filter.size = {"gte": 30};
 
     subscription.onNotification = function (notification: INotification) {
-        console.log(notification);
-        alert("I got notified");
+        alert(`${FSBL.Clients.WindowClient.getWindowIdentifier().windowName}: ${notification.details}`);
     };
 
     subscription.filters.push(filter);

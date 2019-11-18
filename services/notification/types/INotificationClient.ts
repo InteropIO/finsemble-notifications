@@ -16,14 +16,14 @@ export default interface INotificationClient {
      * Used to unsubscribe to a notification stream.
      * @param {string} subscriptionId which was returned when subscription was created.
      */
-    unsubscribe(subscriptionId: string): void;
+    unsubscribe(subscriptionId: string): Promise<void>;
 
     /**
      * Return the Date a notification matching the specified filter was updated.
      * @param {IFilter} filter to identify which notification to save lastUpdated time for.
      * @returns last updated Date object.
      */
-    getLastUpdatedTime(filter?: IFilter): Date;
+    getLastUpdatedTime(filter?: IFilter): Promise<Date>;
 
     /**
      * Used by UI components that need to display a list of historical notifications.
@@ -31,18 +31,18 @@ export default interface INotificationClient {
      * @param {IFilter} filter to match to notifications.
      * @returns {INotification[]} array of notifications.
      */
-    fetchHistory(since: Date, filter: IFilter): INotification[];
+    fetchHistory(since: Date, filter: IFilter): Promise<INotification[]>;
 
     /**
      * Creates or updates notifications in Finsemble.
      * @param {INotification[]} notification Array of INotification
      */
-    notify(notification: INotification[]): void;
+    notify(notification: INotification[]): Promise<void>;
 
     /**
      * Update the notification to mark actions performed.
      * @param {INotification[]} notification Notifications to apply action to.
      * @param {IAction} action which has been triggered by user.
      */
-    markActionHandled(notification: INotification[], action: IAction): void;
+    markActionHandled(notification: INotification[], action: IAction): Promise<void>;
 }

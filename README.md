@@ -3,9 +3,15 @@ Notifications service and user interfaces for use with Finsemble
 
 This project relies on the [Finsemble Seed Project](https://github.com/ChartIQ/finsemble-seed) to run.
 
+For development:
+git clone 
+
+`mklink /D c:\[path/to/seed]\src\components\finsemble-notifications c:\[path\to\cloned\repo]`
+
+ 
 
 
-_./finsemble-seed/configs/application/config.json_
+_Then add the following to your ./finsemble-seed/configs/application/config.json_
 ``` 
 "importConfig": [
     ...

@@ -2,10 +2,9 @@ import INotificationService from "./types/INotificationService";
 import INotification from "./types/INotification";
 import IAction from "./types/IAction";
 import ISubscription from "./types/ISubscription";
+import {ROUTER_ENDPOINTS} from "./notificationClient";
 
 const Finsemble = require("@chartiq/finsemble");
-
-import {ROUTER_ENDPOINTS} from "./notificationClient";
 
 Finsemble.Clients.Logger.start();
 Finsemble.Clients.Logger.log("notification Service starting up");
@@ -65,7 +64,7 @@ class notificationService extends Finsemble.baseService implements INotification
      */
     broadcastNotifications(notifications: INotification[]): void {
         this.subscriptions.forEach((subscription) => {
-            for(let k in notifications) {
+            for (let k in notifications) {
                 if (this.filtersMatch(subscription, notifications[k])) {
                     this.expectResponse(subscription);
                     Finsemble.Clients.RouterClient.query(
@@ -79,7 +78,6 @@ class notificationService extends Finsemble.baseService implements INotification
             }
         });
     }
-
 
 
     /**
@@ -121,14 +119,14 @@ class notificationService extends Finsemble.baseService implements INotification
         };
     }
 
-    private filtersMatch(subscription: ISubscription, notification: INotification): boolean {
-        return true;
-    }
-
     /**
      * @inheritDoc
      */
     saveLastUpdatedTime(lastUpdated: Date, notification: INotification): void {
+    }
+
+    private filtersMatch(subscription: ISubscription, notification: INotification): boolean {
+        return true;
     }
 
     private setupNotify(): void {

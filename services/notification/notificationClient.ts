@@ -31,16 +31,6 @@ export default class NotificationClient implements INotificationClient {
         this.setupFSBLDependencies();
     }
 
-    private setupFSBLDependencies():void {
-        if (typeof this.routerClient === "undefined") {
-            this.routerClient = FSBL.Clients.RouterClient;
-        }
-
-        if (typeof this.loggerClient === "undefined") {
-            this.loggerClient = FSBL.Clients.Logger;
-        }
-    }
-
     public setRouterClient(client: any) {
         this.routerClient = client;
     }
@@ -48,7 +38,6 @@ export default class NotificationClient implements INotificationClient {
     public setLoggerClient(client: any) {
         this.loggerClient = client;
     }
-
 
     /**
      * @inheritDoc
@@ -101,17 +90,36 @@ export default class NotificationClient implements INotificationClient {
                 let returnValue = await this.queryRouter(ROUTER_ENDPOINTS.SUBSCRIBE, JSON.parse(JSON.stringify(subscription)));
                 await this.monitorChannel(returnValue.channel, subscription);
                 this.loggerClient.log("Got some return values", returnValue);
-                if(onSubscriptionSuccess) {
+                if (onSubscriptionSuccess) {
                     onSubscriptionSuccess(returnValue.channel);
                 }
                 resolve(returnValue.id);
             } catch (e) {
-                if(onSubscriptionFault){
+                if (onSubscriptionFault) {
                     onSubscriptionFault(e);
                 }
                 reject(e)
             }
         });
+    }
+
+    /**
+     * @inheritDoc
+     */
+    unsubscribe(subscriptionId: string): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+
+        });
+    }
+
+    private setupFSBLDependencies(): void {
+        if (typeof this.routerClient === "undefined") {
+            this.routerClient = FSBL.Clients.RouterClient;
+        }
+
+        if (typeof this.loggerClient === "undefined") {
+            this.loggerClient = FSBL.Clients.Logger;
+        }
     }
 
     /**
@@ -136,16 +144,8 @@ export default class NotificationClient implements INotificationClient {
         });
     }
 
-    /**
-     * @inheritDoc
-     */
-    unsubscribe(subscriptionId: string): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-
-        });
-    }
-
     private setupRouterEndpoints() {
+
     }
 
     /**
@@ -161,13 +161,13 @@ export default class NotificationClient implements INotificationClient {
             try {
                 let response = await this.routerClient.query(ROUTER_ENDPOINTS.PREFIX + channel, data);
                 this.loggerClient.log(`${channel} response: `, response.response.data.data);
-                if(callback) {
+                if (callback) {
                     callback(null, response.response.data.data);
                 }
                 resolve(response.response.data.data);
             } catch (e) {
                 this.loggerClient.log(`Error: `, e);
-                if(callback) {
+                if (callback) {
                     callback(e);
                 }
                 reject(e);

@@ -2,7 +2,9 @@
   "name": "finsemble-notifications",
   "version": "0.0.1",
   "description": "Notifications services and UI",
-  "scripts": {},
+  "scripts": {
+    "watch": "nodemon -e js,ts,txs,jsx,html,css,json copy.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ChartIQ/finsemble-notifications.git"
@@ -14,6 +16,8 @@
   "homepage": "https://github.com/ChartIQ/finsemble-notifications#readme",
   "dependencies": {},
   "devDependencies": {
-    "@types/node": "^12.12.5"
+    "@types/node": "^12.12.5",
+    "fs-extra": "^8.1.0",
+    "nodemon": "^2.0.0"
   }
 }

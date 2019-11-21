@@ -26,7 +26,19 @@ function init() {
     filter.size = {"gte": 30};
 
     subscription.onNotification = function (notification: INotification) {
-        alert(`${FSBL.Clients.WindowClient.getWindowIdentifier().windowName}: ${notification.details}`);
+        addToList(notification);
+    };
+
+    let addToList = (notification: INotification) => {
+        let actions = "";
+        notification.actions.forEach((action) => {
+            actions += `<span><button>${action.buttonText}</button></span>`;
+        });
+
+        let divElement = document.createElement('div');
+        divElement.innerHTML = `<h5>${notification.headerText}</h5>
+            <div class="actions-container">${actions}</div>`;
+        document.getElementById('notification-list').appendChild(divElement);
     };
 
     subscription.filters.push(filter);

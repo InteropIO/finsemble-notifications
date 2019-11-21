@@ -17,4 +17,9 @@ export default class Notification implements INotification {
     title: string;
     type: string;
 
+    constructor() {
+        this.actions = [];
+        this.actionsHistory = [];
+        this.meta = new Map<string, any>();
+    }
 }

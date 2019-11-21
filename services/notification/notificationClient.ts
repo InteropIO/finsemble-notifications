@@ -133,12 +133,9 @@ export default class NotificationClient implements INotificationClient {
             this.loggerClient.log("Listening on channel", channel);
             this.routerClient.addResponder(channel, (error, queryMessage) => {
                 this.loggerClient.log("Found on channel", queryMessage);
-                try {
-                    subscription.onNotification(queryMessage.data);
-                    queryMessage.sendQueryResponse(null, {"message": "success"});
-                } catch (e) {
-                    queryMessage.sendQueryResponse(e);
-                }
+                // Message received - send receipt
+                queryMessage.sendQueryResponse(null, {"message": "success"});
+                subscription.onNotification(queryMessage.data);
             });
             resolve();
         });

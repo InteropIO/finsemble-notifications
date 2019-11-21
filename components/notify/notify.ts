@@ -6,9 +6,11 @@ import Notification from "../../services/notification/types/Notification";
 let nClient: NotificationClient = null;
 let launchTutorial = () => {
     let not1 = new Notification();
+    not1.headerText = "One notifications";
+
     let not2 = new Notification();
-    not1.details = "blub blub";
-    not2.details = "pemberton";
+    not2.headerText = "Notification 2";
+
     nClient.notify([not1, not2]);
 };
 
@@ -20,6 +22,6 @@ if (window.FSBL && FSBL.addEventListener) {
 }
 
 function init() {
-    document.getElementById('send-notification').addEventListener('click', launchTutorial)
+    document.getElementById('send-notification').addEventListener('click', launchTutorial);
     nClient = new NotificationClient();
 }

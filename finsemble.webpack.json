@@ -1,6 +1,7 @@
 [
 	"services/notification/notificationService.ts",
 	"services/notification/notificationClient.ts",
+	"services/notificationsBuiltInActions/notificationsBuiltInActionsService.ts",
 	"components/notify/notify.ts",
 	"components/subscriber/subscriber.ts",
 	"preloads/notifications.ts"

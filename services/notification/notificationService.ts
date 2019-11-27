@@ -2,7 +2,7 @@ import INotificationService from "./types/INotificationService";
 import INotification from "./types/INotification";
 import IAction from "./types/IAction";
 import ISubscription from "./types/ISubscription";
-import {ROUTER_ENDPOINTS} from "./notificationClient";
+import RouterWrapper, {ROUTER_ENDPOINTS} from "../helpers/RouterWrapper";
 
 const Finsemble = require("@chartiq/finsemble");
 
@@ -12,6 +12,7 @@ Finsemble.Clients.Logger.log("notification Service starting up");
 class notificationService extends Finsemble.baseService implements INotificationService {
     subscriptions: ISubscription[];
     private representationOfNotifications: any[];
+    private routerWrapper: RouterWrapper;
 
     /**
      * Initializes a new instance of the notificationService class.
@@ -37,6 +38,7 @@ class notificationService extends Finsemble.baseService implements INotification
         this.notify = this.notify.bind(this);
         this.broadcastNotifications = this.broadcastNotifications.bind(this);
         this.readyHandler = this.readyHandler.bind(this);
+        this.handleAction = this.handleAction.bind(this);
         this.onBaseServiceReady(this.readyHandler);
     }
 
@@ -45,6 +47,7 @@ class notificationService extends Finsemble.baseService implements INotification
      * @param {Function} callback
      */
     readyHandler(callback: Function) {
+        this.routerWrapper = new RouterWrapper(Finsemble.Clients.RouterClient, Finsemble.Clients.Logger);
         this.createRouterEndpoints();
         Finsemble.Clients.Logger.log("notification Service ready");
         callback();
@@ -57,6 +60,7 @@ class notificationService extends Finsemble.baseService implements INotification
     createRouterEndpoints() {
         this.setupNotify();
         this.setupSubscribe();
+        this.setupAction();
     }
 
     /**
@@ -67,7 +71,7 @@ class notificationService extends Finsemble.baseService implements INotification
             for (let k in notifications) {
                 if (this.filtersMatch(subscription, notifications[k])) {
                     this.expectResponse(subscription);
-                    Finsemble.Clients.RouterClient.query(
+                    this.routerWrapper.queryRouter(
                         subscription.channel,
                         notifications[k],
                         (error, response) => {
@@ -89,8 +93,30 @@ class notificationService extends Finsemble.baseService implements INotification
     /**
      * @inheritDoc
      */
-    handleAction(notifications: INotification[], action: IAction): void {
+    handleAction(message): object {
 
+        const notifications: INotification[] = message.notifications;
+        const action: IAction = message.action;
+        let response = {
+            message: "success",
+            errors: []
+        };
+
+        notifications.forEach((notification) => {
+            try {
+                this.delegateAction(notification, action);
+            } catch (error) {
+                response.message = "fail";
+                response.errors.push(error.message);
+            }
+        });
+        return response;
+    }
+
+    private delegateAction(notification: INotification, action: IAction): void {
+        // TODO: Set the action history
+        // notification.actionsHistory.push(action);
+        this.routerWrapper.queryRouter(ROUTER_ENDPOINTS._PREFIX_ACTION + action.type,  notification);
     }
 
     /**
@@ -126,39 +152,26 @@ class notificationService extends Finsemble.baseService implements INotification
     }
 
     private filtersMatch(subscription: ISubscription, notification: INotification): boolean {
+        // TODO: Filters
         return true;
     }
 
     private setupNotify(): void {
-        this.addResponder(ROUTER_ENDPOINTS.PREFIX + ROUTER_ENDPOINTS.NOTIFY, this.notify);
+        this.routerWrapper.addResponder(ROUTER_ENDPOINTS.NOTIFY, this.notify);
     }
 
     private setupSubscribe() {
-        this.addResponder(ROUTER_ENDPOINTS.PREFIX + ROUTER_ENDPOINTS.SUBSCRIBE, this.subscribe);
+        this.routerWrapper.addResponder(ROUTER_ENDPOINTS.SUBSCRIBE, this.subscribe);
     }
 
-    private addResponder(endpoint: string, dataProcessor: Function) {
-        Finsemble.Clients.Logger.log(`Adding responder for endpoint: ${endpoint}`);
-        Finsemble.Clients.RouterClient.addResponder(endpoint, (err: any, message: any) => {
-            Finsemble.Clients.Logger.log(`endpoint called: ${endpoint}`);
-            Finsemble.Clients.Logger.log(message);
-            if (err) {
-                return Finsemble.Clients.Logger.error(`Failed to setup ${endpoint} responder`, err);
-            }
-
-            try {
-                let returnVal = dataProcessor(message.data);
-
-                message.sendQueryResponse(null, {"status": "success", "data": returnVal});
-            } catch (e) {
-                message.sendQueryResponse(e);
-            }
-        });
+    private setupAction() {
+        this.routerWrapper.addResponder(ROUTER_ENDPOINTS.HANDLE_ACTION, this.handleAction);
     }
+
 
     private setupBroadcast(): void {
-        let endpoint = ROUTER_ENDPOINTS.PREFIX + ROUTER_ENDPOINTS.SUBSCRIBE;
-        Finsemble.Clients.RouterClient.addPubSubResponder(endpoint, {"notifications": this.representationOfNotifications});
+        let endpoint = ROUTER_ENDPOINTS.SUBSCRIBE;
+        // this.routerWrapper.addPubSubResponder(endpoint, {"notifications": this.representationOfNotifications});
     }
 
     private expectResponse(subscription: ISubscription) {
@@ -175,7 +188,7 @@ class notificationService extends Finsemble.baseService implements INotification
     }
 
     private getChannel(subscription: ISubscription) {
-        return ROUTER_ENDPOINTS.PREFIX + ROUTER_ENDPOINTS.SUBSCRIBE + `.${Math.random()}`;
+        return ROUTER_ENDPOINTS.SUBSCRIBE + `.${Math.random()}`;
         // return ROUTER_ENDPOINTS.PREFIX + ROUTER_ENDPOINTS.SUBSCRIBE + ".subscription_" + Math.random();
     }
 }

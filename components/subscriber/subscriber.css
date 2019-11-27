@@ -39,7 +39,7 @@ h1 {
 }
 
 button {
-    width: 200px;
+    width: 50%;
     text-align: center !important;
     margin: 0 auto;
     max-width: 2000px;
@@ -68,4 +68,9 @@ button:hover {
     background-color: #FFFFFF;
     font-size: 100%;
     width: 140px;
+}
+
+.notification {
+    margin: 10px;
+    border: 1px solid white;
 }

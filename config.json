@@ -19,9 +19,12 @@
             },
             "foreign": {
                 "services": {
-                    "dockingService": {
-                        "canGroup": true,
-                        "isArrangable": true
+                    "windowService": {
+                        "allowAutoArrange": true,
+                        "allowSnapping": true,
+                        "allowTabbing": true,
+                        "allowTiling": true,
+                        "allowGrouping": true
                     }
                 },
                 "components": {
@@ -58,9 +61,12 @@
             },
             "foreign": {
                 "services": {
-                    "dockingService": {
-                        "canGroup": true,
-                        "isArrangable": true
+                    "windowService": {
+                        "allowAutoArrange": true,
+                        "allowSnapping": true,
+                        "allowTabbing": true,
+                        "allowTiling": true,
+                        "allowGrouping": true
                     }
                 },
                 "components": {
@@ -87,6 +93,13 @@
             "name": "notificationService",
             "visible": false,
             "html": "$applicationRoot/components/finsemble-notifications/services/notification/notification.html"
+        },
+        "notificationsBuiltInActionsService": {
+            "useWindow": true,
+            "active": true,
+            "name": "notificationsBuiltInActionsService",
+            "visible": false,
+            "html": "$applicationRoot/components/finsemble-notifications/services/notificationsBuiltInActions/notificationsBuiltInActions.html"
         }
     }
 }

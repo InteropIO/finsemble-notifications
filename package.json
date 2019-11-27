@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "Notifications services and UI",
   "scripts": {
-    "watch": "nodemon -e js,ts,txs,jsx,html,css,json copy.js"
+    "watch": "nodemon --delay 500ms -e js,ts,txs,jsx,html,css,json copy.js"
   },
   "repository": {
     "type": "git",

@@ -35,14 +35,14 @@ export default interface INotificationClient {
 
     /**
      * Creates or updates notifications in Finsemble.
-     * @param {INotification[]} notification Array of INotification
+     * @param {INotification[]} notifications Array of INotification
      */
-    notify(notification: INotification[]): Promise<void>;
+    notify(notifications: INotification[]): Promise<void>;
 
     /**
      * Update the notification to mark actions performed.
-     * @param {INotification[]} notification Notifications to apply action to.
+     * @param {INotification[]} notifications Notifications to apply action to.
      * @param {IAction} action which has been triggered by user.
      */
-    markActionHandled(notification: INotification[], action: IAction): Promise<void>;
+    markActionHandled(notifications: INotification[], action: IAction): Promise<void>;
 }

@@ -1,3 +1,5 @@
+// TODO: Replace with actual types
+
 declare namespace FSBL {
     let Clients: any;
     let addEventListener: any;

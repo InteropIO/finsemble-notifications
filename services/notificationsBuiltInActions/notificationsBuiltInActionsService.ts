@@ -8,6 +8,11 @@ const Finsemble = require("@chartiq/finsemble");
 Finsemble.Clients.Logger.start();
 Finsemble.Clients.Logger.log("notificationsBuiltInActions Service starting up");
 
+
+/**
+ * The notification action types this service will deal with.
+ * Also the names of the channels expected
+ */
 const ACTION_TYPES = {
 	DISMISS: 'dismiss',
 	SNOOZE: 'snooze',
@@ -15,7 +20,8 @@ const ACTION_TYPES = {
 };
 
 /**
- * TODO: Add service description here
+ * A service to handle the built notification in actions
+ * TODO: Decide and set what log levels all this should be at.
  */
 class notificationsBuiltInActionsService extends Finsemble.baseService {
 	nClient: INotificationClient;
@@ -55,9 +61,6 @@ class notificationsBuiltInActionsService extends Finsemble.baseService {
 	readyHandler() {
 		this.nClient = new NotificationClient(Finsemble.Clients.RouterClient, Finsemble.Clients.Logger);
 		this.routerWrapper = new RouterWrapper(Finsemble.Clients.RouterClient, Finsemble.Clients.Logger);
-		let r = Finsemble.Clients.RouterClient;
-		let l = Finsemble.Clients.Logger;
-		debugger;
 		this.createRouterEndpoints();
 	}
 
@@ -71,18 +74,29 @@ class notificationsBuiltInActionsService extends Finsemble.baseService {
 		// this.routerWrapper.addResponder(ROUTER_ENDPOINTS._PREFIX_ACTION + ACTION_TYPES.WAKE, this.wake);
 	}
 
+	/**
+	 * Dismisses a notification
+	 *
+	 * @Note The return value of this function is not the updated notification state.
+	 * The return value is used to notify the service that there is something that
+	 * heard the request to process the action
+	 *
+	 * @param notification
+	 *
+	 */
 	private dismiss(notification: INotification): any {
 		Finsemble.Clients.Logger.log("Attempting to dismiss", notification);
+		// Update notification state and send it out.
 		notification.headerText = "Dismissed";
 		this.nClient.notify([notification]);
 		return true;
 	}
 
-	private snooze(data): INotification {
+	private snooze(notification: INotification): any {
 
 	}
 
-	private wake(data): INotification {
+	private wake(notification: INotification): any {
 
 	}
 }

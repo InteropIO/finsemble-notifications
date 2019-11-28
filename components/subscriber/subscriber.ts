@@ -6,6 +6,11 @@ import INotification from "../../services/notification/types/INotification";
 import Filter from "../../services/notification/types/Filter";
 import Action from "../../services/notification/types/Action";
 
+
+/**
+ * Basic example of a getting a component to subscribe to notifications
+ */
+
 let nClient: NotificationClient = null;
 
 if (window.FSBL && FSBL.addEventListener) {
@@ -21,14 +26,15 @@ function init() {
     let action = new Action();
     action.buttonText = "sdfd";
 
+
     let filter = new Filter();
     filter.size = {"gte": 30};
+    subscription.filters.push(filter);
 
     subscription.onNotification = function (notification: INotification) {
+        // This function will be called when a notification arrives
         addToList(notification);
     };
-
-    subscription.filters.push(filter);
 
     FSBL.Clients.Logger.log("Starting Subscribe");
 
@@ -40,17 +46,27 @@ function init() {
             console.log(error);
         }
     );
+
+    // TODO: Unsubscribe using the subscription ID
 }
 
+/**
+ * Example for setting up button clicks
+ *
+ * @param notification
+ * @param action
+ */
 let doAction = (notification, action) => {
     try {
         nClient.markActionHandled([notification], action).then(() => {
+            // NOTE: The request to perform the action has be sent to the notifications service successfully
+            // The action itself has not necessarily been perform successfully
             console.log("success")
         })
     } catch (e) {
+        // NOTE: The request to perform the action has failed
         console.log("fail")
     }
-    console.log(notification, action);
 };
 
 let addToList = (notification: INotification) => {

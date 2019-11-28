@@ -9,10 +9,23 @@ export const ROUTER_ENDPOINTS = {
 const CHANNEL_PREFIX: String = "notification.";
 
 
+/**
+ * Router wrapper created specifically for notifications to keep the clients and services DRY.
+ * Also allows for using the NotificationClient in either a service (Finsemble.Clients.RouterClient) or
+ * a component (FSBL.Clients.RouterClient)
+ *
+ * TODO: Decide and set what log levels all this should be at.
+ */
 export default class RouterWrapper {
     routerClient: IRouterClient;
     loggerClient: any;
 
+    /**
+     * Constructor
+     *
+     * @param router Needs to be set if using in a service. Defaults to FSBL.Client.RouterClient if none is provided
+     * @param logger Needs to be set if using in a service. Defaults to FSBL.Client.Logger if none is provided
+     */
     constructor(router?: IRouterClient, logger?: any) {
         if(!router) {
             router = FSBL.Clients.RouterClient;
@@ -25,7 +38,6 @@ export default class RouterWrapper {
         this.loggerClient = logger;
 
         this.queryRouter = this.queryRouter.bind(this);
-        this.listenRouter = this.listenRouter.bind(this);
         this.addResponder = this.addResponder.bind(this);
     }
 
@@ -42,7 +54,7 @@ export default class RouterWrapper {
                 let response = await this.routerClient.query(
                     CHANNEL_PREFIX.toString() + channel,
                     data,
-                    () => {}
+                    () => {} // Using promise to get back re
                 );
                 this.loggerClient.log(`${channel} raw response: `, response);
                 if (callback) {
@@ -56,13 +68,6 @@ export default class RouterWrapper {
                 }
                 reject(e);
             }
-        });
-    }
-
-    public listenRouter(channel: string, callback: StandardCallback) {
-        this.routerClient.addListener(CHANNEL_PREFIX + channel, (error, response) => {
-            this.loggerClient.log(`Message received on ${channel}: `, response);
-            callback(error, response);
         });
     }
 

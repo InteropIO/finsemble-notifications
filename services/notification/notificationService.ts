@@ -9,8 +9,20 @@ const Finsemble = require("@chartiq/finsemble");
 Finsemble.Clients.Logger.start();
 Finsemble.Clients.Logger.log("notification Service starting up");
 
+/**
+ * A service used to transport notification data across the system
+ * TODO: Decide and set what log levels all this should be at.
+ */
 class notificationService extends Finsemble.baseService implements INotificationService {
+
+    /**
+     * TODO: Review the storage of the subscriptions
+     */
     subscriptions: ISubscription[];
+
+    /**
+     * TODO: Store the state of the notifications as per the spec
+     */
     private representationOfNotifications: any[];
     private routerWrapper: RouterWrapper;
 
@@ -54,8 +66,7 @@ class notificationService extends Finsemble.baseService implements INotification
     }
 
     /**
-     * Creates a router endpoint for your service.
-     * Add query responders, listeners or pub/sub topic as appropriate.
+     * Setting up the router channels/endpoints
      */
     createRouterEndpoints() {
         this.setupNotify();
@@ -64,18 +75,24 @@ class notificationService extends Finsemble.baseService implements INotification
     }
 
     /**
-     * @inheritDoc
+     * When incoming notifications arrive, lookup matching subscriptions and call necessary
+     * callbacks on subscription.
+     *
+     * @param {INotification[]} notifications of INotification objects to broadcast.
+     * @private
      */
     broadcastNotifications(notifications: INotification[]): void {
         this.subscriptions.forEach((subscription) => {
             for (let k in notifications) {
+                // Check if this notification matches any filters
                 if (this.filtersMatch(subscription, notifications[k])) {
-                    this.expectResponse(subscription);
+                    // For each notification that matches, expect a response and send it out.
+                    this.expectReceipt(subscription, notifications[k]);
                     this.routerWrapper.queryRouter(
                         subscription.channel,
                         notifications[k],
                         (error, response) => {
-                            this.setReceivedReceipt(subscription, error, response);
+                            this.setReceivedReceipt(subscription, notifications[k] error, response);
                         }
                     );
                 }
@@ -85,18 +102,23 @@ class notificationService extends Finsemble.baseService implements INotification
 
 
     /**
-     * @inheritDoc
+     * Delete a notification as part of a purge.
+     *
+     * @param {string} id of a notification
+     *
+     * TODO: implement
      */
     deleteNotification(id: string): void {
     }
 
     /**
-     * @inheritDoc
+     * Handles all messages on the 'action' endpoint/channel and sends them
+     * out to the service that knows how to deal with it.
+     *
+     * @param message
      */
     handleAction(message): object {
-
-        const notifications: INotification[] = message.notifications;
-        const action: IAction = message.action;
+        const { notifications, action } = message;
         let response = {
             message: "success",
             errors: []
@@ -113,31 +135,60 @@ class notificationService extends Finsemble.baseService implements INotification
         return response;
     }
 
+    /**
+     * Delegate the action to any service that is registered on the correct channel
+     *
+     * @see notificationsBuiltInActionsService for an example
+     *
+     * @param notification
+     * @param action
+     *
+     */
     private delegateAction(notification: INotification, action: IAction): void {
-        // TODO: Set the action history
-        // notification.actionsHistory.push(action);
+        // TODO: Change IAction to IPerformedAction and push on the stack
+        // notification.actionsHistory.push(performedAction);
+
+        /**
+         * TODO/NOTE/DISCUSS:
+         * Need to complete the unhappy path. What happens when there is no responder setup on the action.type channel?
+         * handleAction() is expecting that an error is thrown (if possible) in which case an error, if the code works
+         * correctly, will be sent back to the client.
+         *
+         * If it's ok that the may or may not be an actor waiting at the end of the line. No changes need to be made...
+         * I think.
+         */
+        // The request for notification will be sent on action.type as the channel name
         this.routerWrapper.queryRouter(ROUTER_ENDPOINTS._PREFIX_ACTION + action.type,  notification);
     }
 
     /**
-     * @inheritDoc
+     * Creates or updates notifications in Finsemble.
+     *
+     * @param {INotification[]} notifications from external source to be created or updated in Finsemble.
      */
     notify(notifications: INotification[]): void {
-        // Do some things. Store/Modify the notification
-        // Call broadcast notifications
         notifications.forEach((notification) => {
+            // TODO: Store/Modify the notification appropriately
             this.representationOfNotifications.push(notification);
         });
         this.broadcastNotifications(notifications);
     }
 
+
+    /**
+     * Picks up any messages on the 'subscribe' endpoint/channel
+     *
+     * @param {ISubscription} subscription
+     * @return {string} a router channel on which notifications for this subscription will be sent.
+     */
     subscribe(subscription: ISubscription): object {
         let channel = this.getChannel(subscription);
-        // TODO: Do some checking on the filters
+        // TODO: Set the subscriptionId correctly in accordance with the spec
         subscription.id = "subscription_" + Math.random();
         Finsemble.Clients.Logger.log("Successfully subscription", subscription);
-        Finsemble.Clients.Logger.log("Sending response... see you on the flip side");
+        Finsemble.Clients.Logger.log("Sending channel and subscription Id");
         subscription.channel = channel;
+
         this.addToSubscription(subscription);
         return {
             "id": subscription.id,
@@ -146,48 +197,101 @@ class notificationService extends Finsemble.baseService implements INotification
     }
 
     /**
-     * @inheritDoc
+     * Update saveLastUpdated time when incoming notification arrives in Finsemble.
+     *
+     * @param {Date} lastUpdated when notification was last delivered to Finsemble.
+     * @param {INotification} notification a notification that was updated. This notification can then be matched on using a filter to find out when different notifications were last updated.
+     * @private
+     *
+     * TODO: Implement
      */
     saveLastUpdatedTime(lastUpdated: Date, notification: INotification): void {
     }
 
+    /**
+     * Check if the filters for a subscription match a notification
+     *
+     * @param subscription
+     * @param notification
+     * @return boolean
+     *
+     * TODO: Implement
+     */
     private filtersMatch(subscription: ISubscription, notification: INotification): boolean {
-        // TODO: Filters
         return true;
     }
 
+    /**
+     * Setup callback on notify channel
+     */
     private setupNotify(): void {
         this.routerWrapper.addResponder(ROUTER_ENDPOINTS.NOTIFY, this.notify);
     }
 
+    /**
+     * Setup callback on subscribe channel
+     */
     private setupSubscribe() {
         this.routerWrapper.addResponder(ROUTER_ENDPOINTS.SUBSCRIBE, this.subscribe);
     }
 
+    /**
+     * Setup callback on action channel
+     */
     private setupAction() {
         this.routerWrapper.addResponder(ROUTER_ENDPOINTS.HANDLE_ACTION, this.handleAction);
     }
 
 
-    private setupBroadcast(): void {
-        let endpoint = ROUTER_ENDPOINTS.SUBSCRIBE;
-        // this.routerWrapper.addPubSubResponder(endpoint, {"notifications": this.representationOfNotifications});
-    }
-
-    private expectResponse(subscription: ISubscription) {
+    /**
+     * Sets up that we are expecting a receipt for the subscription and notification.
+     *
+     * @param subscription
+     * @param notification
+     *
+     * TODO: Implement.
+     * TODO: Also implement the mechanism that watches for and retries missing receipts
+     */
+    private expectReceipt(subscription: ISubscription, notification: INotification) {
         // We're expecting a received receipt on the channel from the client
     }
 
-    private setReceivedReceipt(subscription: ISubscription, error, response) {
+    /**
+     * Set the receipt status
+     *
+     * @param subscription
+     * @param notification
+     * @param error The error from the Router query
+     * @param response
+     *
+     * TODO: Implement.
+     * @Note I just put all the params in here... not sure what info will be needed
+     */
+    private setReceivedReceipt(subscription: ISubscription, notification: INotification, error: String|null, response) {
         Finsemble.Clients.Logger.log(`Got a receipt on: ${subscription.channel}`);
         // We've received a response from the client. Process it and set the correct value
     }
 
+    /**
+     * Store the subscription so it can be referenced and also unsubscribed from later.
+     *
+     * @param subscription
+     *
+     * TODO: Implement
+     */
     private addToSubscription(subscription) {
         this.subscriptions.push(subscription);
     }
 
-    private getChannel(subscription: ISubscription) {
+    /**
+     * Get a channel/endpoint the client will need to listen to
+     *
+     * @param subscription
+     * @return string
+     *
+     * TODO: Can/should this be improved?
+     */
+    private getChannel(subscription: ISubscription): String {
         return ROUTER_ENDPOINTS.SUBSCRIBE + `.${Math.random()}`;
         // return ROUTER_ENDPOINTS.PREFIX + ROUTER_ENDPOINTS.SUBSCRIBE + ".subscription_" + Math.random();
     }

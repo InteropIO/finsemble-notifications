@@ -92,8 +92,8 @@
         "autoShow": true,
         "bottom": 0,
         "right": 0,
-        "width": 1,
-        "height": 1,
+        "width": "auto",
+        "height": "auto",
         "position": "available",
         "options": {
           "transparent": true,

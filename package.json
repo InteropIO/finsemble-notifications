@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "Notifications services and UI",
   "scripts": {
-    "watch": "nodemon --delay 500ms -e js,ts,txs,jsx,html,css,json copy.js"
+    "watch": "nodemon --delay 500ms -e js,ts,tsx,jsx,html,css,json copy.js"
   },
   "repository": {
     "type": "git",
@@ -14,10 +14,18 @@
     "url": "https://github.com/ChartIQ/finsemble-notifications/issues"
   },
   "homepage": "https://github.com/ChartIQ/finsemble-notifications#readme",
-  "dependencies": {},
+  "dependencies": {
+    "date-fns": "^2.8.1"
+  },
   "devDependencies": {
+    "@types/react": "^16.9.11",
+    "@types/react-dom": "^16.9.3",
     "@types/node": "^12.12.5",
+    "ansi-html": "0.0.7",
     "fs-extra": "^8.1.0",
-    "nodemon": "^2.0.0"
+    "nodemon": "^2.0.0",
+    "react": "16.8.4",
+    "react-dom": "16.8.4",
+    "react-devtools": "^4.2.0"
   }
 }

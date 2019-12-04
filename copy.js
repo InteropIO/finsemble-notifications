@@ -1,21 +1,19 @@
 #!/usr/bin/env node
 const config = require("./copy.config.json");
 const path = require("path");
-const {copy} = require("fs-extra");
+const { copy } = require("fs-extra");
 
 const source = path.resolve(__dirname, config.source);
 const dest = path.resolve(__dirname, config.destination);
 
 let resources = [
-    'components',
-    'preloads',
-    'services',
-    'config.json',
-    'finsemble.webpack.json'
+  "components",
+  "preloads",
+  "services",
+  "types",
+  "config.json",
+  "finsemble.webpack.json"
 ];
-resources.forEach((resource) => {
-    copy(
-        path.join(source, resource),
-        path.join(dest, resource),
-    )
+resources.forEach(resource => {
+  copy(path.join(source, resource), path.join(dest, resource));
 });

@@ -1,7 +1,7 @@
-import INotificationService from "./types/INotificationService";
-import INotification from "./types/INotification";
-import IAction from "./types/IAction";
-import ISubscription from "./types/ISubscription";
+import INotificationService from "../../types/Notification-definitions/INotificationService";
+import INotification from "../../types/Notification-definitions/INotification";
+import IAction from "../../types/Notification-definitions/IAction";
+import ISubscription from "../../types/Notification-definitions/ISubscription";
 import RouterWrapper, {ROUTER_ENDPOINTS} from "../helpers/RouterWrapper";
 
 const Finsemble = require("@chartiq/finsemble");

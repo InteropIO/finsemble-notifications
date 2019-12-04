@@ -1,8 +1,10 @@
 [
-	"services/notification/notificationService.ts",
-	"services/notification/notificationClient.ts",
-	"services/notificationsBuiltInActions/notificationsBuiltInActionsService.ts",
-	"components/notify/notify.ts",
-	"components/subscriber/subscriber.ts",
-	"preloads/notifications.ts"
+  "services/notification/notificationService.ts",
+  "services/notification/notificationClient.ts",
+  "services/notificationsBuiltInActions/notificationsBuiltInActionsService.ts",
+  "components/notify/notify.ts",
+  "components/subscriber/subscriber.ts",
+  "components/notification-center/notification-center.js",
+  "components/notification-drawer/notification-drawer.js",
+  "preloads/notifications.ts"
 ]

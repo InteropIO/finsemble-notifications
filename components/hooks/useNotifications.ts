@@ -3,6 +3,11 @@ import { RouterMessage } from "../../types/FSBL-definitions/clients/IRouterClien
 import { WindowClient } from "../../types/FSBL-definitions/clients/windowClient";
 import { WindowIdentifier } from "../../types/FSBL-definitions/globals";
 import INotification from "../../types/Notification-definitions/INotification";
+import Subscription from "../../types/Notification-definitions/Subscription";
+import NotificationClient from "../../services/notification/notificationClient";
+import Action from "../../types/Notification-definitions/Action";
+import Filter from "../../types/Notification-definitions/Filter";
+import {} from "date-fns";
 
 const FSBL = window.FSBL;
 
@@ -11,17 +16,46 @@ const { RouterClient, LauncherClient } = FSBL.Clients;
 export default function useNotifications() {
   const [notifications, setNotifications] = useState([]);
 
+  let nClient = new NotificationClient();
+  let subscription = new Subscription();
+  let action = new Action();
+  let filter = new Filter();
+
+  action.buttonText = "sdfd";
+  filter.size = { gte: 30 };
+  subscription.filters.push(filter);
+
   useEffect(() => {
-    RouterClient.addListener(
-      "notifications",
-      async (err, incomingNotification: RouterMessage<INotification>) => {
-        err && console.error(err);
-        addNotificationToState(incomingNotification);
-        //await showWindow();
+    subscription.onNotification = function(notification: INotification) {
+      // This function will be called when a notification arrives
+      setNotifications([...notifications, notification]);
+    };
+
+    nClient.subscribe(
+      subscription,
+      (data: any) => {
+        console.log(data);
+      },
+      (error: any) => {
+        console.log(error);
       }
     );
+
+    // RouterClient.addListener(
+    //   "notifications",
+    //   async (err, incomingNotification: RouterMessage<INotification>) => {
+    //     err && console.error(err);
+    //     addNotificationToState(incomingNotification);
+    //     //await showWindow();
+    //   }
+    // );
   });
 
+  const getAllNotifications = (): INotification[] => {
+    const today = new Date();
+    const filter = new Filter();
+    const notifications = new NotificationClient().fetchHistory(today);
+  };
   const removeNotification = (id: string) => {
     const notificationRemoved: INotification[] = notifications.filter(
       (notification: INotification): boolean => notification.id !== id

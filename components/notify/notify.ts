@@ -26,11 +26,13 @@ let launchTutorial = () => {
   not1.id = "notification_" + Math.random();
   not1.headerText = "One notifications";
   not1.actions = actionList;
+  not1.details = "This is the detail of the notification";
 
   let not2 = new Notification();
   not2.id = "notification_" + Math.random();
   not2.headerText = "Notification 2";
   not2.actions = actionList;
+  not2.details = "This is the detail of the notification";
 
   nClient.notify([not1, not2]);
 };

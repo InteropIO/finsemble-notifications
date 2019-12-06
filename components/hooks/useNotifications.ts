@@ -14,7 +14,7 @@ const FSBL = window.FSBL;
 const { RouterClient, LauncherClient } = FSBL.Clients;
 
 export default function useNotifications() {
-  const [notifications, setNotifications] = useState([]);
+  const [notifications, setNotifications] = useState<INotification[] | []>([]);
 
   let nClient = new NotificationClient();
   let subscription = new Subscription();
@@ -25,22 +25,24 @@ export default function useNotifications() {
   filter.size = { gte: 30 };
   subscription.filters.push(filter);
 
+  subscription.onNotification = function(notification: INotification) {
+    // This function will be called when a notification arrives
+    setNotifications([...notifications, notification]);
+  };
   useEffect(() => {
     subscription.onNotification = function(notification: INotification) {
       // This function will be called when a notification arrives
       setNotifications([...notifications, notification]);
     };
-
-    nClient.subscribe(
-      subscription,
-      (data: any) => {
-        console.log(data);
-      },
-      (error: any) => {
-        console.log(error);
-      }
-    );
-
+    // nClient.subscribe(
+    //   subscription,
+    //   (data: any) => {
+    //     console.log(data);
+    //   },
+    //   (error: any) => {
+    //     console.log(error);
+    //   }
+    // );
     // RouterClient.addListener(
     //   "notifications",
     //   async (err, incomingNotification: RouterMessage<INotification>) => {
@@ -93,5 +95,5 @@ export default function useNotifications() {
     return x;
   };
 
-  return { notifications };
+  return { notifications, getAllNotifications };
 }

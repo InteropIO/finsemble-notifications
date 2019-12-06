@@ -6,10 +6,9 @@ import useNotifications from "../hooks/useNotifications";
 
 const App = () => {
   const { notifications } = useNotifications();
-  console.log(notifications);
   return (
     <StoreProvider>
-      <Center />
+      <Center notifications={notifications} />
     </StoreProvider>
   );
 };

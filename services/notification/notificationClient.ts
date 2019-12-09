@@ -5,6 +5,7 @@ import IFilter from "./types/IFilter";
 import IAction from "./types/IAction";
 import ISubscription from "./types/ISubscription";
 import RouterWrapper, {ROUTER_ENDPOINTS} from "../helpers/RouterWrapper";
+import {InternalActions} from "./types/InternalActions";
 
 
 /**
@@ -120,7 +121,7 @@ export default class NotificationClient implements INotificationClient {
      *
      * TODO: onSubscriptionSuccess and onSubscriptionFault can do a better job of explaining what params will be passed in
      */
-    subscribe(subscription: ISubscription, onSubscriptionSuccess?: Function, onSubscriptionFault?: Function) : Promise<string> {
+    subscribe(subscription: ISubscription, onSubscriptionSuccess?: Function, onSubscriptionFault?: Function): Promise<string> {
         return new Promise<string>(async (resolve, reject) => {
             try {
                 // Get a channel from the service to monitor
@@ -195,3 +196,8 @@ export default class NotificationClient implements INotificationClient {
         });
     }
 }
+
+export {
+    InternalActions,
+    NotificationClient
+};

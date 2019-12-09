@@ -4,5 +4,6 @@
  */
 export default interface IPerformedAction {
     id: string;
+    type: string;
     datePerformed: Date;
 }

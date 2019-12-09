@@ -3,6 +3,8 @@ import INotification from "./types/INotification";
 import IAction from "./types/IAction";
 import ISubscription from "./types/ISubscription";
 import RouterWrapper, {ROUTER_ENDPOINTS} from "../helpers/RouterWrapper";
+import PerformedAction from "./types/PerformedAction";
+import {InternalActions} from "./types/InternalActions";
 
 const Finsemble = require("@chartiq/finsemble");
 
@@ -20,10 +22,12 @@ class notificationService extends Finsemble.baseService implements INotification
      */
     subscriptions: ISubscription[];
 
+    snoozeQueue: {};
+
     /**
      * TODO: Store the state of the notifications as per the spec
      */
-    private representationOfNotifications: any[];
+    representationOfNotifications: {};
     private routerWrapper: RouterWrapper;
 
     /**
@@ -43,7 +47,8 @@ class notificationService extends Finsemble.baseService implements INotification
             }
         });
 
-        this.representationOfNotifications = [];
+        this.snoozeQueue = {};
+        this.representationOfNotifications = {};
         this.subscriptions = [];
 
         this.subscribe = this.subscribe.bind(this);
@@ -92,7 +97,7 @@ class notificationService extends Finsemble.baseService implements INotification
                         subscription.channel,
                         notifications[k],
                         (error, response) => {
-                            this.setReceivedReceipt(subscription, notifications[k] error, response);
+                            this.setReceivedReceipt(subscription, notifications[k], error, response);
                         }
                     );
                 }
@@ -106,9 +111,12 @@ class notificationService extends Finsemble.baseService implements INotification
      *
      * @param {string} id of a notification
      *
-     * TODO: implement
+     * TODO: implement using appropriate storage
      */
     deleteNotification(id: string): void {
+        if (this.representationOfNotifications[id]) {
+            delete this.representationOfNotifications[id];
+        }
     }
 
     /**
@@ -118,7 +126,7 @@ class notificationService extends Finsemble.baseService implements INotification
      * @param message
      */
     handleAction(message): object {
-        const { notifications, action } = message;
+        const {notifications, action} = message;
         let response = {
             message: "success",
             errors: []
@@ -136,44 +144,14 @@ class notificationService extends Finsemble.baseService implements INotification
     }
 
     /**
-     * Delegate the action to any service that is registered on the correct channel
-     *
-     * @see notificationsBuiltInActionsService for an example
-     *
-     * @param notification
-     * @param action
-     *
-     */
-    private delegateAction(notification: INotification, action: IAction): void {
-        // TODO: Change IAction to IPerformedAction and push on the stack
-        // notification.actionsHistory.push(performedAction);
-
-        /**
-         * TODO/NOTE/DISCUSS:
-         * Need to complete the unhappy path. What happens when there is no responder setup on the action.type channel?
-         * handleAction() is expecting that an error is thrown (if possible) in which case an error, if the code works
-         * correctly, will be sent back to the client.
-         *
-         * If it's ok that the may or may not be an actor waiting at the end of the line. No changes need to be made...
-         * I think.
-         */
-        // The request for notification will be sent on action.type as the channel name
-        this.routerWrapper.queryRouter(ROUTER_ENDPOINTS._PREFIX_ACTION + action.type,  notification);
-    }
-
-    /**
      * Creates or updates notifications in Finsemble.
      *
      * @param {INotification[]} notifications from external source to be created or updated in Finsemble.
      */
     notify(notifications: INotification[]): void {
-        notifications.forEach((notification) => {
-            // TODO: Store/Modify the notification appropriately
-            this.representationOfNotifications.push(notification);
-        });
+        this.storeNotifications(notifications);
         this.broadcastNotifications(notifications);
     }
-
 
     /**
      * Picks up any messages on the 'subscribe' endpoint/channel
@@ -206,6 +184,79 @@ class notificationService extends Finsemble.baseService implements INotification
      * TODO: Implement
      */
     saveLastUpdatedTime(lastUpdated: Date, notification: INotification): void {
+    }
+
+    /**
+     * Delegate the action to any service that is registered on the correct channel
+     *
+     * @see notificationsBuiltInActionsService for an example
+     *
+     * @param notification
+     * @param action
+     *
+     */
+    private delegateAction(notification: INotification, action: IAction): void {
+        /**
+         * Action is considered completed by the time it hits the service
+         * ie. (the request for action has been received)
+         * Discussion here https://chartiq.slack.com/archives/CPYQ16K7H/p1574357206003200
+         */
+        notification = this.setPerformedAction(notification, action);
+
+        /**
+         * If an action is performed on a notification, it should not be snoozed anymore.
+         */
+        this.removeFromSnoozeQueue(notification);
+
+        if (typeof InternalActions[action.type] !== "undefined") {
+
+            let updatedNotification;
+            // Get the updated state from performing the action
+            switch (action.type) {
+                case InternalActions.DISMISS:
+                    updatedNotification = this.dismiss(notification, action);
+                    break;
+                case InternalActions.SNOOZE:
+                    updatedNotification = this.snooze(notification, action);
+                    break;
+                case InternalActions.SPAWN:
+                    updatedNotification = this.spawn(notification, action);
+                    break;
+            }
+
+            // Send out the new state to all required clients
+            this.notify(updatedNotification);
+        } else {
+            /**
+             * TODO/NOTE/DISCUSS:
+             * Need to complete the unhappy path. What happens when there is no responder setup on the action.type channel?
+             * handleAction() is expecting that an error is thrown (if possible) in which case an error, if the code works
+             * correctly, will be sent back to the client.
+             *
+             * If it's ok that the may or may not be an actor waiting at the end of the line. No changes need to be made...
+             * I think.
+             */
+            // The request for notification will be sent on action.type as the channel name
+            this.routerWrapper.queryRouter(ROUTER_ENDPOINTS._PREFIX_ACTION + action.type, notification);
+        }
+    }
+
+    /**
+     * Stores the notifications
+     *
+     * @param notifications {INotification[]}
+     */
+    private storeNotifications(notifications: INotification[]) {
+        notifications.forEach((notification) => {
+            if (!notification.id) {
+                // Is falsey an appropriate enough check?
+                notification.id = this.getId();
+            }
+
+            this.storeNotification(notification);
+            // TODO: Store/Modify the notification appropriately
+            this.representationOfNotifications[notification.id] = notification;
+        });
     }
 
     /**
@@ -267,7 +318,7 @@ class notificationService extends Finsemble.baseService implements INotification
      * TODO: Implement.
      * @Note I just put all the params in here... not sure what info will be needed
      */
-    private setReceivedReceipt(subscription: ISubscription, notification: INotification, error: String|null, response) {
+    private setReceivedReceipt(subscription: ISubscription, notification: INotification, error: string | null, response) {
         Finsemble.Clients.Logger.log(`Got a receipt on: ${subscription.channel}`);
         // We've received a response from the client. Process it and set the correct value
     }
@@ -291,10 +342,68 @@ class notificationService extends Finsemble.baseService implements INotification
      *
      * TODO: Can/should this be improved?
      */
-    private getChannel(subscription: ISubscription): String {
+    private getChannel(subscription: ISubscription): string {
         return ROUTER_ENDPOINTS.SUBSCRIBE + `.${Math.random()}`;
         // return ROUTER_ENDPOINTS.PREFIX + ROUTER_ENDPOINTS.SUBSCRIBE + ".subscription_" + Math.random();
     }
+
+    private snooze(notification: INotification, action: IAction): INotification {
+        notification.isActive = false;
+        this.snoozeQueue[notification.id] = setTimeout(() => {
+            notification.isActive = true;
+            this.notify([notification]);
+        }, 10000);
+        return notification;
+    }
+
+    private dismiss(notification: INotification, action: IAction): INotification {
+        notification.dismissedAt = new Date();
+        notification.isActive = false;
+        return notification;
+    }
+
+    private spawn(notification: INotification, action: IAction): INotification {
+        notification.isActive = false;
+        // TODO: spawn component using meta
+        return notification;
+    }
+
+    /**
+     * Converts an IAction into and IPerformedAction and places it performedActions list
+     *
+     * @param notification
+     * @param action
+     * @return INotification
+     *
+     * @note JavaScript is pass by reference for objects but prefer to be specific by returning a value
+     * not sure if putting a return in is confusing and hinting at it being pass by reference.
+     */
+    private setPerformedAction(notification: INotification, action: IAction): INotification {
+
+        const performedAction = new PerformedAction();
+        performedAction.id = action.id;
+        performedAction.type = action.type;
+        performedAction.datePerformed = new Date();
+        notification.actionsHistory.push(performedAction);
+
+        return notification;
+    }
+
+    /**
+     * Generates a UUID
+     *
+     * TODO: Generate a reliably unique UUID
+     */
+    private getId(): string {
+        return Math.random().toString();
+    }
+
+    private removeFromSnoozeQueue(notification: INotification) {
+        if (this.snoozeQueue[notification.id]) {
+            clearTimeout(this.snoozeQueue[notification.id]);
+        }
+    }
+
 }
 
 const serviceInstance = new notificationService();

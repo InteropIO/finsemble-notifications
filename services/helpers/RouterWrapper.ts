@@ -1,4 +1,3 @@
-
 export const ROUTER_ENDPOINTS = {
     NOTIFY: "notify",
     SUBSCRIBE: "subscribe",
@@ -6,7 +5,7 @@ export const ROUTER_ENDPOINTS = {
     _PREFIX_ACTION: "action."
 };
 
-const CHANNEL_PREFIX: String = "notification.";
+const CHANNEL_PREFIX: string = "notification.";
 
 
 /**
@@ -27,12 +26,12 @@ export default class RouterWrapper {
      * @param logger Needs to be set if using in a service. Defaults to FSBL.Client.Logger if none is provided
      */
     constructor(router?: IRouterClient, logger?: any) {
-        if(!router) {
+        if (!router) {
             router = FSBL.Clients.RouterClient;
         }
         this.routerClient = router;
 
-        if(!logger) {
+        if (!logger) {
             logger = FSBL.Clients.Logger;
         }
         this.loggerClient = logger;
@@ -47,14 +46,15 @@ export default class RouterWrapper {
      * @param data
      * @param {Function} callback
      */
-    public queryRouter(channel: String, data: any, callback?: Function): Promise<any> {
+    public queryRouter(channel: string, data: any, callback?: Function): Promise<any> {
         return new Promise<any>(async (resolve, reject) => {
             this.loggerClient.log(`Wrapper: sending message on ${channel} channel`, data);
             try {
                 let response = await this.routerClient.query(
-                    CHANNEL_PREFIX.toString() + channel,
+                    CHANNEL_PREFIX + channel,
                     data,
-                    () => {} // Using promise to get back re
+                    () => {
+                    } // Ignore collback. Use promise to get result
                 );
                 this.loggerClient.log(`${channel} raw response: `, response);
                 if (callback) {

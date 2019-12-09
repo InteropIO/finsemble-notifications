@@ -30,5 +30,6 @@ export default interface INotification {
     timeout?: number;
     meta?: Map<string, any>;
     dismissedAt?: Date;
+    isActive: boolean;
     actionsHistory?: IPerformedAction[];
 }

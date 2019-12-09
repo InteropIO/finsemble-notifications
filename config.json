@@ -1,105 +1,185 @@
 {
-    "comment": "Notifications configuration",
-    "components": {
-        "NotificationComponent": {
-            "window": {
-                "url": "$applicationRoot/components/finsemble-notifications/components/notify/notify.html",
-                "affinity": "workspaceComponents",
-                "frame": false,
-                "resizable": true,
-                "autoShow": true,
-                "top": "center",
-                "left": "center",
-                "width": 400,
-                "height": 432
-            },
-            "component": {
-                "inject": false,
-                "spawnOnStartup": false
-            },
-            "foreign": {
-                "services": {
-                    "windowService": {
-                        "allowAutoArrange": true,
-                        "allowSnapping": true,
-                        "allowTabbing": true,
-                        "allowTiling": true,
-                        "allowGrouping": true
-                    }
-                },
-                "components": {
-                    "App Launcher": {
-                        "launchableByUser": true
-                    },
-                    "Window Manager": {
-                        "showLinker": true,
-                        "FSBLHeader": true,
-                        "persistWindowState": true,
-                        "title": "Notifications"
-                    },
-                    "Toolbar": {
-                        "iconClass": "ff-component"
-                    }
-                }
-            }
+  "comment": "Notifications configuration",
+  "components": {
+    "NotificationComponent": {
+      "window": {
+        "url": "$applicationRoot/components/finsemble-notifications/components/notify/notify.html",
+        "affinity": "workspaceComponents",
+        "frame": false,
+        "resizable": true,
+        "autoShow": true,
+        "top": "center",
+        "left": "center",
+        "width": 400,
+        "height": 432
+      },
+      "component": {
+        "inject": false,
+        "spawnOnStartup": false
+      },
+      "foreign": {
+        "services": {
+          "windowService": {
+            "allowAutoArrange": true,
+            "allowSnapping": true,
+            "allowTabbing": true,
+            "allowTiling": true,
+            "allowGrouping": true
+          }
         },
-        "SubscriberComponent": {
-            "window": {
-                "url": "$applicationRoot/components/finsemble-notifications/components/subscriber/subscriber.html",
-                "affinity": "workspaceComponents",
-                "frame": false,
-                "resizable": true,
-                "autoShow": true,
-                "top": "center",
-                "left": "center",
-                "width": 400,
-                "height": 432
-            },
-            "component": {
-                "inject": false,
-                "spawnOnStartup": false
-            },
-            "foreign": {
-                "services": {
-                    "windowService": {
-                        "allowAutoArrange": true,
-                        "allowSnapping": true,
-                        "allowTabbing": true,
-                        "allowTiling": true,
-                        "allowGrouping": true
-                    }
-                },
-                "components": {
-                    "App Launcher": {
-                        "launchableByUser": true
-                    },
-                    "Window Manager": {
-                        "showLinker": true,
-                        "FSBLHeader": true,
-                        "persistWindowState": true,
-                        "title": "Subscriber"
-                    },
-                    "Toolbar": {
-                        "iconClass": "ff-component"
-                    }
-                }
-            }
+        "components": {
+          "App Launcher": {
+            "launchableByUser": true
+          },
+          "Window Manager": {
+            "showLinker": true,
+            "FSBLHeader": true,
+            "persistWindowState": true,
+            "title": "Notifications"
+          },
+          "Toolbar": {
+            "iconClass": "ff-component"
+          }
         }
+      }
     },
-    "services": {
-        "notificationService": {
-            "useWindow": true,
-            "active": true,
-            "name": "notificationService",
-            "visible": false,
-            "html": "$applicationRoot/components/finsemble-notifications/services/notification/notification.html"
+    "SubscriberComponent": {
+      "window": {
+        "url": "$applicationRoot/components/finsemble-notifications/components/subscriber/subscriber.html",
+        "affinity": "workspaceComponents",
+        "frame": false,
+        "resizable": true,
+        "autoShow": true,
+        "top": "center",
+        "left": "center",
+        "width": 400,
+        "height": 432
+      },
+      "component": {
+        "inject": false,
+        "spawnOnStartup": false
+      },
+      "foreign": {
+        "services": {
+          "windowService": {
+            "allowAutoArrange": true,
+            "allowSnapping": true,
+            "allowTabbing": true,
+            "allowTiling": true,
+            "allowGrouping": true
+          }
         },
-        "notificationsBuiltInActionsService": {
-            "useWindow": true,
-            "active": true,
-            "name": "notificationsBuiltInActionsService",
-            "visible": false,
-            "html": "$applicationRoot/components/finsemble-notifications/services/notificationsBuiltInActions/notificationsBuiltInActions.html"
+        "components": {
+          "App Launcher": {
+            "launchableByUser": true
+          },
+          "Window Manager": {
+            "showLinker": true,
+            "FSBLHeader": true,
+            "persistWindowState": true,
+            "title": "Subscriber"
+          },
+          "Toolbar": {
+            "iconClass": "ff-component"
+          }
         }
+      }
+    },
+    "notification-drawer": {
+      "window": {
+        "url": "$applicationRoot/components/finsemble-notifications/components/notification-drawer/notification-drawer.html",
+        "resizable": true,
+        "autoShow": true,
+        "bottom": 0,
+        "right": 0,
+        "width": "auto",
+        "height": "auto",
+        "position": "available",
+        "options": {
+          "transparent": true,
+          "alwaysOnTop": true
+        }
+      },
+      "component": {
+        "preload": false,
+        "spawnOnStartup": true,
+        "singleton": true
+      },
+      "foreign": {
+        "services": {
+          "dockingService": {
+            "canGroup": false,
+            "isArrangable": false
+          }
+        },
+        "components": {
+          "App Launcher": {
+            "launchableByUser": false
+          },
+          "Window Manager": {
+            "title": "notification-drawer",
+            "FSBLHeader": false,
+            "persistWindowState": true
+          },
+          "Toolbar": {
+            "iconClass": "notification-drawer"
+          }
+        }
+      }
+    },
+    "notification-center": {
+      "window": {
+        "url": "$applicationRoot/components/finsemble-notifications/components/notification-center/notification-center.html",
+        "frame": false,
+        "resizable": true,
+        "autoShow": true,
+        "top": "center",
+        "left": "center",
+        "width": 800,
+        "height": 800,
+        "monitor": "primary"
+      },
+      "component": {
+        "preload": false,
+        "spawnOnStartup": true
+      },
+      "foreign": {
+        "services": {
+          "dockingService": {
+            "canGroup": true,
+            "isArrangable": true
+          }
+        },
+        "components": {
+          "App Launcher": {
+            "launchableByUser": true
+          },
+          "Window Manager": {
+            "title": "notification-center",
+            "FSBLHeader": true,
+            "persistWindowState": true
+          },
+          "Toolbar": {
+            "iconClass": "ff-component"
+          }
+        }
+      }
     }
+  },
+  "services": {
+    "notificationService": {
+      "useWindow": true,
+      "active": true,
+      "name": "notificationService",
+      "visible": false,
+      "html": "$applicationRoot/components/finsemble-notifications/services/notification/notification.html"
+    },
+    "notificationsBuiltInActionsService": {
+      "useWindow": true,
+      "active": true,
+      "name": "notificationsBuiltInActionsService",
+      "visible": false,
+      "html": "$applicationRoot/components/finsemble-notifications/services/notificationsBuiltInActions/notificationsBuiltInActions.html"
+    }
+  }
 }

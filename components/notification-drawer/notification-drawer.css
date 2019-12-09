@@ -1,0 +1,90 @@
+body {
+  margin: 0px;
+  /* background-color: red; */
+  position: absolute;
+  bottom: 0;
+}
+.notification {
+  font-family: "Open Sans", sans-serif;
+  width: 100%;
+  max-width: 500px;
+  min-width: 200px;
+  color: white;
+  background-color: #333333;
+  display: grid;
+  grid-auto-rows: auto;
+  padding: 10px;
+  font-size: 13px;
+  box-shadow: 2px 4px 5px 0px #252525;
+}
+.notification hr {
+  width: 100%;
+}
+.detail-area {
+  --fr-test: 1fr;
+  display: grid;
+  /* grid-auto-flow: column; */
+  grid-template-columns: 20px var(--fr-test) auto 5px;
+  grid-column-gap: 20px;
+  justify-items: flex-start;
+  margin-bottom: 10px;
+}
+.content-area {
+  display: grid;
+  grid-column-gap: 15px;
+  grid-template-columns: auto 1fr;
+  justify-items: start;
+  margin-bottom: 10px;
+}
+.content-area img {
+  width: 40px;
+  /* margin:0 9px; */
+  border-radius: 10px;
+}
+.action-area {
+  display: flex;
+  justify-content: flex-end;
+  padding: 5px;
+  color: yellow;
+  height: 20px;
+}
+.action-area > button {
+  margin-right: 10px;
+  background-color: rgba(255, 255, 255, 0);
+  border: 0px;
+  color: yellow;
+  height: 30px;
+  cursor: pointer;
+}
+.action-area > button:hover {
+  animation-duration: 0.6s;
+  animation-name: fadeIn;
+}
+
+@keyframes fadeIn {
+  0% {
+    background-color: rgba(126, 126, 19, 0);
+  }
+  100% {
+    background-color: rgb(126, 126, 19);
+  }
+}
+
+/* Notification Centre CSS */
+#notification-center {
+  display: grid;
+  grid-template-rows: 2fr 2fr;
+}
+
+#notification-center__header {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+#notification-center__notifications {
+  display: grid;
+  grid-template-rows: 3fr 1fr;
+}
+
+#notification-center__notification-detail {
+  background-color: black;
+}

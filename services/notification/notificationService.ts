@@ -2,7 +2,7 @@ import INotificationService from "../../types/Notification-definitions/INotifica
 import INotification from "../../types/Notification-definitions/INotification";
 import IAction from "../../types/Notification-definitions/IAction";
 import ISubscription from "../../types/Notification-definitions/ISubscription";
-import RouterWrapper, {ROUTER_ENDPOINTS} from "../helpers/RouterWrapper";
+import RouterWrapper, {ROUTER_ENDPOINTS, ROUTER_NAMESPACE} from "../helpers/RouterWrapper";
 import PerformedAction from "../../types/Notification-definitions/PerformedAction";
 import {InternalActions} from "../../types/Notification-definitions/InternalActions";
 
@@ -126,6 +126,7 @@ class notificationService extends Finsemble.baseService implements INotification
 	 * @param message
 	 */
 	handleAction(message): object {
+		Finsemble.Clients.Logger.log("Got some actions", message);
 		const {notifications, action} = message;
 		let response = {
 			message: "success",
@@ -208,9 +209,11 @@ class notificationService extends Finsemble.baseService implements INotification
 		 */
 		this.removeFromSnoozeQueue(notification);
 
+		Finsemble.Clients.Logger.log(`Action type: ${action.type}`);
 		if (typeof InternalActions[action.type] !== "undefined") {
+			Finsemble.Clients.Logger.log(`Is internal action`);
 
-			let updatedNotification;
+			let updatedNotification = notification;
 			// Get the updated state from performing the action
 			switch (action.type) {
 				case InternalActions.DISMISS:
@@ -224,9 +227,11 @@ class notificationService extends Finsemble.baseService implements INotification
 					break;
 			}
 
+			Finsemble.Clients.Logger.log('Updated notification state', updatedNotification);
 			// Send out the new state to all required clients
-			this.notify(updatedNotification);
+			this.notify([updatedNotification]);
 		} else {
+			Finsemble.Clients.Logger.log(`Is External action`);
 			/**
 			 * TODO/NOTE/DISCUSS:
 			 * Need to complete the unhappy path. What happens when there is no responder setup on the action.type channel?
@@ -237,7 +242,7 @@ class notificationService extends Finsemble.baseService implements INotification
 			 * I think.
 			 */
 			// The request for notification will be sent on action.type as the channel name
-			this.routerWrapper.queryRouter(ROUTER_ENDPOINTS._PREFIX_ACTION + action.type, notification);
+			this.routerWrapper.queryRouter(ROUTER_ENDPOINTS.ACTION_PREFIX + action.type, notification);
 		}
 	}
 
@@ -344,7 +349,6 @@ class notificationService extends Finsemble.baseService implements INotification
 	 */
 	private getChannel(subscription: ISubscription): string {
 		return ROUTER_ENDPOINTS.SUBSCRIBE + `.${Math.random()}`;
-		// return ROUTER_ENDPOINTS.PREFIX + ROUTER_ENDPOINTS.SUBSCRIBE + ".subscription_" + Math.random();
 	}
 
 	private snooze(notification: INotification, action: IAction): INotification {

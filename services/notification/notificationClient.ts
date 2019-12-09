@@ -4,8 +4,11 @@ import INotification from "../../types/Notification-definitions/INotification";
 import IFilter from "../../types/Notification-definitions/IFilter";
 import IAction from "../../types/Notification-definitions/IAction";
 import ISubscription from "../../types/Notification-definitions/ISubscription";
-import RouterWrapper, {ROUTER_ENDPOINTS} from "../helpers/RouterWrapper";
+import RouterWrapper, {ROUTER_ENDPOINTS, ROUTER_NAMESPACE} from "../helpers/RouterWrapper";
 import {InternalActions} from "../../types/Notification-definitions/InternalActions";
+import {FSBL} from "../../types/FSBL-definitions/globals";
+import {IRouterClient} from "../../types/FSBL-definitions/clients/IRouterClient";
+import {ILogger} from "../../types/FSBL-definitions/clients/logger.interface";
 
 
 /**
@@ -73,6 +76,12 @@ export default class NotificationClient implements INotificationClient {
 	 * @throws Error If no error is thrown the service has received the request to perform the action successfully. Note a successful resolution of the promise does not mean successful completion of the action.
 	 */
 	markActionHandled(notifications: INotification[], action: IAction): Promise<void> {
+		// I think this is a clumsy interface. The default case will likely be a single notification.
+		// No need to punish the developer
+		if (!Array.isArray(notifications)) {
+			notifications = [notifications];
+		}
+
 		return new Promise<void>(async (resolve, reject) => {
 			try {
 				let data = await this.routerWrapper.queryRouter(
@@ -158,7 +167,11 @@ export default class NotificationClient implements INotificationClient {
 		}
 
 		if (typeof this.loggerClient === "undefined") {
-			this.loggerClient = FSBL.Clients.Logger;
+			if (typeof FSBL !== "undefined") {
+				this.loggerClient = FSBL.Clients.Logger;
+			} else if (typeof Finsemble !== "undefined") {
+				this.loggerClient = Finsemble.Clients.Logger;
+			}
 		}
 	}
 
@@ -194,5 +207,6 @@ export default class NotificationClient implements INotificationClient {
 
 export {
 	InternalActions,
-	NotificationClient
+	NotificationClient,
+	ROUTER_NAMESPACE
 };

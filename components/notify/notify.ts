@@ -13,14 +13,19 @@ let launchTutorial = () => {
   let dismiss = new Action();
   dismiss.id = "action_" + Math.random();
   dismiss.buttonText = "Dismiss";
-  dismiss.type = "dismiss";
+  dismiss.type = "DISMISS";
 
   let snooze = new Action();
   snooze.id = "action_" + Math.random();
   snooze.buttonText = "Snooze";
-  snooze.type = "snooze";
+  snooze.type = "SNOOZE";
 
-  let actionList: IAction[] = [snooze, dismiss];
+  let changeHeader = new Action();
+  changeHeader.id = "action_" + Math.random();
+  changeHeader.buttonText = "Change header";
+  changeHeader.type = "change-header";
+
+  let actionList: IAction[] = [snooze, dismiss, changeHeader];
 
   let not1 = new Notification();
   not1.id = "notification_" + Math.random();

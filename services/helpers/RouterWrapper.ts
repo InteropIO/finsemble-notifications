@@ -1,13 +1,22 @@
 import {IRouterClient} from "../../types/FSBL-definitions/clients/IRouterClient";
 
+/**
+ * Internal (private) router channels, should not need to be referenced by outside of the Client src
+ */
 export const ROUTER_ENDPOINTS = {
 	NOTIFY: "notify",
 	SUBSCRIBE: "subscribe",
 	HANDLE_ACTION: "handle_action",
-	_PREFIX_ACTION: "action."
+	CHANNEL_PREFIX: "notification.",
+	ACTION_PREFIX: "action.",
 };
 
-const CHANNEL_PREFIX: string = "notification.";
+/**
+ * User for creating custom actions
+ */
+export const ROUTER_NAMESPACE = {
+	ACTION_PREFIX: ROUTER_ENDPOINTS.CHANNEL_PREFIX + ROUTER_ENDPOINTS.ACTION_PREFIX,
+};
 
 /**
  * Router wrapper created specifically for notifications to keep the clients and services DRY.
@@ -27,13 +36,22 @@ export default class RouterWrapper {
 	 * @param logger Needs to be set if using in a service. Defaults to FSBL.Client.Logger if none is provided
 	 */
 	constructor(router?: IRouterClient, logger?: any) {
+		// Detect if we're in a service or a component.
 		if (!router) {
-			router = FSBL.Clients.RouterClient;
+			if (typeof FSBL !== "undefined") {
+				router = FSBL.Clients.RouterClient;
+			} else if (typeof Finsemble !== "undefined") {
+				router = Finsemble.Clients.RouterClient;
+			}
 		}
 		this.routerClient = router;
 
 		if (!logger) {
-			logger = FSBL.Clients.Logger;
+			if (typeof FSBL !== "undefined") {
+				logger = FSBL.Clients.Logger;
+			} else if (typeof Finsemble !== "undefined") {
+				router = Finsemble.Clients.Logger;
+			}
 		}
 		this.loggerClient = logger;
 
@@ -52,7 +70,7 @@ export default class RouterWrapper {
 			this.loggerClient.log(`Wrapper: sending message on ${channel} channel`, data);
 			try {
 				let response = await this.routerClient.query(
-					CHANNEL_PREFIX + channel,
+					ROUTER_ENDPOINTS.CHANNEL_PREFIX + channel,
 					data,
 					() => {
 					} // Ignore collback. Use promise to get result
@@ -74,7 +92,7 @@ export default class RouterWrapper {
 
 	public addResponder(channel: string, dataProcessor: (notification: any) => any) {
 		this.loggerClient.log(`Wrapper: Adding responder for endpoint: ${channel}`);
-		this.routerClient.addResponder(CHANNEL_PREFIX + channel, (err: any, message: any) => {
+		this.routerClient.addResponder(ROUTER_ENDPOINTS.CHANNEL_PREFIX + channel, (err: any, message: any) => {
 			this.loggerClient.log(`Message received on ${channel}: `, message);
 			if (err) {
 				this.loggerClient.error(`Failed to setup ${channel} responder`, err);

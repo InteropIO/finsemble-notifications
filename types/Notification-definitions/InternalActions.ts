@@ -1,6 +1,6 @@
 export enum InternalActions {
-    DISMISS = "dismiss",
-    SNOOZE = "snooze",
-    SPAWN = "spawn"
+    DISMISS = "DISMISS",
+    SNOOZE = "SNOOZE",
+    SPAWN = "SPAWN"
 }
 

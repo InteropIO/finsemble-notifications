@@ -12,6 +12,7 @@ let resources = [
   "services",
   "types",
   "config.json",
+  "sample.config.json",
   "finsemble.webpack.json"
 ];
 resources.forEach(resource => {

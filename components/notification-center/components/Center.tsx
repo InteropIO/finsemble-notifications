@@ -4,6 +4,7 @@ import { StoreContext } from "../store/Store";
 import useFinsemble from "../../hooks/useFinsemble";
 import INotification from "../../../types/Notification-definitions/INotification";
 import useNotifications from "../../hooks/useNotifications";
+import { getDate } from "date-fns";
 
 const { useEffect, useState, useContext, useRef } = React;
 
@@ -46,8 +47,8 @@ const Center = (props: Props) => (
             <div>{notification.id}</div>
             <div>{notification.headerText} </div>
             <div>{notification.details} </div>
-            <div>{notification.issuedAt} </div>
-            <div>{notification.type} </div>
+            <div>{notification.issuedAt || getDate(new Date())} </div>
+            <div>{notification.type || "any"} </div>
           </div>
         ))}
       </section>

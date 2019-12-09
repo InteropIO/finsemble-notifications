@@ -89,7 +89,7 @@ body {
 }
 #notification-center__notifications {
   display: grid;
-  grid-template-rows: 3fr 1fr;
+  grid-template-rows: auto;
 }
 
 #notification-center__notification-detail {

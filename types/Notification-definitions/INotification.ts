@@ -18,17 +18,18 @@ import IPerformedAction from "./IPerformedAction";
  * @property {IPerformedAction[]} actionsHistory - list of actions which have been performed on a notification.
  */
 export default interface INotification {
-    id?: string;
-    issuedAt: Date;
-    type?: string;
-    title: string;
-    details?: string;
-    headerText?: string;
-    headerLogo?: string;
-    contentLogo?: string;
-    actions?: IAction[];
-    timeout?: number;
-    meta?: Map<string, any>;
-    dismissedAt?: Date;
-    actionsHistory?: IPerformedAction[];
+  id?: string;
+  issuedAt: Date;
+  type?: string;
+  title: string;
+  details?: string;
+  headerText?: string;
+  headerLogo?: string;
+  contentLogo?: string;
+  actions?: IAction[];
+  timeout?: number;
+  meta?: Map<string, any>;
+  dismissedAt?: Date;
+  isActive: boolean;
+  actionsHistory?: IPerformedAction[];
 }

@@ -25,24 +25,22 @@ export default function useNotifications() {
   filter.size = { gte: 30 };
   subscription.filters.push(filter);
 
-  subscription.onNotification = function(notification: INotification) {
-    // This function will be called when a notification arrives
-    setNotifications([...notifications, notification]);
-  };
+  nClient.subscribe(
+    subscription,
+    (data: any) => {
+      console.log(data);
+    },
+    (error: any) => {
+      console.log(error);
+    }
+  );
+
   useEffect(() => {
     subscription.onNotification = function(notification: INotification) {
       // This function will be called when a notification arrives
       setNotifications([...notifications, notification]);
     };
-    // nClient.subscribe(
-    //   subscription,
-    //   (data: any) => {
-    //     console.log(data);
-    //   },
-    //   (error: any) => {
-    //     console.log(error);
-    //   }
-    // );
+
     // RouterClient.addListener(
     //   "notifications",
     //   async (err, incomingNotification: RouterMessage<INotification>) => {
@@ -51,12 +49,65 @@ export default function useNotifications() {
     //     //await showWindow();
     //   }
     // );
-  });
+  }, [notifications]);
+
+  const groupNotificationsByType = (
+    notifications: INotification[]
+  ): { [type: string]: INotification[] } => {
+    const groupBy = (arr: INotification[], type: string) =>
+      arr
+        .map(
+          (notification: INotification): INotification["type"] =>
+            notification[type]
+        )
+        .reduce(
+          (
+            acc: { [x: string]: any },
+            notificationType: INotification["type"],
+            index: number
+          ) => {
+            acc[notificationType] = [
+              ...(acc[notificationType] || []),
+              arr[index]
+            ];
+            return acc;
+          },
+          {}
+        );
+
+    return groupBy(notifications, "type");
+  };
 
   const getAllNotifications = (): INotification[] => {
     const today = new Date();
     const filter = new Filter();
-    const notifications = new NotificationClient().fetchHistory(today);
+    // const notifications = new NotificationClient().fetchHistory(today);
+    return [
+      {
+        id: "123",
+        type: "a",
+        title: "title",
+        issuedAt: new Date()
+      },
+      {
+        id: "123",
+        type: "b",
+        title: "title",
+        issuedAt: new Date()
+      },
+      {
+        id: "143",
+        type: "a",
+        title: "title",
+        issuedAt: new Date()
+      },
+      {
+        id: "162",
+        type: "a",
+        title: "title",
+        issuedAt: new Date()
+      }
+    ];
   };
   const removeNotification = (id: string) => {
     const notificationRemoved: INotification[] = notifications.filter(
@@ -95,5 +146,5 @@ export default function useNotifications() {
     return x;
   };
 
-  return { notifications, getAllNotifications };
+  return { notifications, getAllNotifications, groupNotificationsByType };
 }

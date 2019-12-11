@@ -2,9 +2,11 @@ import INotificationService from "../../types/Notification-definitions/INotifica
 import INotification from "../../types/Notification-definitions/INotification";
 import IAction from "../../types/Notification-definitions/IAction";
 import ISubscription from "../../types/Notification-definitions/ISubscription";
-import RouterWrapper, {ROUTER_ENDPOINTS, ROUTER_NAMESPACE} from "../helpers/RouterWrapper";
+import RouterWrapper, {ROUTER_ENDPOINTS} from "../helpers/RouterWrapper";
 import PerformedAction from "../../types/Notification-definitions/PerformedAction";
-import {InternalActions} from "../../types/Notification-definitions/InternalActions";
+import {ActionTypes} from "../../types/Notification-definitions/ActionTypes";
+import {act} from "react-dom/test-utils";
+import Logger from "../../types/FSBL-definitions/clients/logger";
 
 const Finsemble = require("@chartiq/finsemble");
 
@@ -93,9 +95,10 @@ class notificationService extends Finsemble.baseService implements INotification
 				if (this.filtersMatch(subscription, notifications[k])) {
 					// For each notification that matches, expect a response and send it out.
 					this.expectReceipt(subscription, notifications[k]);
-					this.routerWrapper.queryRouter(
+					this.routerWrapper.query(
 						subscription.channel,
 						notifications[k],
+						null,
 						(error, response) => {
 							this.setReceivedReceipt(subscription, notifications[k], error, response);
 						}
@@ -164,7 +167,7 @@ class notificationService extends Finsemble.baseService implements INotification
 		let channel = this.getChannel(subscription);
 		// TODO: Set the subscriptionId correctly in accordance with the spec
 		subscription.id = "subscription_" + Math.random();
-		Finsemble.Clients.Logger.log("Successfully subscription", subscription);
+		Finsemble.Clients.Logger.log("Successfully processed subscription: ", subscription);
 		Finsemble.Clients.Logger.log("Sending channel and subscription Id");
 		subscription.channel = channel;
 
@@ -202,7 +205,7 @@ class notificationService extends Finsemble.baseService implements INotification
 		 * ie. (the request for action has been received)
 		 * Discussion here https://chartiq.slack.com/archives/CPYQ16K7H/p1574357206003200
 		 */
-		notification = this.setPerformedAction(notification, action);
+		notification = this.addPerformedAction(notification, action);
 
 		/**
 		 * If an action is performed on a notification, it should not be snoozed anymore.
@@ -210,40 +213,36 @@ class notificationService extends Finsemble.baseService implements INotification
 		this.removeFromSnoozeQueue(notification);
 
 		Finsemble.Clients.Logger.log(`Action type: ${action.type}`);
-		if (typeof InternalActions[action.type] !== "undefined") {
-			Finsemble.Clients.Logger.log(`Is internal action`);
-
-			let updatedNotification = notification;
-			// Get the updated state from performing the action
-			switch (action.type) {
-				case InternalActions.DISMISS:
-					updatedNotification = this.dismiss(notification, action);
-					break;
-				case InternalActions.SNOOZE:
-					updatedNotification = this.snooze(notification, action);
-					break;
-				case InternalActions.SPAWN:
-					updatedNotification = this.spawn(notification, action);
-					break;
-			}
-
-			Finsemble.Clients.Logger.log('Updated notification state', updatedNotification);
-			// Send out the new state to all required clients
-			this.notify([updatedNotification]);
-		} else {
-			Finsemble.Clients.Logger.log(`Is External action`);
-			/**
-			 * TODO/NOTE/DISCUSS:
-			 * Need to complete the unhappy path. What happens when there is no responder setup on the action.type channel?
-			 * handleAction() is expecting that an error is thrown (if possible) in which case an error, if the code works
-			 * correctly, will be sent back to the client.
-			 *
-			 * If it's ok that the may or may not be an actor waiting at the end of the line. No changes need to be made...
-			 * I think.
-			 */
-			// The request for notification will be sent on action.type as the channel name
-			this.routerWrapper.queryRouter(ROUTER_ENDPOINTS.ACTION_PREFIX + action.type, notification);
+		// Notification has been actioned - mark it as inactive (should remove it from displaying in the UI)
+		notification.isActive = false;
+		// Pick up any updated states from performing the action
+		switch (action.type.toUpperCase()) {
+			case ActionTypes.SNOOZE:
+				notification = this.snooze(notification, action);
+				break;
+			case ActionTypes.SPAWN:
+				notification = this.spawn(notification, action);
+				break;
+			case ActionTypes.QUERY:
+				notification = this.forwardAsQuery(notification, action);
+				break;
+			case ActionTypes.TRANSMIT:
+				notification = this.forwardAsTransmit(notification, action);
+				break;
+			case ActionTypes.PUBLISH:
+				notification = this.forwardAsPublish(notification, action);
+				break;
+			case ActionTypes.DISMISS:
+				notification = this.dismiss(notification, action);
+				break;
+			default:
+				Finsemble.Clients.Logger.error(`Unable to perform action '${action.type}' on notification`);
+				return;
 		}
+		Finsemble.Clients.Logger.log('Updated notification state', notification);
+
+		// Send out the new state to all required clients
+		this.notify([notification]);
 	}
 
 	/**
@@ -261,7 +260,6 @@ class notificationService extends Finsemble.baseService implements INotification
 			this.representationOfNotifications[notification.id] = notification;
 		});
 	}
-
 
 
 	/**
@@ -351,24 +349,31 @@ class notificationService extends Finsemble.baseService implements INotification
 		return ROUTER_ENDPOINTS.SUBSCRIBE + `.${Math.random()}`;
 	}
 
+	/**
+	 * Snoozes a notification
+	 *
+	 * @param notification {INotification}
+	 * @param action {IAction}
+	 *
+	 * TODO: notification wake on finsemble restart
+	 */
 	private snooze(notification: INotification, action: IAction): INotification {
-		notification.isActive = false;
+		let defaultTimeout = 10000; // TODO: get from config
+		let timeout = action.milliseconds ? action.milliseconds : defaultTimeout;
 		this.snoozeQueue[notification.id] = setTimeout(() => {
 			notification.isActive = true;
 			this.notify([notification]);
-		}, 10000);
+		}, defaultTimeout);
 		return notification;
 	}
 
 	private dismiss(notification: INotification, action: IAction): INotification {
 		notification.dismissedAt = new Date();
-		notification.isActive = false;
 		return notification;
 	}
 
 	private spawn(notification: INotification, action: IAction): INotification {
-		notification.isActive = false;
-		// TODO: spawn component using meta
+		// TODO: spawn component using .component and .spawnParams
 		return notification;
 	}
 
@@ -382,13 +387,66 @@ class notificationService extends Finsemble.baseService implements INotification
 	 * @note JavaScript is pass by reference for objects but prefer to be specific by returning a value
 	 * not sure if putting a return in is confusing and hinting at it being pass by reference.
 	 */
-	private setPerformedAction(notification: INotification, action: IAction): INotification {
+	private addPerformedAction(notification: INotification, action: IAction): INotification {
 
 		const performedAction = new PerformedAction();
 		performedAction.id = action.id;
 		performedAction.type = action.type;
 		performedAction.datePerformed = new Date();
 		notification.actionsHistory.push(performedAction);
+
+		return notification;
+	}
+
+	private validateForwardParams(action: IAction) {
+		if (!action.channel) {
+			throw new Error(`No channel set when trying to perform '${action.type}'`);
+		}
+	}
+
+	private forwardAsQuery(notification: INotification, action: IAction): INotification {
+		this.validateForwardParams(action);
+		try {
+			this.routerWrapper.query(
+				action.channel,
+				{
+					'notification': notification,
+					'actionPayload': action.payload
+				},
+				''
+			);
+		} catch (error) {
+			Finsemble.Clients.Logger.error(`Error performing action on channel channel: '${action.channel}'`);
+			notification.isActive = true;
+		}
+
+		return notification;
+	}
+
+	private forwardAsTransmit(notification: INotification, action: IAction): INotification {
+		this.validateForwardParams(action);
+		this.routerWrapper.transmit(
+			action.channel,
+			{
+				'notification': notification,
+				'actionPayload': action.payload
+			},
+			''
+		);
+
+		return notification;
+	}
+
+	private forwardAsPublish(notification: INotification, action: IAction): INotification {
+		this.validateForwardParams(action);
+		this.routerWrapper.publish(
+			action.channel,
+			{
+				'notification': notification,
+				'actionPayload': action.payload
+			},
+			''
+		);
 
 		return notification;
 	}

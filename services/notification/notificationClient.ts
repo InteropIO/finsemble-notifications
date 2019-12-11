@@ -1,14 +1,14 @@
-//Create and export functions which use the router to communicate with your service
 import INotificationClient from "../../types/Notification-definitions/INotificationClient";
 import INotification from "../../types/Notification-definitions/INotification";
 import IFilter from "../../types/Notification-definitions/IFilter";
 import IAction from "../../types/Notification-definitions/IAction";
 import ISubscription from "../../types/Notification-definitions/ISubscription";
 import RouterWrapper, {ROUTER_ENDPOINTS, ROUTER_NAMESPACE} from "../helpers/RouterWrapper";
-import {InternalActions} from "../../types/Notification-definitions/InternalActions";
-import {FSBL} from "../../types/FSBL-definitions/globals";
+import {ActionTypes} from "../../types/Notification-definitions/ActionTypes";
 import {IRouterClient} from "../../types/FSBL-definitions/clients/IRouterClient";
 import {ILogger} from "../../types/FSBL-definitions/clients/logger.interface";
+
+const {Logger} = require("@chartiq/finsemble").Clients;
 
 
 /**
@@ -37,8 +37,13 @@ export default class NotificationClient implements INotificationClient {
 		if (routerClient || loggerClient) {
 			this.routerWrapper = new RouterWrapper(routerClient, loggerClient);
 			this.loggerClient = loggerClient ? loggerClient : null;
+		} else {
+			this.routerWrapper = new RouterWrapper();
 		}
-		this.initialize();
+
+		if (!this.loggerClient) {
+			this.loggerClient = typeof FSBL !== "undefined"? FSBL.Clients.Logger : Logger;
+		}
 	}
 
 	/**
@@ -84,7 +89,7 @@ export default class NotificationClient implements INotificationClient {
 
 		return new Promise<void>(async (resolve, reject) => {
 			try {
-				let data = await this.routerWrapper.queryRouter(
+				let data = await this.routerWrapper.query(
 					ROUTER_ENDPOINTS.HANDLE_ACTION,
 					{
 						"notifications": notifications,
@@ -107,7 +112,7 @@ export default class NotificationClient implements INotificationClient {
 	notify(notifications: any[]): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
 			try {
-				this.routerWrapper.queryRouter(ROUTER_ENDPOINTS.NOTIFY, notifications).then(() => {
+				this.routerWrapper.query(ROUTER_ENDPOINTS.NOTIFY, notifications).then(() => {
 					resolve();
 				});
 			} catch (e) {
@@ -127,11 +132,15 @@ export default class NotificationClient implements INotificationClient {
 	 * TODO: onSubscriptionSuccess and onSubscriptionFault can do a better job of explaining what params will be passed in
 	 */
 	subscribe(subscription: ISubscription, onSubscriptionSuccess?: Function, onSubscriptionFault?: Function): Promise<string> {
+		this.loggerClient.log("Attempting to subscribe: ", subscription);
 		return new Promise<string>(async (resolve, reject) => {
 			try {
 				// Get a channel from the service to monitor
 				this.loggerClient.log("Attempting to subscribe: ", subscription);
-				let returnValue = await this.routerWrapper.queryRouter(ROUTER_ENDPOINTS.SUBSCRIBE, JSON.parse(JSON.stringify(subscription)));
+				let returnValue = await this.routerWrapper.query(
+					ROUTER_ENDPOINTS.SUBSCRIBE,
+					JSON.parse(JSON.stringify(subscription))
+				);
 
 				// Monitor the channel and execute subscription.onNotification() for each one that arrives.
 				this.loggerClient.log("Got a return value containing a channel", returnValue);
@@ -161,19 +170,6 @@ export default class NotificationClient implements INotificationClient {
 		});
 	}
 
-	private initialize(): void {
-		if (typeof this.routerWrapper === "undefined") {
-			this.routerWrapper = new RouterWrapper();
-		}
-
-		if (typeof this.loggerClient === "undefined") {
-			if (typeof FSBL !== "undefined") {
-				this.loggerClient = FSBL.Clients.Logger;
-			} else if (typeof Finsemble !== "undefined") {
-				this.loggerClient = Finsemble.Clients.Logger;
-			}
-		}
-	}
 
 	/**
 	 * Listens on a channel to execute the onNotification callback and sends receipt
@@ -184,29 +180,31 @@ export default class NotificationClient implements INotificationClient {
 	private monitorChannel(channel: string, onNotification: Function): Promise<void> {
 		return new Promise((resolve) => {
 			this.loggerClient.log("Listening for messages on channel", channel);
-			this.routerWrapper.addResponder(channel, (queryMessage) => {
-				this.loggerClient.log("Incoming message on channel: ", queryMessage);
-				this.loggerClient.log(`Heard message on channel: ${channel}`, queryMessage);
+			this.routerWrapper.addResponder(
+				channel,
+				(queryMessage) => {
+					this.loggerClient.log("Incoming message on channel: ", queryMessage);
+					this.loggerClient.log(`Heard message on channel: ${channel}`, queryMessage);
 
-				// Catching user-code errors to allow for successful sending of receipt.
-				// TODO: 2nd pair of eyes: Is there situation where this will be confusing to anyone trying to debug an issue
-				try {
-					onNotification(queryMessage);
-				} catch (e) {
-					// Error thrown in the onNotification
-					this.loggerClient.error(`Error thrown in the onNotification: ${channel}`, queryMessage);
-				}
+					// Catching user-code errors to allow for successful sending of receipt.
+					// TODO: 2nd pair of eyes: Is there situation where this will be confusing to anyone trying to debug an issue
+					try {
+						onNotification(queryMessage);
+					} catch (e) {
+						// Error thrown in the onNotification
+						this.loggerClient.error(`Error thrown in the subscription.onNotification()`, e);
+					}
 
-				// Return value used in addResponder as notification received response.
-				return {"message": "success"};
-			});
+					// Return value used in addResponder as notification received response.
+					return {"message": "success"};
+				});
 			resolve();
 		});
 	}
 }
 
 export {
-	InternalActions,
+	ActionTypes,
 	NotificationClient,
 	ROUTER_NAMESPACE
 };

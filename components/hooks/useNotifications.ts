@@ -25,21 +25,21 @@ export default function useNotifications() {
   filter.size = { gte: 30 };
   subscription.filters.push(filter);
 
-  nClient.subscribe(
-    subscription,
-    (data: any) => {
-      console.log(data);
-    },
-    (error: any) => {
-      console.log(error);
-    }
-  );
-
   useEffect(() => {
     subscription.onNotification = function(notification: INotification) {
       // This function will be called when a notification arrives
       setNotifications([...notifications, notification]);
     };
+
+    nClient.subscribe(
+      subscription,
+      (data: any) => {
+        console.log(data);
+      },
+      (error: any) => {
+        console.log(error);
+      }
+    );
 
     // RouterClient.addListener(
     //   "notifications",
@@ -49,7 +49,7 @@ export default function useNotifications() {
     //     //await showWindow();
     //   }
     // );
-  }, [notifications]);
+  });
 
   const groupNotificationsByType = (
     notifications: INotification[]

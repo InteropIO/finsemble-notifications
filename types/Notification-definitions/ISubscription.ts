@@ -8,7 +8,7 @@ import IFilter from "./IFilter";
 export default interface ISubscription {
     id: string;
     filters?: IFilter[];
-    channel?: String;
+    channel?: string;
 
     onNotification: (notification: INotification) => void;
 }

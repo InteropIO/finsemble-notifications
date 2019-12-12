@@ -1,14 +1,20 @@
 /**
  * @property {string} id - UUID
  * @property {string} buttonText - Text to display on the button UI.
- * @property {string} type - Type of notification.
- * @property {string} component - Component to perform the action on.
- * @property {Map<string, any>} params - Additional params passed along with action.
+ * @property {string} type - Type of action.
+ * @property {number} milliseconds - Milliseconds to snooze for.
+ * @property {string} component - Component to spawn.
+ * @property {Map<string, any>} spawnParams - params passed to the spawn function.
+ * @property {string} channel - channel to transmit payload on.
+ * @property payload {any} - payload transmitted along channel.
  */
 export default interface IAction {
     id: string;
     buttonText: string;
     type: string;
+    milliseconds?: number;
     component?: string;
-    params?: Map<string, any>;
+    spawnParams?: object;
+    channel?: string;
+    payload?: any;
 }

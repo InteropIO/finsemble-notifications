@@ -1,7 +1,7 @@
 [
   "services/notification/notificationService.ts",
   "services/notification/notificationClient.ts",
-  "services/notificationsBuiltInActions/notificationsBuiltInActionsService.ts",
+  "services/exampleCustomAction/exampleCustomActionService.ts",
   "components/notify/notify.ts",
   "components/subscriber/subscriber.ts",
   "components/notification-center/notification-center.js",

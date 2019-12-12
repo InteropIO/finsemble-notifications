@@ -2,12 +2,11 @@ import IAction from "./IAction";
 
 export default class Action implements IAction {
     id: string;
-
-    /**
-     * @description The button things
-     */
     buttonText: string;
     type: string;
+    milliseconds?: number;
     component?: string;
-    params?: Map<string, any>;
+    spawnParams?: Map<string, any>;
+    channel?: string;
+    payload?: any;
 }

@@ -20,17 +20,21 @@ export default function useNotifications() {
   let subscription = new Subscription();
   let action = new Action();
   let filter = new Filter();
-
   action.buttonText = "sdfd";
   filter.size = { gte: 30 };
   subscription.filters.push(filter);
+  subscription.onNotification = (notification: INotification) => {
+    const newNotifications = [notification, ...notifications];
+    // console.log(notification);
+    setNotifications(newNotifications);
+  };
+
+  useEffect(() => console.log("mounted or updated"));
 
   useEffect(() => {
-    subscription.onNotification = function(notification: INotification) {
-      // This function will be called when a notification arrives
-      setNotifications([...notifications, notification]);
-    };
-
+    // let subscription = new Subscription();
+    // console.warn(subscription);
+    // subscribeToNotification(subscription);
     nClient.subscribe(
       subscription,
       (data: any) => {
@@ -40,16 +44,7 @@ export default function useNotifications() {
         console.log(error);
       }
     );
-
-    // RouterClient.addListener(
-    //   "notifications",
-    //   async (err, incomingNotification: RouterMessage<INotification>) => {
-    //     err && console.error(err);
-    //     addNotificationToState(incomingNotification);
-    //     //await showWindow();
-    //   }
-    // );
-  });
+  }, [notifications]);
 
   const groupNotificationsByType = (
     notifications: INotification[]

@@ -3,7 +3,8 @@ import {
   useState,
   useEffect,
   DOMElement,
-  ReactElement
+  ReactElement,
+  MutableRefObject
 } from "react";
 import { RouterMessage } from "../../types/FSBL-definitions/clients/IRouterClient";
 import { WindowClient } from "../../types/FSBL-definitions/clients/windowClient";
@@ -113,6 +114,41 @@ export default function useNotifications() {
         title: "title",
         issuedAt: new Date(),
         isActive: true
+      },
+      {
+        id: "162",
+        type: "c",
+        title: "title",
+        issuedAt: new Date(),
+        isActive: true
+      },
+      {
+        id: "162",
+        type: "c",
+        title: "title",
+        issuedAt: new Date(),
+        isActive: true
+      },
+      {
+        id: "162",
+        type: "c",
+        title: "title",
+        issuedAt: new Date(),
+        isActive: true
+      },
+      {
+        id: "162",
+        type: "c",
+        title: "title",
+        issuedAt: new Date(),
+        isActive: true
+      },
+      {
+        id: "162",
+        type: "c",
+        title: "title",
+        issuedAt: new Date(),
+        isActive: true
       }
     ];
 
@@ -160,14 +196,15 @@ export default function useNotifications() {
    * @param param0
    */
   const setNotificationDrawerPosition = async (
-    element: HTMLDivElement,
+    element: MutableRefObject<any>,
     { bottom, right, monitor }: SpawnParams
   ) => {
     const windowId: WindowIdentifier = await LauncherClient.getMyWindowIdentifier();
     const windowShowParams: SpawnParams = {
       bottom,
       right,
-      height: element.current.getBoundingClientRect().height,
+      height: element.current.getBoundingClientRect().height + 20,
+      width: element.current.getBoundingClientRect().width + 20,
       position: "available",
       monitor
     };

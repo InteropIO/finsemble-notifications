@@ -1,3 +1,15 @@
+@import url("https://fonts.googleapis.com/css?family=Roboto+Condensed&display=swap");
+
+root {
+  --notification-primary-color: grey;
+  --notification-secondary-color: black;
+  --notification-contrast-color: yellow;
+
+  --notification-background-color: var(--notification-primary-color);
+  --notification-font-family: "Roboto-Condensed", sans-serif;
+  --notification-font-color: var(--notification-contrast-color);
+}
+
 body {
   margin: 0px;
   /* background-color: red; */
@@ -6,12 +18,12 @@ body {
 }
 .notification {
   margin: 15px;
-  font-family: "Open Sans", sans-serif;
+  font-family: var(--notification-font-family);
   width: 100%;
   max-width: 500px;
   min-width: 200px;
-  color: white;
-  background-color: #333333;
+  color: var(--notification-font-color);
+  background-color: var(--notification-background-color);
   display: grid;
   grid-auto-rows: auto;
   padding: 10px;
@@ -46,14 +58,14 @@ body {
   display: flex;
   justify-content: flex-end;
   padding: 5px;
-  color: yellow;
+  color: var(--notification-font-color);
   height: 20px;
 }
 .action-area > button {
   margin-right: 10px;
   background-color: rgba(255, 255, 255, 0);
   border: 0px;
-  color: yellow;
+  color: var(--notification-font-color);
   height: 30px;
   cursor: pointer;
 }

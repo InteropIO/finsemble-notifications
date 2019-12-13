@@ -1,6 +1,4 @@
 import * as React from "react";
-import Notification from "./Notification";
-import { StoreContext } from "../store/Store";
 import useNotifications from "../../hooks/useNotifications";
 
 const { useEffect, useState, useContext, useRef } = React;
@@ -11,11 +9,16 @@ interface Props {
 
 function Drawer(props: Props): React.ReactElement {
   // const { setWindowId, setWindowPosition } = useFinsemble();
-  const { setWindowId, setWindowPosition } = useNotifications();
+  const { setNotificationDrawerPosition } = useNotifications();
 
   useEffect(() => {
-    setWindowId();
-  }, [state.windowId]);
+    inputEl.current.getBoundingClientRect().height;
+    setNotificationDrawerPosition(inputEl, {
+      bottom: 0,
+      left: 100,
+      monitor: "primary"
+    });
+  });
 
   const inputEl = useRef(null);
 

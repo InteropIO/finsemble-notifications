@@ -100,8 +100,8 @@ body {
   grid-gap: 10px;
 }
 #notification-center__notifications {
-  display: grid;
-  grid-template-rows: auto;
+  /* display: grid; */
+  /* grid-template-rows: auto; */
 }
 
 #notification-center__notification-detail {
@@ -160,7 +160,13 @@ main {
 
 .notification-center__notifications__rows {
   display: grid;
-  grid-template-columns: 1fr 1fr 2fr 1fr 1fr;
+  /* grid-template-columns: 1fr 1fr 2fr 1fr 1fr;
+   */
+  padding: 7px;
+  grid-auto-flow: column;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  overflow-wrap: break-word;
+  grid-column-gap: 2px;
 }
 
 /*  */

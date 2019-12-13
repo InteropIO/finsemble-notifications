@@ -7,6 +7,10 @@ import PerformedAction from "../../types/Notification-definitions/PerformedActio
 import {ActionTypes} from "../../types/Notification-definitions/ActionTypes";
 import {act} from "react-dom/test-utils";
 import Logger from "../../types/FSBL-definitions/clients/logger";
+import ILastUpdated from "../../types/Notification-definitions/LastUpdated";
+import ISnoozeTimer from "../../types/Notification-definitions/ISnoozeTimer";
+import SnoozeTimer from "../../types/Notification-definitions/SnoozeTimer";
+import LastUpdated from "../../types/Notification-definitions/ILastUpdated";
 
 const Finsemble = require("@chartiq/finsemble");
 
@@ -20,16 +24,23 @@ Finsemble.Clients.Logger.log("notification Service starting up");
 class notificationService extends Finsemble.baseService implements INotificationService {
 
 	/**
-	 * TODO: Review the storage of the subscriptions
+	 * Abstracting all internal state into a single point as a way to keep track of what
+	 * needs to change when implementing a solution for storage
+	 * TODO: Implement storage
 	 */
-	subscriptions: ISubscription[];
+	private storageAbstraction: {
+		subscriptions: Map<string, ISubscription>,
+		snoozeTimers: Map<string, ISnoozeTimer>,
 
-	snoozeQueue: {};
+		// TODO: Think about the best representation of notification as oldest ones will need to drop off the list
+		// TODO: While also being indexable
+		notifications: Map<string, INotification>,
+		lastUpdated: Map<string, ILastUpdated>
+	};
 
 	/**
 	 * TODO: Store the state of the notifications as per the spec
 	 */
-	representationOfNotifications: {};
 	private routerWrapper: RouterWrapper;
 
 	/**
@@ -49,9 +60,12 @@ class notificationService extends Finsemble.baseService implements INotification
 			}
 		});
 
-		this.snoozeQueue = {};
-		this.representationOfNotifications = {};
-		this.subscriptions = [];
+		this.storageAbstraction = {
+			subscriptions: new Map<string, ISubscription>(),
+			snoozeTimers: new Map<string, ISnoozeTimer>(),
+			notifications: new Map<string, INotification>(),
+			lastUpdated: new Map<string, ILastUpdated>()
+		};
 
 		this.subscribe = this.subscribe.bind(this);
 		this.notify = this.notify.bind(this);
@@ -89,7 +103,7 @@ class notificationService extends Finsemble.baseService implements INotification
 	 * @private
 	 */
 	broadcastNotifications(notifications: INotification[]): void {
-		this.subscriptions.forEach((subscription) => {
+		this.storageAbstraction.subscriptions.forEach( ((subscription, key) => {
 			for (let k in notifications) {
 				// Check if this notification matches any filters
 				if (this.filtersMatch(subscription, notifications[k])) {
@@ -105,7 +119,7 @@ class notificationService extends Finsemble.baseService implements INotification
 					);
 				}
 			}
-		});
+		}));
 	}
 
 
@@ -117,8 +131,8 @@ class notificationService extends Finsemble.baseService implements INotification
 	 * TODO: implement using appropriate storage
 	 */
 	deleteNotification(id: string): void {
-		if (this.representationOfNotifications[id]) {
-			delete this.representationOfNotifications[id];
+		if (this.storageAbstraction.notifications.has(id)) {
+			this.storageAbstraction.notifications.delete(id);
 		}
 	}
 
@@ -164,7 +178,7 @@ class notificationService extends Finsemble.baseService implements INotification
 	 * @return {string} a router channel on which notifications for this subscription will be sent.
 	 */
 	subscribe(subscription: ISubscription): object {
-		let channel = this.getChannel(subscription);
+		const channel = this.getChannel(subscription);
 		// TODO: Set the subscriptionId correctly in accordance with the spec
 		subscription.id = "subscription_" + Math.random();
 		Finsemble.Clients.Logger.log("Successfully processed subscription: ", subscription);
@@ -180,14 +194,16 @@ class notificationService extends Finsemble.baseService implements INotification
 
 	/**
 	 * Update saveLastUpdated time when incoming notification arrives in Finsemble.
-	 *
+	 * @param {string} source a notification that was updated. This notification can then be matched on using a filter to find out when different notifications were last updated.
 	 * @param {Date} lastUpdated when notification was last delivered to Finsemble.
-	 * @param {INotification} notification a notification that was updated. This notification can then be matched on using a filter to find out when different notifications were last updated.
-	 * @private
 	 *
-	 * TODO: Implement
+	 * TODO: Use this in the correct place. Make sure older notifications passing through again do not update timestamp
 	 */
-	saveLastUpdatedTime(lastUpdated: Date, notification: INotification): void {
+	saveLastUpdatedTime(source: string, lastUpdated: Date): void {
+		this.storageAbstraction.lastUpdated.set(
+			source,
+			new LastUpdated(source, lastUpdated)
+		);
 	}
 
 	/**
@@ -257,7 +273,7 @@ class notificationService extends Finsemble.baseService implements INotification
 				notification.id = this.getId();
 			}
 			// TODO: Store/Modify the notification appropriately
-			this.representationOfNotifications[notification.id] = notification;
+			this.storageAbstraction.notifications.set(notification.id, notification)
 		});
 	}
 
@@ -334,7 +350,7 @@ class notificationService extends Finsemble.baseService implements INotification
 	 * TODO: Implement
 	 */
 	private addToSubscription(subscription) {
-		this.subscriptions.push(subscription);
+		this.storageAbstraction.subscriptions.set(subscription.id, subscription)
 	}
 
 	/**
@@ -358,12 +374,17 @@ class notificationService extends Finsemble.baseService implements INotification
 	 * TODO: notification wake on finsemble restart
 	 */
 	private snooze(notification: INotification, action: IAction): INotification {
-		let defaultTimeout = 10000; // TODO: get from config
-		let timeout = action.milliseconds ? action.milliseconds : defaultTimeout;
-		this.snoozeQueue[notification.id] = setTimeout(() => {
+		const defaultTimeout = 10000; // TODO: get from config
+		const timeout = action.milliseconds ? action.milliseconds : defaultTimeout;
+
+		const snoozeTimer = new SnoozeTimer();
+		snoozeTimer.notificationId = notification.id;
+		snoozeTimer.snoozeInterval = timeout;
+		snoozeTimer.timeoutId = setTimeout(() => {
 			notification.isActive = true;
 			this.notify([notification]);
-		}, defaultTimeout);
+		}, timeout);
+		this.storageAbstraction.snoozeTimers.set(notification.id, snoozeTimer);
 		return notification;
 	}
 
@@ -388,7 +409,6 @@ class notificationService extends Finsemble.baseService implements INotification
 	 * not sure if putting a return in is confusing and hinting at it being pass by reference.
 	 */
 	private addPerformedAction(notification: INotification, action: IAction): INotification {
-
 		const performedAction = new PerformedAction();
 		performedAction.id = action.id;
 		performedAction.type = action.type;
@@ -461,8 +481,8 @@ class notificationService extends Finsemble.baseService implements INotification
 	}
 
 	private removeFromSnoozeQueue(notification: INotification) {
-		if (this.snoozeQueue[notification.id]) {
-			clearTimeout(this.snoozeQueue[notification.id]);
+		if (this.storageAbstraction.snoozeTimers.has(notification.id)) {
+			clearTimeout(this.storageAbstraction.snoozeTimers.get(notification.id).timeoutId);
 		}
 	}
 

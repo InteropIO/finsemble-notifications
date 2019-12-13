@@ -166,8 +166,7 @@ export default class NotificationClient implements INotificationClient {
 	 * TODO: implement
 	 */
 	unsubscribe(subscriptionId: string): Promise<void> {
-		return new Promise<void>((resolve, reject) => {
-		});
+		return new Promise<void>((resolve, reject) => {});
 	}
 
 

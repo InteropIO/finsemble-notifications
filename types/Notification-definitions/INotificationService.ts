@@ -3,11 +3,6 @@ import IAction from "./IAction";
 import ISubscription from "./ISubscription";
 
 export default interface INotificationService {
-    /**
-     * Array of subscriptions for a particular set of filters.
-     * @private
-     */
-    subscriptions: ISubscription[];
 
     /**
      * Creates or updates notifications in Finsemble.
@@ -24,11 +19,11 @@ export default interface INotificationService {
 
     /**
      * Update saveLastUpdated time when incoming notification arrives in Finsemble.
+     * @param {string} source a notification that was updated. This notification can then be matched on using a filter to find out when different notifications were last updated.
      * @param {Date} lastUpdated when notification was last delivered to Finsemble.
-     * @param {INotification} notification a notification that was updated. This notification can then be matched on using a filter to find out when different notifications were last updated.
      * @private
      */
-    saveLastUpdatedTime(lastUpdated: Date, notification: INotification): void;
+    saveLastUpdatedTime(source: string, lastUpdated: Date): void;
 
     /**
      * Called in response to a user action VIA a NotificationClient router transmit.

@@ -13,7 +13,7 @@ function App(): React.ReactElement {
   const [hover, setHover] = useState(false);
   const {
     notifications,
-    allNotifications,
+    getAllNotifications,
     groupNotificationsByType
   } = useNotifications();
 
@@ -21,27 +21,38 @@ function App(): React.ReactElement {
     setHover(!hover);
   };
   let hoverStyle;
-  if (this.state.hover) {
+  if (hover) {
     hoverStyle = { display: "none", cursor: "pointer" };
   } else {
     hoverStyle = { display: "block" };
   }
+
+  Object.entries(groupNotificationsByType(getAllNotifications())).map(
+    ([key, values]) => {
+      console.log(key, values[0].id);
+    }
+  );
+
   return (
     <div>
-      {Object.entries(groupNotificationsByType(allNotifications)).map(
-        ([key, values]) => {
-          <span>
-            <span
-              style={hoverStyle}
-              onMouseEnter={toggleHover}
-              onMouseLeave={toggleHover}
-            >
-              {key}
-            </span>
-            {values.length}
-          </span>;
-        }
-      )}
+      <span>
+        {Object.entries(groupNotificationsByType(getAllNotifications())).map(
+          ([key, values]) => {
+            return (
+              <span key={key}>
+                {/* <span
+                  style={hoverStyle}
+                  onMouseEnter={toggleHover}
+                  onMouseLeave={toggleHover}
+                >
+                  {key}
+                </span> */}
+                {values.length}
+              </span>
+            );
+          }
+        )}
+      </span>
     </div>
   );
 }

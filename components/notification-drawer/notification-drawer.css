@@ -5,6 +5,7 @@ body {
   bottom: 0;
 }
 .notification {
+  margin: 15px;
   font-family: "Open Sans", sans-serif;
   width: 100%;
   max-width: 500px;

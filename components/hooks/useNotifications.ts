@@ -1,6 +1,13 @@
-import { useContext, useState, useEffect } from "react";
+import {
+  useContext,
+  useState,
+  useEffect,
+  DOMElement,
+  ReactElement
+} from "react";
 import { RouterMessage } from "../../types/FSBL-definitions/clients/IRouterClient";
 import { WindowClient } from "../../types/FSBL-definitions/clients/windowClient";
+import { SpawnParams } from "../../types/FSBL-definitions/services/window/Launcher/launcher";
 import { WindowIdentifier } from "../../types/FSBL-definitions/globals";
 import INotification from "../../types/Notification-definitions/INotification";
 import Subscription from "../../types/Notification-definitions/Subscription";
@@ -73,36 +80,43 @@ export default function useNotifications() {
     return groupBy(notifications, "type");
   };
 
-  const getAllNotifications = (): INotification[] => {
+  const getAllNotifications = (): Array<INotification> => {
+    // get the history and then subscribe
     const today = new Date();
     const filter = new Filter();
     // const notifications = new NotificationClient().fetchHistory(today);
-    return [
+    const a = [
       {
         id: "123",
         type: "a",
         title: "title",
-        issuedAt: new Date()
+        issuedAt: new Date(),
+        isActive: true
       },
       {
         id: "123",
         type: "b",
         title: "title",
-        issuedAt: new Date()
+        issuedAt: new Date(),
+        isActive: true
       },
       {
         id: "143",
         type: "a",
         title: "title",
-        issuedAt: new Date()
+        issuedAt: new Date(),
+        isActive: true
       },
       {
         id: "162",
         type: "a",
         title: "title",
-        issuedAt: new Date()
+        issuedAt: new Date(),
+        isActive: true
       }
     ];
+
+    return a;
   };
   const removeNotification = (id: string) => {
     const notificationRemoved: INotification[] = notifications.filter(
@@ -141,5 +155,40 @@ export default function useNotifications() {
     return x;
   };
 
-  return { notifications, getAllNotifications, groupNotificationsByType };
+  /**
+   * Set the position of the notification window
+   * @param param0
+   */
+  const setNotificationDrawerPosition = async (
+    element: HTMLDivElement,
+    { bottom, right, monitor }: SpawnParams
+  ) => {
+    const windowId: WindowIdentifier = await LauncherClient.getMyWindowIdentifier();
+    const windowShowParams: SpawnParams = {
+      bottom,
+      right,
+      height: element.current.getBoundingClientRect().height,
+      position: "available",
+      monitor
+    };
+
+    await setWindowPosition(windowId, windowShowParams);
+  };
+
+  const setWindowPosition = async (
+    windowId: WindowIdentifier,
+    windowShowParams: SpawnParams
+  ): Promise<any> => {
+    const { windowDescriptor: windowPosition } = (
+      await LauncherClient.showWindow(windowId, windowShowParams)
+    ).data;
+    return windowPosition;
+  };
+
+  return {
+    notifications,
+    getAllNotifications,
+    groupNotificationsByType,
+    setNotificationDrawerPosition
+  };
 }

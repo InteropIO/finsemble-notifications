@@ -2,7 +2,7 @@
 
 body {
   margin: 0px;
-  background-color: #161617;
+  background: #151f28;
   color: white;
   position: absolute;
   bottom: 0;
@@ -88,7 +88,7 @@ body {
 }
 
 #notification-center > main {
-  grid-template-columns: repeat(3, auto);
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
 }
 
 #notification-center__header {

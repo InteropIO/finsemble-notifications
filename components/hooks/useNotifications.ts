@@ -24,10 +24,11 @@ const { RouterClient, LauncherClient } = FSBL.Clients;
 export default function useNotifications() {
   const [notifications, setNotifications] = useState<INotification[] | []>([]);
 
-  let nClient = new NotificationClient();
-  let subscription = new Subscription();
-  let action = new Action();
-  let filter = new Filter();
+  const nClient = new NotificationClient();
+  const subscription = new Subscription();
+  const action = new Action();
+  const filter = new Filter();
+
   action.buttonText = "sdfd";
   filter.size = { gte: 30 };
   subscription.filters.push(filter);
@@ -52,7 +53,7 @@ export default function useNotifications() {
         console.log(error);
       }
     );
-  }, [notifications]);
+  }, [nClient, notifications, subscription]);
 
   const groupNotificationsByType = (
     notifications: INotification[]

@@ -4,5 +4,5 @@
  */
 export default interface ILastUpdated {
     source: string;
-    updated: Date;
+    updated: string;
 }

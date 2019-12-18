@@ -5,6 +5,9 @@
 import INotification from "./INotification";
 import IFilter from "./IFilter";
 
+/**
+ * TODO: Ensure this interface or (implemented type) is publicly accessible
+ */
 export default interface ISubscription {
     id: string;
     filters?: IFilter[];

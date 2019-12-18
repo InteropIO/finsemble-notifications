@@ -1,3 +1,6 @@
+/**
+ * TODO: Ensure this is publicly accessible
+ */
 export enum ActionTypes {
     DISMISS = "DISMISS",
     SNOOZE = "SNOOZE",

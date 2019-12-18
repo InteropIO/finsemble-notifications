@@ -20,10 +20,10 @@ export default interface INotificationService {
     /**
      * Update saveLastUpdated time when incoming notification arrives in Finsemble.
      * @param {string} source a notification that was updated. This notification can then be matched on using a filter to find out when different notifications were last updated.
-     * @param {Date} lastUpdated when notification was last delivered to Finsemble.
+     * @param {string} issuedAt ISO8601 format string. When a notification was last delivered to Finsemble.
      * @private
      */
-    saveLastUpdatedTime(source: string, lastUpdated: Date): void;
+    saveLastIssuedAt(source: string, issuedAt: string): void;
 
     /**
      * Called in response to a user action VIA a NotificationClient router transmit.

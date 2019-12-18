@@ -49,27 +49,27 @@ export default class NotificationClient implements INotificationClient {
 	/**
 	 * Used by UI components that need to display a list of historical notifications.
 	 *
-	 * @param {Date} since / time to fetch notifications from.
+	 * @param {string} since ISO8601 formatted string to fetch notifications from.
 	 * @param {IFilter} filter to match to notifications.
 	 * @returns {INotification[]} array of notifications.
 	 * @throws Error
 	 * TODO: Implement
 	 */
-	fetchHistory(since: Date, filter: IFilter): Promise<INotification[]> {
+	fetchHistory(since: string, filter: IFilter): Promise<INotification[]> {
 		return new Promise<INotification[]>((resolve, reject) => {
 		});
 	}
 
 	/**
-	 * Return the Date a notification matching the specified filter was updated.
+	 * Return an ISO8601 date a notification matching the specified source was issued.
 	 *
-	 * @param {IFilter} filter to identify which notification to save lastUpdated time for.
-	 * @returns last updated Date object.
+	 * @param {string} source to identify which notification to save lastUpdated time for.
+	 * @returns last issued at date string in the ISO8601 date format.
 	 * @throws Error
 	 * TODO: Implement
 	 */
-	getLastUpdatedTime(filter?: IFilter): Promise<Date> {
-		return new Promise<Date>((resolve, reject) => {
+	getLastIssuedAt(source?: string): Promise<string> {
+		return new Promise<string>((resolve, reject) => {
 		});
 	}
 

@@ -7,10 +7,10 @@ import PerformedAction from "../../types/Notification-definitions/PerformedActio
 import {ActionTypes} from "../../types/Notification-definitions/ActionTypes";
 import {act} from "react-dom/test-utils";
 import Logger from "../../types/FSBL-definitions/clients/logger";
-import ILastUpdated from "../../types/Notification-definitions/LastUpdated";
+import ILastIssued from "../../types/Notification-definitions/ILastIssued";
 import ISnoozeTimer from "../../types/Notification-definitions/ISnoozeTimer";
 import SnoozeTimer from "../../types/Notification-definitions/SnoozeTimer";
-import LastUpdated from "../../types/Notification-definitions/ILastUpdated";
+import LastIssued from "../../types/Notification-definitions/LastIssued";
 
 const Finsemble = require("@chartiq/finsemble");
 
@@ -35,7 +35,7 @@ class notificationService extends Finsemble.baseService implements INotification
 		// TODO: Think about the best representation of notification as oldest ones will need to drop off the list
 		// TODO: While also being indexable
 		notifications: Map<string, INotification>,
-		lastUpdated: Map<string, ILastUpdated>
+		lastIssued: Map<string, ILastIssued>
 	};
 
 	/**
@@ -64,7 +64,7 @@ class notificationService extends Finsemble.baseService implements INotification
 			subscriptions: new Map<string, ISubscription>(),
 			snoozeTimers: new Map<string, ISnoozeTimer>(),
 			notifications: new Map<string, INotification>(),
-			lastUpdated: new Map<string, ILastUpdated>()
+			lastIssued: new Map<string, ILastIssued>()
 		};
 
 		this.subscribe = this.subscribe.bind(this);
@@ -195,14 +195,14 @@ class notificationService extends Finsemble.baseService implements INotification
 	/**
 	 * Update saveLastUpdated time when incoming notification arrives in Finsemble.
 	 * @param {string} source a notification that was updated. This notification can then be matched on using a filter to find out when different notifications were last updated.
-	 * @param {Date} lastUpdated when notification was last delivered to Finsemble.
+	 * @param {string} issuedAt ISO8601 format string. When a notification was last delivered to Finsemble.
 	 *
 	 * TODO: Use this in the correct place. Make sure older notifications passing through again do not update timestamp
 	 */
-	saveLastUpdatedTime(source: string, lastUpdated: Date): void {
-		this.storageAbstraction.lastUpdated.set(
+	saveLastIssuedAt(source: string, issuedAt: string): void {
+		this.storageAbstraction.lastIssued.set(
 			source,
-			new LastUpdated(source, lastUpdated)
+			new LastIssued(source, issuedAt)
 		);
 	}
 
@@ -271,6 +271,10 @@ class notificationService extends Finsemble.baseService implements INotification
 			if (!notification.id) {
 				// Is falsey an appropriate enough check?
 				notification.id = this.getId();
+			}
+
+			if (!this.storageAbstraction.notifications.has(notification.id)) {
+				this.saveLastUpdatedTime(notification.source, notification.issuedAt)
 			}
 			// TODO: Store/Modify the notification appropriately
 			this.storageAbstraction.notifications.set(notification.id, notification)

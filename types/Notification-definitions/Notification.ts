@@ -11,12 +11,13 @@ export default class Notification implements INotification {
     headerLogo: string;
     headerText: string;
     id: string;
-    issuedAt: Date;
+    issuedAt: string;
     meta: Map<string, any>;
     isActive: boolean = true;
     timeout: number;
     title: string;
     type: string;
+    source: string;
 
     constructor() {
         this.actions = [];

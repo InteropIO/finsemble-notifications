@@ -2,14 +2,14 @@
  * @property {string} source - UUID
  * @property {Date} lastUpdated - Text to display on the button UI.
  */
-import ILastUpdated from "./LastUpdated";
+import ILastIssued from "./ILastIssued";
 
-export default class LastUpdated implements ILastUpdated {
+export default class LastIssued implements ILastIssued {
     source: string;
-    updated: Date;
+    issuedAt: string;
 
-    constructor(source: string, updatedDate: Date) {
+    constructor(source: string, issuedAt: string) {
         this.source = source;
-        this.updated = updatedDate;
+        this.issuedAt = issuedAt;
     }
 }

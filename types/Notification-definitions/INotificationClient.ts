@@ -22,21 +22,22 @@ export default interface INotificationClient {
     unsubscribe(subscriptionId: string): Promise<void>;
 
     /**
-     * Return the Date a notification matching the specified filter was updated.
-     * @param {IFilter} filter to identify which notification to save lastUpdated time for.
-     * @returns last updated Date object.
+     * Return an ISO8601 formatted date a notification matching the specified source was issued.
+     *
+     * @param {string} source identify which notification to save lastUpdated time for.
+     * @returns last issued at date string in the ISO8601 date format.
      * @throws Error
      */
-    getLastUpdatedTime(filter?: IFilter): Promise<Date>;
+    getLastIssuedAt(source?: string): Promise<string>;
 
     /**
      * Used by UI components that need to display a list of historical notifications.
-     * @param {Date} since / time to fetch notifications from.
+     * @param {string} since ISO8601 formatted string to fetch notifications from.
      * @param {IFilter} filter to match to notifications.
      * @returns {INotification[]} array of notifications.
      * @throws Error
      */
-    fetchHistory(since: Date, filter: IFilter): Promise<INotification[]>;
+    fetchHistory(since: string, filter: IFilter): Promise<INotification[]>;
 
     /**
      * Creates or updates notifications in Finsemble.

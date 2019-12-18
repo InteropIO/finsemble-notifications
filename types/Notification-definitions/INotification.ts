@@ -4,9 +4,10 @@ import IPerformedAction from "./IPerformedAction";
 /**
  * @property {string} id - Either sent when notification is created to refer to id an external |
  * system or if null set to UUID.
- * @property {Date} issuedAt - When the notification occurred.
+ * @property {string} issuedAt ISO8601 date format - When the notification occurred.
  * @property {string} type - Type of notification.
  * @property {string} title - Main display title.
+ * @property {string} source - The source that the notification originates from.
  * @property {string} details - Details about the notification mainly for display purposes.
  * @property {string} headerText - Display header.
  * @property {string} headerLogo - Logo to display in header section of a notification. HTML source data URI or URL, or CSS class. Defaults set by type in configuration.
@@ -19,8 +20,9 @@ import IPerformedAction from "./IPerformedAction";
  */
 export default interface INotification {
     id?: string;
-    issuedAt: Date;
+    issuedAt: string;
     type?: string;
+    source?: string;
     title: string;
     details?: string;
     headerText?: string;

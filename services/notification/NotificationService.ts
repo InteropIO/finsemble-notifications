@@ -5,8 +5,6 @@ import ISubscription from "../../types/Notification-definitions/ISubscription";
 import RouterWrapper, {ROUTER_ENDPOINTS} from "../helpers/RouterWrapper";
 import PerformedAction from "../../types/Notification-definitions/PerformedAction";
 import {ActionTypes} from "../../types/Notification-definitions/ActionTypes";
-import {act} from "react-dom/test-utils";
-import Logger from "../../types/FSBL-definitions/clients/logger";
 import ILastIssued from "../../types/Notification-definitions/ILastIssued";
 import ISnoozeTimer from "../../types/Notification-definitions/ISnoozeTimer";
 import SnoozeTimer from "../../types/Notification-definitions/SnoozeTimer";
@@ -21,7 +19,7 @@ Finsemble.Clients.Logger.log("notification Service starting up");
  * A service used to transport notification data across the system
  * TODO: Decide and set what log levels all this should be at.
  */
-class notificationService extends Finsemble.baseService implements INotificationService {
+export default class NotificationService extends Finsemble.baseService implements INotificationService {
 
 	/**
 	 * Abstracting all internal state into a single point as a way to keep track of what
@@ -44,7 +42,7 @@ class notificationService extends Finsemble.baseService implements INotification
 	private routerWrapper: RouterWrapper;
 
 	/**
-	 * Initializes a new instance of the notificationService class.
+	 * Initializes a new instance of the NotificationService class.
 	 */
 	constructor() {
 		super({
@@ -193,7 +191,8 @@ class notificationService extends Finsemble.baseService implements INotification
 	}
 
 	/**
-	 * Update saveLastUpdated time when incoming notification arrives in Finsemble.
+	 * Stores the time when a notification arrived from a specific source in finsemble.
+	 *
 	 * @param {string} source a notification that was updated. This notification can then be matched on using a filter to find out when different notifications were last updated.
 	 * @param {string} issuedAt ISO8601 format string. When a notification was last delivered to Finsemble.
 	 *
@@ -268,13 +267,19 @@ class notificationService extends Finsemble.baseService implements INotification
 	 */
 	private storeNotifications(notifications: INotification[]) {
 		notifications.forEach((notification) => {
+			// TODO: Store previous state
+
 			if (!notification.id) {
-				// Is falsey an appropriate enough check?
+				// Is falsy an appropriate enough check?
 				notification.id = this.getId();
 			}
 
+			if(!notification.issuedAt) {
+				notification.issuedAt = new Date().toISOString();
+			}
+
 			if (!this.storageAbstraction.notifications.has(notification.id)) {
-				this.saveLastUpdatedTime(notification.source, notification.issuedAt)
+				this.saveLastIssuedAt(notification.source, notification.issuedAt);
 			}
 			// TODO: Store/Modify the notification appropriately
 			this.storageAbstraction.notifications.set(notification.id, notification)
@@ -489,11 +494,4 @@ class notificationService extends Finsemble.baseService implements INotification
 			clearTimeout(this.storageAbstraction.snoozeTimers.get(notification.id).timeoutId);
 		}
 	}
-
 }
-
-const serviceInstance = new notificationService();
-
-serviceInstance.start();
-
-export default serviceInstance;

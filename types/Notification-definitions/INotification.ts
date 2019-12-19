@@ -18,7 +18,7 @@ import IPerformedAction from "./IPerformedAction";
  * @property {Date} dismissedAt - When notification was dismissed.
  * @property {IPerformedAction[]} actionsHistory - list of actions which have been performed on a notification.
  *
- * TODO: Ensure this interface or (implemented type) is publicly accessible
+ * TODO: Ensure this interface (or implemented type) is publicly accessible
  */
 export default interface INotification {
     id?: string;

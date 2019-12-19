@@ -18,7 +18,8 @@ export default interface INotificationService {
     deleteNotification(id: string): void;
 
     /**
-     * Update saveLastUpdated time when incoming notification arrives in Finsemble.
+     * Stores the time when a notification arrived from a specific source in finsemble.
+     *
      * @param {string} source a notification that was updated. This notification can then be matched on using a filter to find out when different notifications were last updated.
      * @param {string} issuedAt ISO8601 format string. When a notification was last delivered to Finsemble.
      * @private

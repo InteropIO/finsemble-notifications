@@ -296,7 +296,7 @@ export default class NotificationService extends Finsemble.baseService implement
 	 *
 	 * TODO: Implement
 	 */
-	private filtersMatch(subscription: ISubscription, notification: INotification): boolean {
+	filtersMatch(subscription: ISubscription, notification: INotification): boolean {
 		return true;
 	}
 
@@ -370,7 +370,7 @@ export default class NotificationService extends Finsemble.baseService implement
 	 *
 	 * TODO: Can/should this be improved?
 	 */
-	private getChannel(subscription: ISubscription): string {
+	getChannel(subscription: ISubscription): string {
 		return ROUTER_ENDPOINTS.SUBSCRIBE + `.${Math.random()}`;
 	}
 
@@ -382,7 +382,7 @@ export default class NotificationService extends Finsemble.baseService implement
 	 *
 	 * TODO: notification wake on finsemble restart
 	 */
-	private snooze(notification: INotification, action: IAction): INotification {
+	snooze(notification: INotification, action: IAction): INotification {
 		const defaultTimeout = 10000; // TODO: get from config
 		const timeout = action.milliseconds ? action.milliseconds : defaultTimeout;
 
@@ -397,12 +397,12 @@ export default class NotificationService extends Finsemble.baseService implement
 		return notification;
 	}
 
-	private dismiss(notification: INotification, action: IAction): INotification {
+	dismiss(notification: INotification, action: IAction): INotification {
 		notification.dismissedAt = new Date();
 		return notification;
 	}
 
-	private spawn(notification: INotification, action: IAction): INotification {
+	spawn(notification: INotification, action: IAction): INotification {
 		// TODO: spawn component using .component and .spawnParams
 		return notification;
 	}
@@ -417,7 +417,7 @@ export default class NotificationService extends Finsemble.baseService implement
 	 * @note JavaScript is pass by reference for objects but prefer to be specific by returning a value
 	 * not sure if putting a return in is confusing and hinting at it being pass by reference.
 	 */
-	private addPerformedAction(notification: INotification, action: IAction): INotification {
+	addPerformedAction(notification: INotification, action: IAction): INotification {
 		const performedAction = new PerformedAction();
 		performedAction.id = action.id;
 		performedAction.type = action.type;
@@ -427,7 +427,7 @@ export default class NotificationService extends Finsemble.baseService implement
 		return notification;
 	}
 
-	private validateForwardParams(action: IAction) {
+	validateForwardParams(action: IAction) {
 		if (!action.channel) {
 			throw new Error(`No channel set when trying to perform '${action.type}'`);
 		}

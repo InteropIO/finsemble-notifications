@@ -10,6 +10,7 @@ interface Props {
 function Drawer(props: Props): React.ReactElement {
   // const { setWindowId, setWindowPosition } = useFinsemble();
   const { setNotificationDrawerPosition } = useNotifications();
+  const inputEl = useRef(null);
 
   useEffect(() => {
     inputEl.current.getBoundingClientRect().height;
@@ -19,8 +20,6 @@ function Drawer(props: Props): React.ReactElement {
       monitor: "primary"
     });
   });
-
-  const inputEl = useRef(null);
 
   return <div ref={inputEl}>{props.children}</div>;
 }

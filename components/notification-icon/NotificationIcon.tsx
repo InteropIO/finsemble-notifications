@@ -18,21 +18,21 @@ function App(): React.ReactElement {
     groupNotificationsByType
   } = useNotifications();
 
-  const toggleHover = () => {
-    setHover(!hover);
-  };
-  let hoverStyle;
-  if (hover) {
-    hoverStyle = { display: "none", cursor: "pointer" };
-  } else {
-    hoverStyle = { display: "block" };
-  }
+  // const toggleHover = () => {
+  //   setHover(!hover);
+  // };
+  // let hoverStyle;
+  // if (hover) {
+  //   hoverStyle = { display: "none", cursor: "pointer" };
+  // } else {
+  //   hoverStyle = { display: "block" };
+  // }
 
-  Object.entries(groupNotificationsByType(getAllNotifications())).map(
-    ([key, values]) => {
-      console.log(key, values[0].id);
-    }
-  );
+  // Object.entries(groupNotificationsByType(getAllNotifications())).map(
+  //   ([key, values]) => {
+  //     console.log(key, values[0].id);
+  //   }
+  // );
 
   return (
     <div id="notification-icon__wrapper">
@@ -40,7 +40,7 @@ function App(): React.ReactElement {
         ([key, values]) => {
           const colors = {
             a: "red",
-            b: "blue",
+            b: "yellow",
             c: "green"
           };
           return (

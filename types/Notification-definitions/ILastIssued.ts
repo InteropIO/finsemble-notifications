@@ -3,6 +3,6 @@
  * @property {string} lastUpdated - Text to display on the button UI.
  */
 export default interface ILastIssued {
-    source: string;
-    issuedAt: string;
+	source: string;
+	issuedAt: string;
 }

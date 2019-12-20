@@ -10,6 +10,8 @@ import ISnoozeTimer from "../../types/Notification-definitions/ISnoozeTimer";
 import SnoozeTimer from "../../types/Notification-definitions/SnoozeTimer";
 import LastIssued from "../../types/Notification-definitions/LastIssued";
 
+const uuidv4 = require('uuid/v4');
+
 const Finsemble = require("@chartiq/finsemble");
 
 Finsemble.Clients.Logger.start();
@@ -101,7 +103,7 @@ export default class NotificationService extends Finsemble.baseService implement
 	 * @private
 	 */
 	broadcastNotifications(notifications: INotification[]): void {
-		this.storageAbstraction.subscriptions.forEach( ((subscription, key) => {
+		this.storageAbstraction.subscriptions.forEach(((subscription, key) => {
 			for (let k in notifications) {
 				// Check if this notification matches any filters
 				if (this.filtersMatch(subscription, notifications[k])) {
@@ -165,6 +167,12 @@ export default class NotificationService extends Finsemble.baseService implement
 	 * @param {INotification[]} notifications from external source to be created or updated in Finsemble.
 	 */
 	notify(notifications: INotification[]): void {
+		/**
+		 * TODO:
+		 * 1. Copy initial incoming state.
+		 * 2. Set defaults if needed (receivedAt, issuedAt, Id, initial action history)
+		 * 3. Store initial state along with updated state
+		 */
 		this.storeNotifications(notifications);
 		this.broadcastNotifications(notifications);
 	}
@@ -206,88 +214,6 @@ export default class NotificationService extends Finsemble.baseService implement
 	}
 
 	/**
-	 * Delegate the action to any service that is registered on the correct channel
-	 *
-	 * @see notificationsBuiltInActionsService for an example
-	 *
-	 * @param notification
-	 * @param action
-	 *
-	 */
-	private delegateAction(notification: INotification, action: IAction): void {
-		/**
-		 * Action is considered completed by the time it hits the service
-		 * ie. (the request for action has been received)
-		 * Discussion here https://chartiq.slack.com/archives/CPYQ16K7H/p1574357206003200
-		 */
-		notification = this.addPerformedAction(notification, action);
-
-		/**
-		 * If an action is performed on a notification, it should not be snoozed anymore.
-		 */
-		this.removeFromSnoozeQueue(notification);
-
-		Finsemble.Clients.Logger.log(`Action type: ${action.type}`);
-		// Notification has been actioned - mark it as inactive (should remove it from displaying in the UI)
-		notification.isActive = false;
-		// Pick up any updated states from performing the action
-		switch (action.type.toUpperCase()) {
-			case ActionTypes.SNOOZE:
-				notification = this.snooze(notification, action);
-				break;
-			case ActionTypes.SPAWN:
-				notification = this.spawn(notification, action);
-				break;
-			case ActionTypes.QUERY:
-				notification = this.forwardAsQuery(notification, action);
-				break;
-			case ActionTypes.TRANSMIT:
-				notification = this.forwardAsTransmit(notification, action);
-				break;
-			case ActionTypes.PUBLISH:
-				notification = this.forwardAsPublish(notification, action);
-				break;
-			case ActionTypes.DISMISS:
-				notification = this.dismiss(notification, action);
-				break;
-			default:
-				Finsemble.Clients.Logger.error(`Unable to perform action '${action.type}' on notification`);
-				return;
-		}
-		Finsemble.Clients.Logger.log('Updated notification state', notification);
-
-		// Send out the new state to all required clients
-		this.notify([notification]);
-	}
-
-	/**
-	 * Stores the notifications
-	 *
-	 * @param notifications {INotification[]}
-	 */
-	private storeNotifications(notifications: INotification[]) {
-		notifications.forEach((notification) => {
-			// TODO: Store previous state
-
-			if (!notification.id) {
-				// Is falsy an appropriate enough check?
-				notification.id = this.getId();
-			}
-
-			if(!notification.issuedAt) {
-				notification.issuedAt = new Date().toISOString();
-			}
-
-			if (!this.storageAbstraction.notifications.has(notification.id)) {
-				this.saveLastIssuedAt(notification.source, notification.issuedAt);
-			}
-			// TODO: Store/Modify the notification appropriately
-			this.storageAbstraction.notifications.set(notification.id, notification)
-		});
-	}
-
-
-	/**
 	 * Check if the filters for a subscription match a notification
 	 *
 	 * @param subscription
@@ -298,68 +224,6 @@ export default class NotificationService extends Finsemble.baseService implement
 	 */
 	filtersMatch(subscription: ISubscription, notification: INotification): boolean {
 		return true;
-	}
-
-	/**
-	 * Setup callback on notify channel
-	 */
-	private setupNotify(): void {
-		this.routerWrapper.addResponder(ROUTER_ENDPOINTS.NOTIFY, this.notify);
-	}
-
-	/**
-	 * Setup callback on subscribe channel
-	 */
-	private setupSubscribe() {
-		this.routerWrapper.addResponder(ROUTER_ENDPOINTS.SUBSCRIBE, this.subscribe);
-	}
-
-	/**
-	 * Setup callback on action channel
-	 */
-	private setupAction() {
-		this.routerWrapper.addResponder(ROUTER_ENDPOINTS.HANDLE_ACTION, this.handleAction);
-	}
-
-
-	/**
-	 * Sets up that we are expecting a receipt for the subscription and notification.
-	 *
-	 * @param subscription
-	 * @param notification
-	 *
-	 * TODO: Implement.
-	 * TODO: Also implement the mechanism that watches for and retries missing receipts
-	 */
-	private expectReceipt(subscription: ISubscription, notification: INotification) {
-		// We're expecting a received receipt on the channel from the client
-	}
-
-	/**
-	 * Set the receipt status
-	 *
-	 * @param subscription
-	 * @param notification
-	 * @param error The error from the Router query
-	 * @param response
-	 *
-	 * TODO: Implement.
-	 * @Note I just put all the params in here... not sure what info will be needed
-	 */
-	private setReceivedReceipt(subscription: ISubscription, notification: INotification, error: string | null, response) {
-		Finsemble.Clients.Logger.log(`Got a receipt on: ${subscription.channel}`);
-		// We've received a response from the client. Process it and set the correct value
-	}
-
-	/**
-	 * Store the subscription so it can be referenced and also unsubscribed from later.
-	 *
-	 * @param subscription
-	 *
-	 * TODO: Implement
-	 */
-	private addToSubscription(subscription) {
-		this.storageAbstraction.subscriptions.set(subscription.id, subscription)
 	}
 
 	/**
@@ -433,6 +297,149 @@ export default class NotificationService extends Finsemble.baseService implement
 		}
 	}
 
+	/**
+	 * Delegate the action to any service that is registered on the correct channel
+	 *
+	 * @see notificationsBuiltInActionsService for an example
+	 *
+	 * @param notification
+	 * @param action
+	 *
+	 */
+	private delegateAction(notification: INotification, action: IAction): void {
+		/**
+		 * TODO: Move this into individual functions
+		 * Action is considered completed by the time it hits the service
+		 * ie. (the request for action has been received)
+		 * Discussion here https://chartiq.slack.com/archives/CPYQ16K7H/p1574357206003200
+		 */
+		notification = this.addPerformedAction(notification, action);
+
+		/**
+		 * If an action is performed on a notification, it should not be snoozed anymore.
+		 */
+		this.removeFromSnoozeQueue(notification);
+
+		Finsemble.Clients.Logger.log(`Action type: ${action.type}`);
+		// Notification has been actioned - mark it as inactive (should remove it from displaying in the UI)
+		notification.isActive = false;
+		// Pick up any updated states from performing the action
+		switch (action.type.toUpperCase()) {
+			case ActionTypes.SNOOZE:
+				notification = this.snooze(notification, action);
+				break;
+			case ActionTypes.SPAWN:
+				notification = this.spawn(notification, action);
+				break;
+			case ActionTypes.QUERY:
+				notification = this.forwardAsQuery(notification, action);
+				break;
+			case ActionTypes.TRANSMIT:
+				notification = this.forwardAsTransmit(notification, action);
+				break;
+			case ActionTypes.PUBLISH:
+				notification = this.forwardAsPublish(notification, action);
+				break;
+			case ActionTypes.DISMISS:
+				notification = this.dismiss(notification, action);
+				break;
+			default:
+				Finsemble.Clients.Logger.error(`Unable to perform action '${action.type}' on notification`);
+				return;
+		}
+		Finsemble.Clients.Logger.log('Updated notification state', notification);
+
+		// Send out the new state to all required clients
+		this.notify([notification]);
+	}
+
+	/**
+	 * Stores the notifications
+	 *
+	 * @param notifications {INotification[]}
+	 */
+	private storeNotifications(notifications: INotification[]) {
+		notifications.forEach((notification) => {
+			// TODO: Store previous state
+
+			if (!notification.id) {
+				// Is falsy an appropriate enough check?
+				notification.id = this.getId(notification);
+			}
+
+			if (!notification.issuedAt) {
+				notification.issuedAt = new Date().toISOString();
+			}
+
+			if (!this.storageAbstraction.notifications.has(notification.id)) {
+				this.saveLastIssuedAt(notification.source, notification.issuedAt);
+			}
+			// TODO: Store/Modify the notification appropriately
+			this.storageAbstraction.notifications.set(notification.id, notification)
+		});
+	}
+
+	/**
+	 * Setup callback on notify channel
+	 */
+	private setupNotify(): void {
+		this.routerWrapper.addResponder(ROUTER_ENDPOINTS.NOTIFY, this.notify);
+	}
+
+	/**
+	 * Setup callback on subscribe channel
+	 */
+	private setupSubscribe() {
+		this.routerWrapper.addResponder(ROUTER_ENDPOINTS.SUBSCRIBE, this.subscribe);
+	}
+
+	/**
+	 * Setup callback on action channel
+	 */
+	private setupAction() {
+		this.routerWrapper.addResponder(ROUTER_ENDPOINTS.HANDLE_ACTION, this.handleAction);
+	}
+
+	/**
+	 * Sets up that we are expecting a receipt for the subscription and notification.
+	 *
+	 * @param subscription
+	 * @param notification
+	 *
+	 * TODO: Implement.
+	 * TODO: Also implement the mechanism that watches for and retries missing receipts
+	 */
+	private expectReceipt(subscription: ISubscription, notification: INotification) {
+		// We're expecting a received receipt on the channel from the client
+	}
+
+	/**
+	 * Set the receipt status
+	 *
+	 * @param subscription
+	 * @param notification
+	 * @param error The error from the Router query
+	 * @param response
+	 *
+	 * TODO: Implement.
+	 * @Note I just put all the params in here... not sure what info will be needed
+	 */
+	private setReceivedReceipt(subscription: ISubscription, notification: INotification, error: string | null, response) {
+		Finsemble.Clients.Logger.log(`Got a receipt on: ${subscription.channel}`);
+		// We've received a response from the client. Process it and set the correct value
+	}
+
+	/**
+	 * Store the subscription so it can be referenced and also unsubscribed from later.
+	 *
+	 * @param subscription
+	 *
+	 * TODO: Implement
+	 */
+	private addToSubscription(subscription) {
+		this.storageAbstraction.subscriptions.set(subscription.id, subscription)
+	}
+
 	private forwardAsQuery(notification: INotification, action: IAction): INotification {
 		this.validateForwardParams(action);
 		try {
@@ -483,10 +490,10 @@ export default class NotificationService extends Finsemble.baseService implement
 	/**
 	 * Generates a UUID
 	 *
-	 * TODO: Generate a reliably unique UUID
+	 * TODO: Ensure correct usage of UUID library - uniqueness. Are there other concerns?
 	 */
-	private getId(): string {
-		return Math.random().toString();
+	private getId(notification: INotification): string {
+		return uuidv4();
 	}
 
 	private removeFromSnoozeQueue(notification: INotification) {

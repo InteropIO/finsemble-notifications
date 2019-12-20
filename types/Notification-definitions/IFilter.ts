@@ -4,5 +4,5 @@
  * TODO: Ensure this interface (or implemented type) is publicly accessible
  */
 export default interface IFilter {
-    [key: string]: object;
+	[key: string]: object;
 }

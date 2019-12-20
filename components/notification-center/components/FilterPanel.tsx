@@ -1,17 +1,24 @@
 import * as React from "react";
-import INotification from "../../../types/Notification-definitions/INotification";
-import { getDate } from "date-fns";
-
 interface Props {
   children?: React.PropsWithChildren<any>;
-  notifications: Array<INotification>;
+  types: Array<string>;
 }
 
 const NotificationsPanel = (props: Props) => (
   <section id="notification-center__notification-filter-panel">
-    <div />
-    <div />
-    <div />
+    <div>
+      {props.types.map(
+        type =>
+          type && (
+            <>
+              <input key={type} type="checkbox" name={type} value={type} />{" "}
+              {type}
+              <br />
+            </>
+          )
+      )}
+      <button>Filter</button>
+    </div>
   </section>
 );
 

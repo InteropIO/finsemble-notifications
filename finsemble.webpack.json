@@ -1,5 +1,5 @@
 [
-  "services/notification/notificationService.ts",
+  "services/notification/serviceInstance.ts",
   "services/notification/notificationClient.ts",
   "services/exampleCustomAction/exampleCustomActionService.ts",
   "components/notify/notify.ts",

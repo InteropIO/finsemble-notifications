@@ -1,4 +1,4 @@
-import NotificationClient, {ROUTER_NAMESPACE} from "../notification/notificationClient";
+import NotificationClient from "../notification/notificationClient";
 
 const Finsemble = require("@chartiq/finsemble");
 
@@ -54,7 +54,7 @@ class exampleCustomActionService extends Finsemble.baseService {
 
 		Finsemble.Clients.RouterClient.addPubSubResponder(
 			'publish-channel',
-			{ "State": "start" }
+			{"State": "start"}
 		);
 		Finsemble.Clients.RouterClient.subscribe(
 			'publish-channel',

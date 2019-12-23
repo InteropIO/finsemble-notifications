@@ -9,6 +9,7 @@ export const ROUTER_ENDPOINTS = {
 	NOTIFY: "notify",
 	SUBSCRIBE: "subscribe",
 	HANDLE_ACTION: "handle_action",
+	LAST_ISSUED: "last_issued",
 	CHANNEL_PREFIX: "notification.",
 	ACTION_PREFIX: "action.",
 };
@@ -41,11 +42,11 @@ export default class RouterWrapper {
 	constructor(router?: IRouterClient, logger?: any) {
 
 		if (!router) {
-			router = typeof FSBL !== "undefined"? FSBL.Clients.RouterClient : RouterClient;
+			router = typeof FSBL !== "undefined" ? FSBL.Clients.RouterClient : RouterClient;
 		}
 
 		if (!logger) {
-			logger = typeof FSBL !== "undefined"? FSBL.Clients.Logger : Logger;
+			logger = typeof FSBL !== "undefined" ? FSBL.Clients.Logger : Logger;
 		}
 
 		this.routerClient = router;

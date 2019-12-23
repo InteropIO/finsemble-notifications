@@ -5,8 +5,12 @@ import ISubscription from "../../types/Notification-definitions/ISubscription";
 import RouterWrapper, {ROUTER_ENDPOINTS} from "../helpers/RouterWrapper";
 import PerformedAction from "../../types/Notification-definitions/PerformedAction";
 import {ActionTypes} from "../../types/Notification-definitions/ActionTypes";
-import {act} from "react-dom/test-utils";
-import Logger from "../../types/FSBL-definitions/clients/logger";
+import ILastIssued from "../../types/Notification-definitions/ILastIssued";
+import ISnoozeTimer from "../../types/Notification-definitions/ISnoozeTimer";
+import SnoozeTimer from "../../types/Notification-definitions/SnoozeTimer";
+import LastIssued from "../../types/Notification-definitions/LastIssued";
+
+const uuidv4 = require('uuid/v4');
 
 const Finsemble = require("@chartiq/finsemble");
 
@@ -16,24 +20,29 @@ Finsemble.Clients.Logger.log("notification Service starting up");
 /**
  * A service used to transport notification data across the system
  * TODO: Decide and set what log levels all this should be at.
+ * TODO: use immutable js or lowdash.clonedeep to make sure all state changes happen on separate objects.
  */
-class notificationService extends Finsemble.baseService implements INotificationService {
+export default class NotificationService extends Finsemble.baseService implements INotificationService {
 
 	/**
-	 * TODO: Review the storage of the subscriptions
+	 * Abstracting all internal state into a single point as a way to keep track of what
+	 * needs to change when implementing a solution for storage
+	 * TODO: Implement storage - will need to modify all places storageAbstraction is referenced
 	 */
-	subscriptions: ISubscription[];
+	private storageAbstraction: {
+		subscriptions: Map<string, ISubscription>,
+		snoozeTimers: Map<string, ISnoozeTimer>,
 
-	snoozeQueue: {};
+		// TODO: Think about the best representation of notification as oldest ones will need to drop off the list
+		// TODO: While also being indexable
+		notifications: Map<string, INotification>,
+		lastIssued: Map<string, ILastIssued>
+	};
 
-	/**
-	 * TODO: Store the state of the notifications as per the spec
-	 */
-	representationOfNotifications: {};
 	private routerWrapper: RouterWrapper;
 
 	/**
-	 * Initializes a new instance of the notificationService class.
+	 * Initializes a new instance of the NotificationService class.
 	 */
 	constructor() {
 		super({
@@ -49,13 +58,17 @@ class notificationService extends Finsemble.baseService implements INotification
 			}
 		});
 
-		this.snoozeQueue = {};
-		this.representationOfNotifications = {};
-		this.subscriptions = [];
+		this.storageAbstraction = {
+			subscriptions: new Map<string, ISubscription>(),
+			snoozeTimers: new Map<string, ISnoozeTimer>(),
+			notifications: new Map<string, INotification>(),
+			lastIssued: new Map<string, ILastIssued>()
+		};
 
 		this.subscribe = this.subscribe.bind(this);
 		this.notify = this.notify.bind(this);
 		this.broadcastNotifications = this.broadcastNotifications.bind(this);
+		this.getLastIssued = this.getLastIssued.bind(this);
 		this.readyHandler = this.readyHandler.bind(this);
 		this.handleAction = this.handleAction.bind(this);
 		this.onBaseServiceReady(this.readyHandler);
@@ -77,6 +90,7 @@ class notificationService extends Finsemble.baseService implements INotification
 	 */
 	createRouterEndpoints() {
 		this.setupNotify();
+		this.setupLastIssued();
 		this.setupSubscribe();
 		this.setupAction();
 	}
@@ -89,7 +103,7 @@ class notificationService extends Finsemble.baseService implements INotification
 	 * @private
 	 */
 	broadcastNotifications(notifications: INotification[]): void {
-		this.subscriptions.forEach((subscription) => {
+		this.storageAbstraction.subscriptions.forEach(((subscription, key) => {
 			for (let k in notifications) {
 				// Check if this notification matches any filters
 				if (this.filtersMatch(subscription, notifications[k])) {
@@ -105,7 +119,7 @@ class notificationService extends Finsemble.baseService implements INotification
 					);
 				}
 			}
-		});
+		}));
 	}
 
 
@@ -117,8 +131,8 @@ class notificationService extends Finsemble.baseService implements INotification
 	 * TODO: implement using appropriate storage
 	 */
 	deleteNotification(id: string): void {
-		if (this.representationOfNotifications[id]) {
-			delete this.representationOfNotifications[id];
+		if (this.storageAbstraction.notifications.has(id)) {
+			this.storageAbstraction.notifications.delete(id);
 		}
 	}
 
@@ -153,6 +167,12 @@ class notificationService extends Finsemble.baseService implements INotification
 	 * @param {INotification[]} notifications from external source to be created or updated in Finsemble.
 	 */
 	notify(notifications: INotification[]): void {
+		/**
+		 * TODO:
+		 * 1. Copy initial incoming state.
+		 * 2. Set defaults if needed (receivedAt, issuedAt, Id, initial action history)
+		 * 3. Store initial state along with updated state
+		 */
 		this.storeNotifications(notifications);
 		this.broadcastNotifications(notifications);
 	}
@@ -164,9 +184,9 @@ class notificationService extends Finsemble.baseService implements INotification
 	 * @return {string} a router channel on which notifications for this subscription will be sent.
 	 */
 	subscribe(subscription: ISubscription): object {
-		let channel = this.getChannel(subscription);
+		const channel = this.getChannel(subscription);
 		// TODO: Set the subscriptionId correctly in accordance with the spec
-		subscription.id = "subscription_" + Math.random();
+		subscription.id = this.getUuid();
 		Finsemble.Clients.Logger.log("Successfully processed subscription: ", subscription);
 		Finsemble.Clients.Logger.log("Sending channel and subscription Id");
 		subscription.channel = channel;
@@ -179,15 +199,116 @@ class notificationService extends Finsemble.baseService implements INotification
 	}
 
 	/**
-	 * Update saveLastUpdated time when incoming notification arrives in Finsemble.
+	 * Stores the time when a notification arrived from a specific source in finsemble.
 	 *
-	 * @param {Date} lastUpdated when notification was last delivered to Finsemble.
-	 * @param {INotification} notification a notification that was updated. This notification can then be matched on using a filter to find out when different notifications were last updated.
-	 * @private
+	 * @param {string} source a notification that was updated. This notification can then be matched on using a filter to find out when different notifications were last updated.
+	 * @param {string} issuedAt ISO8601 format string. When a notification was last delivered to Finsemble.
+	 */
+	saveLastIssuedAt(source: string, issuedAt: string): void {
+		if (!source) {
+			return;
+		}
+
+		if (this.storageAbstraction.lastIssued.has(source)) {
+			const d1 = new Date(issuedAt);
+			const d2 = new Date(this.storageAbstraction.lastIssued.get(source).issuedAt);
+			// Update only if the new date is newer
+			if (d1 > d2) {
+				this.storageAbstraction.lastIssued.set(
+					source,
+					new LastIssued(source, issuedAt)
+				);
+			}
+		} else {
+			this.storageAbstraction.lastIssued.set(
+				source,
+				new LastIssued(source, issuedAt)
+			);
+		}
+	}
+
+	/**
+	 * Check if the filters for a subscription match a notification
+	 *
+	 * @param subscription
+	 * @param notification
+	 * @return boolean
 	 *
 	 * TODO: Implement
 	 */
-	saveLastUpdatedTime(lastUpdated: Date, notification: INotification): void {
+	filtersMatch(subscription: ISubscription, notification: INotification): boolean {
+		return true;
+	}
+
+	/**
+	 * Get a channel/endpoint the client will need to listen to
+	 *
+	 * @param subscription
+	 * @return string
+	 */
+	getChannel(subscription: ISubscription): string {
+		return ROUTER_ENDPOINTS.SUBSCRIBE + `.${this.getUuid()}`;
+	}
+
+	/**
+	 * Snoozes a notification
+	 *
+	 * @param notification {INotification}
+	 * @param action {IAction}
+	 *
+	 * TODO: notification wake on finsemble restart
+	 */
+	snooze(notification: INotification, action: IAction): INotification {
+		const defaultTimeout = 10000; // TODO: get from config
+		const timeout = action.milliseconds ? action.milliseconds : defaultTimeout;
+
+		const snoozeTimer = new SnoozeTimer();
+		snoozeTimer.notificationId = notification.id;
+		snoozeTimer.snoozeInterval = timeout;
+		snoozeTimer.timeoutId = setTimeout(() => {
+			notification.isSnoozed = false;
+			this.notify([notification]);
+		}, timeout);
+		this.storageAbstraction.snoozeTimers.set(notification.id, snoozeTimer);
+		notification.isSnoozed = true;
+		return notification;
+	}
+
+	dismiss(notification: INotification, action: IAction): INotification {
+		notification.isActionPerformed = true;
+		return notification;
+	}
+
+	spawn(notification: INotification, action: IAction): INotification {
+		notification.isActionPerformed = true;
+		// TODO: spawn component using .component and .spawnParams
+		return notification;
+	}
+
+	/**
+	 * Converts an IAction into and IPerformedAction and places it performedActions list
+	 *
+	 * @param notification
+	 * @param action
+	 * @return INotification
+	 *
+	 * @note JavaScript is pass by reference for objects but prefer to be specific by returning a value
+	 * not sure if putting a return in is confusing and hinting at it being pass by reference.
+	 */
+	addPerformedAction(notification: INotification, action: IAction): INotification {
+		const performedAction = new PerformedAction();
+		performedAction.id = action.id;
+		performedAction.type = action.type;
+		performedAction.datePerformed = new Date().toISOString();
+		notification.actionsHistory.push(performedAction);
+
+		return notification;
+	}
+
+	validateForwardParams(action: IAction) {
+		if (!action.channel) {
+			throw new Error(`No channel set when trying to perform '${action.type}'`);
+		}
 	}
 
 	/**
@@ -213,8 +334,7 @@ class notificationService extends Finsemble.baseService implements INotification
 		this.removeFromSnoozeQueue(notification);
 
 		Finsemble.Clients.Logger.log(`Action type: ${action.type}`);
-		// Notification has been actioned - mark it as inactive (should remove it from displaying in the UI)
-		notification.isActive = false;
+		notification.isActionPerformed = true;
 		// Pick up any updated states from performing the action
 		switch (action.type.toUpperCase()) {
 			case ActionTypes.SNOOZE:
@@ -252,27 +372,20 @@ class notificationService extends Finsemble.baseService implements INotification
 	 */
 	private storeNotifications(notifications: INotification[]) {
 		notifications.forEach((notification) => {
+			// TODO: Store previous state
+
 			if (!notification.id) {
-				// Is falsey an appropriate enough check?
-				notification.id = this.getId();
+				// Is falsy an appropriate enough check?
+				notification.id = this.getUuid(notification);
 			}
-			// TODO: Store/Modify the notification appropriately
-			this.representationOfNotifications[notification.id] = notification;
+
+			if (!notification.issuedAt) {
+				notification.issuedAt = new Date().toISOString();
+			}
+
+			this.saveLastIssuedAt(notification.source, notification.issuedAt);
+			this.storageAbstraction.notifications.set(notification.id, notification)
 		});
-	}
-
-
-	/**
-	 * Check if the filters for a subscription match a notification
-	 *
-	 * @param subscription
-	 * @param notification
-	 * @return boolean
-	 *
-	 * TODO: Implement
-	 */
-	private filtersMatch(subscription: ISubscription, notification: INotification): boolean {
-		return true;
 	}
 
 	/**
@@ -280,6 +393,14 @@ class notificationService extends Finsemble.baseService implements INotification
 	 */
 	private setupNotify(): void {
 		this.routerWrapper.addResponder(ROUTER_ENDPOINTS.NOTIFY, this.notify);
+	}
+
+
+	/**
+	 * Setup callback on notify channel
+	 */
+	private setupLastIssued(): void {
+		this.routerWrapper.addResponder(ROUTER_ENDPOINTS.LAST_ISSUED, this.getLastIssued);
 	}
 
 	/**
@@ -295,7 +416,6 @@ class notificationService extends Finsemble.baseService implements INotification
 	private setupAction() {
 		this.routerWrapper.addResponder(ROUTER_ENDPOINTS.HANDLE_ACTION, this.handleAction);
 	}
-
 
 	/**
 	 * Sets up that we are expecting a receipt for the subscription and notification.
@@ -330,83 +450,15 @@ class notificationService extends Finsemble.baseService implements INotification
 	 * Store the subscription so it can be referenced and also unsubscribed from later.
 	 *
 	 * @param subscription
-	 *
-	 * TODO: Implement
 	 */
 	private addToSubscription(subscription) {
-		this.subscriptions.push(subscription);
-	}
-
-	/**
-	 * Get a channel/endpoint the client will need to listen to
-	 *
-	 * @param subscription
-	 * @return string
-	 *
-	 * TODO: Can/should this be improved?
-	 */
-	private getChannel(subscription: ISubscription): string {
-		return ROUTER_ENDPOINTS.SUBSCRIBE + `.${Math.random()}`;
-	}
-
-	/**
-	 * Snoozes a notification
-	 *
-	 * @param notification {INotification}
-	 * @param action {IAction}
-	 *
-	 * TODO: notification wake on finsemble restart
-	 */
-	private snooze(notification: INotification, action: IAction): INotification {
-		let defaultTimeout = 10000; // TODO: get from config
-		let timeout = action.milliseconds ? action.milliseconds : defaultTimeout;
-		this.snoozeQueue[notification.id] = setTimeout(() => {
-			notification.isActive = true;
-			this.notify([notification]);
-		}, defaultTimeout);
-		return notification;
-	}
-
-	private dismiss(notification: INotification, action: IAction): INotification {
-		notification.dismissedAt = new Date();
-		return notification;
-	}
-
-	private spawn(notification: INotification, action: IAction): INotification {
-		// TODO: spawn component using .component and .spawnParams
-		return notification;
-	}
-
-	/**
-	 * Converts an IAction into and IPerformedAction and places it performedActions list
-	 *
-	 * @param notification
-	 * @param action
-	 * @return INotification
-	 *
-	 * @note JavaScript is pass by reference for objects but prefer to be specific by returning a value
-	 * not sure if putting a return in is confusing and hinting at it being pass by reference.
-	 */
-	private addPerformedAction(notification: INotification, action: IAction): INotification {
-
-		const performedAction = new PerformedAction();
-		performedAction.id = action.id;
-		performedAction.type = action.type;
-		performedAction.datePerformed = new Date();
-		notification.actionsHistory.push(performedAction);
-
-		return notification;
-	}
-
-	private validateForwardParams(action: IAction) {
-		if (!action.channel) {
-			throw new Error(`No channel set when trying to perform '${action.type}'`);
-		}
+		this.storageAbstraction.subscriptions.set(subscription.id, subscription)
 	}
 
 	private forwardAsQuery(notification: INotification, action: IAction): INotification {
 		this.validateForwardParams(action);
 		try {
+			notification.isActionPerformed = true;
 			this.routerWrapper.query(
 				action.channel,
 				{
@@ -417,7 +469,7 @@ class notificationService extends Finsemble.baseService implements INotification
 			);
 		} catch (error) {
 			Finsemble.Clients.Logger.error(`Error performing action on channel channel: '${action.channel}'`);
-			notification.isActive = true;
+			notification.isActionPerformed = false;
 		}
 
 		return notification;
@@ -434,6 +486,7 @@ class notificationService extends Finsemble.baseService implements INotification
 			''
 		);
 
+		notification.isActionPerformed = true;
 		return notification;
 	}
 
@@ -448,28 +501,50 @@ class notificationService extends Finsemble.baseService implements INotification
 			''
 		);
 
+		notification.isActionPerformed = true;
 		return notification;
+	}
+
+	/**
+	 * Gets the last issued date for the source provided
+	 * If source is not provided it will get the latest issue from the all registered sources
+	 *
+	 * @param source
+	 */
+	private getLastIssued(source?: string): string {
+		Finsemble.Clients.Logger.log(`Finding last issued for source: '${source}'`);
+		let returnValue = '';
+		if (source && this.storageAbstraction.lastIssued.has(source)) {
+			returnValue = this.storageAbstraction.lastIssued.get(source).issuedAt;
+		} else {
+			this.storageAbstraction.lastIssued.forEach((lastIssued: ILastIssued) => {
+				if (!returnValue) {
+					returnValue = lastIssued.issuedAt;
+				} else {
+					const d1 = new Date(returnValue);
+					const d2 = new Date(lastIssued.issuedAt);
+					if (d2 > d1) {
+						returnValue = lastIssued.issuedAt;
+					}
+				}
+			})
+		}
+
+		return returnValue;
 	}
 
 	/**
 	 * Generates a UUID
 	 *
-	 * TODO: Generate a reliably unique UUID
+	 * TODO: Ensure correct usage of UUID library - uniqueness. Are there other concerns?
 	 */
-	private getId(): string {
-		return Math.random().toString();
+	private getUuid(notification?: INotification): string {
+		return uuidv4();
 	}
 
 	private removeFromSnoozeQueue(notification: INotification) {
-		if (this.snoozeQueue[notification.id]) {
-			clearTimeout(this.snoozeQueue[notification.id]);
+		if (this.storageAbstraction.snoozeTimers.has(notification.id)) {
+			clearTimeout(this.storageAbstraction.snoozeTimers.get(notification.id).timeoutId);
 		}
 	}
-
 }
-
-const serviceInstance = new notificationService();
-
-serviceInstance.start();
-
-export default serviceInstance;

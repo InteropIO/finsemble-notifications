@@ -42,34 +42,43 @@ export default class NotificationClient implements INotificationClient {
 		}
 
 		if (!this.loggerClient) {
-			this.loggerClient = typeof FSBL !== "undefined"? FSBL.Clients.Logger : Logger;
+			this.loggerClient = typeof FSBL !== "undefined" ? FSBL.Clients.Logger : Logger;
 		}
 	}
 
 	/**
 	 * Used by UI components that need to display a list of historical notifications.
 	 *
-	 * @param {Date} since / time to fetch notifications from.
+	 * @param {string} since ISO8601 formatted string to fetch notifications from.
 	 * @param {IFilter} filter to match to notifications.
 	 * @returns {INotification[]} array of notifications.
 	 * @throws Error
 	 * TODO: Implement
 	 */
-	fetchHistory(since: Date, filter: IFilter): Promise<INotification[]> {
+	fetchHistory(since: string, filter: IFilter): Promise<INotification[]> {
 		return new Promise<INotification[]>((resolve, reject) => {
 		});
 	}
 
 	/**
-	 * Return the Date a notification matching the specified filter was updated.
+	 * Return an ISO8601 date a notification matching the specified source was issued.
 	 *
-	 * @param {IFilter} filter to identify which notification to save lastUpdated time for.
-	 * @returns last updated Date object.
+	 * @param {string} source to identify which notification to save lastUpdated time for.
+	 * @returns last issued at date string in the ISO8601 date format.
 	 * @throws Error
 	 * TODO: Implement
 	 */
-	getLastUpdatedTime(filter?: IFilter): Promise<Date> {
-		return new Promise<Date>((resolve, reject) => {
+	getLastIssuedAt(source?: string): Promise<string> {
+		return new Promise<string>(async (resolve, reject) => {
+			try {
+				let data = await this.routerWrapper.query(
+					ROUTER_ENDPOINTS.LAST_ISSUED,
+					source
+				);
+				resolve(data);
+			} catch (e) {
+				reject(e);
+			}
 		});
 	}
 
@@ -79,6 +88,8 @@ export default class NotificationClient implements INotificationClient {
 	 * @param {INotification[]} notifications Notifications to apply action to.
 	 * @param {IAction} action which has been triggered by user.
 	 * @throws Error If no error is thrown the service has received the request to perform the action successfully. Note a successful resolution of the promise does not mean successful completion of the action.
+	 *
+	 * TODO: Discuss this. markActionsHandled(INotification[]) vs markActionHandled(INotification)
 	 */
 	markActionHandled(notifications: INotification[], action: IAction): Promise<void> {
 		// I think this is a clumsy interface. The default case will likely be a single notification.
@@ -166,8 +177,7 @@ export default class NotificationClient implements INotificationClient {
 	 * TODO: implement
 	 */
 	unsubscribe(subscriptionId: string): Promise<void> {
-		return new Promise<void>((resolve, reject) => {
-		});
+		return new Promise<void>((resolve, reject) => {});
 	}
 
 

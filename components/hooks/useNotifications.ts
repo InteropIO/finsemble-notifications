@@ -2,6 +2,7 @@ import {
   useContext,
   useState,
   useEffect,
+  useRef,
   DOMElement,
   ReactElement,
   MutableRefObject
@@ -23,6 +24,8 @@ const { RouterClient, LauncherClient } = FSBL.Clients;
 
 export default function useNotifications() {
   const [notifications, setNotifications] = useState<INotification[] | []>([]);
+  // useRef to get the value https://stackoverflow.com/questions/53845595/wrong-react-hooks-behaviour-with-event-listener
+  let notificationsRef = useRef(notifications);
 
   const nClient = new NotificationClient();
   const subscription = new Subscription();
@@ -33,9 +36,9 @@ export default function useNotifications() {
   filter.size = { gte: 30 };
   subscription.filters.push(filter);
   subscription.onNotification = (notification: INotification) => {
-    const newNotifications = [notification, ...notifications];
+    notificationsRef.current = [notification, ...notificationsRef.current];
     // console.log(notification);
-    setNotifications(newNotifications);
+    setNotifications(notificationsRef.current);
   };
 
   useEffect(() => console.log("mounted or updated"));
@@ -53,7 +56,14 @@ export default function useNotifications() {
         console.log(error);
       }
     );
-  }, [nClient, notifications, subscription]);
+
+    return () => {
+      // Put unsubscribe here
+    }
+
+    // Will run every time deps change. Set as described in the Note section:
+    // https://reactjs.org/docs/hooks-effect.html#explanation-why-effects-run-on-each-update
+  }, ['empty or const value will only run once']);
 
   const groupNotificationsByType = (
     notifications: INotification[]

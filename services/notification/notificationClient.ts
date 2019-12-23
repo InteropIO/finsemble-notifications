@@ -42,7 +42,7 @@ export default class NotificationClient implements INotificationClient {
 		}
 
 		if (!this.loggerClient) {
-			this.loggerClient = typeof FSBL !== "undefined"? FSBL.Clients.Logger : Logger;
+			this.loggerClient = typeof FSBL !== "undefined" ? FSBL.Clients.Logger : Logger;
 		}
 	}
 
@@ -69,7 +69,16 @@ export default class NotificationClient implements INotificationClient {
 	 * TODO: Implement
 	 */
 	getLastIssuedAt(source?: string): Promise<string> {
-		return new Promise<string>((resolve, reject) => {
+		return new Promise<string>(async (resolve, reject) => {
+			try {
+				let data = await this.routerWrapper.query(
+					ROUTER_ENDPOINTS.LAST_ISSUED,
+					source
+				);
+				resolve(data);
+			} catch (e) {
+				reject(e);
+			}
 		});
 	}
 
@@ -79,6 +88,8 @@ export default class NotificationClient implements INotificationClient {
 	 * @param {INotification[]} notifications Notifications to apply action to.
 	 * @param {IAction} action which has been triggered by user.
 	 * @throws Error If no error is thrown the service has received the request to perform the action successfully. Note a successful resolution of the promise does not mean successful completion of the action.
+	 *
+	 * TODO: Discuss this. markActionsHandled(INotification[]) vs markActionHandled(INotification)
 	 */
 	markActionHandled(notifications: INotification[], action: IAction): Promise<void> {
 		// I think this is a clumsy interface. The default case will likely be a single notification.

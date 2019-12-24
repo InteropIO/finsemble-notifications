@@ -10,6 +10,7 @@ export const ROUTER_ENDPOINTS = {
 	SUBSCRIBE: "subscribe",
 	HANDLE_ACTION: "handle_action",
 	LAST_ISSUED: "last_issued",
+	FETCH_HISTORY: "fetch_history",
 	CHANNEL_PREFIX: "notification.",
 	ACTION_PREFIX: "action.",
 };

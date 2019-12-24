@@ -9,6 +9,7 @@ import ILastIssued from "../../types/Notification-definitions/ILastIssued";
 import ISnoozeTimer from "../../types/Notification-definitions/ISnoozeTimer";
 import SnoozeTimer from "../../types/Notification-definitions/SnoozeTimer";
 import LastIssued from "../../types/Notification-definitions/LastIssued";
+import IFilter from "../../types/Notification-definitions/IFilter";
 
 const uuidv4 = require('uuid/v4');
 
@@ -33,8 +34,12 @@ export default class NotificationService extends Finsemble.baseService implement
 		subscriptions: Map<string, ISubscription>,
 		snoozeTimers: Map<string, ISnoozeTimer>,
 
-		// TODO: Think about the best representation of notification as oldest ones will need to drop off the list
-		// TODO: While also being indexable
+		/**
+		 * TODO: Think about the best representation of notification as oldest ones will need to drop off the list
+		 * Theoretically Map should work https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map
+		 * as it remembers the original insertion order of the keys. Need to test if the order is preserved when
+		 * retrieving it from storage.
+		 */
 		notifications: Map<string, INotification>,
 		lastIssued: Map<string, ILastIssued>
 	};
@@ -71,6 +76,7 @@ export default class NotificationService extends Finsemble.baseService implement
 		this.getLastIssued = this.getLastIssued.bind(this);
 		this.readyHandler = this.readyHandler.bind(this);
 		this.handleAction = this.handleAction.bind(this);
+		this.fetchHistory = this.fetchHistory.bind(this);
 		this.onBaseServiceReady(this.readyHandler);
 	}
 
@@ -93,6 +99,7 @@ export default class NotificationService extends Finsemble.baseService implement
 		this.setupLastIssued();
 		this.setupSubscribe();
 		this.setupAction();
+		this.setupFetchHistory();
 	}
 
 	/**
@@ -106,7 +113,7 @@ export default class NotificationService extends Finsemble.baseService implement
 		this.storageAbstraction.subscriptions.forEach(((subscription, key) => {
 			for (let k in notifications) {
 				// Check if this notification matches any filters
-				if (this.filtersMatch(subscription, notifications[k])) {
+				if (this.filtersMatch(subscription.filters, notifications[k])) {
 					// For each notification that matches, expect a response and send it out.
 					this.expectReceipt(subscription, notifications[k]);
 					this.routerWrapper.query(
@@ -230,13 +237,13 @@ export default class NotificationService extends Finsemble.baseService implement
 	/**
 	 * Check if the filters for a subscription match a notification
 	 *
-	 * @param subscription
+	 * @param filters
 	 * @param notification
 	 * @return boolean
 	 *
 	 * TODO: Implement
 	 */
-	filtersMatch(subscription: ISubscription, notification: INotification): boolean {
+	filtersMatch(filters: IFilter[], notification: INotification): boolean {
 		return true;
 	}
 
@@ -383,9 +390,14 @@ export default class NotificationService extends Finsemble.baseService implement
 				notification.issuedAt = new Date().toISOString();
 			}
 
+			if (!notification.receivedAt) {
+				notification.receivedAt = new Date().toISOString();
+			}
+
 			this.saveLastIssuedAt(notification.source, notification.issuedAt);
 			this.storageAbstraction.notifications.set(notification.id, notification)
 		});
+		console.log(this.storageAbstraction.notifications);
 	}
 
 	/**
@@ -395,12 +407,18 @@ export default class NotificationService extends Finsemble.baseService implement
 		this.routerWrapper.addResponder(ROUTER_ENDPOINTS.NOTIFY, this.notify);
 	}
 
-
 	/**
 	 * Setup callback on notify channel
 	 */
 	private setupLastIssued(): void {
 		this.routerWrapper.addResponder(ROUTER_ENDPOINTS.LAST_ISSUED, this.getLastIssued);
+	}
+
+	/**
+	 * Setup callback on notify channel
+	 */
+	private setupFetchHistory(): void {
+		this.routerWrapper.addResponder(ROUTER_ENDPOINTS.FETCH_HISTORY, this.fetchHistory);
 	}
 
 	/**
@@ -531,6 +549,44 @@ export default class NotificationService extends Finsemble.baseService implement
 		}
 
 		return returnValue;
+	}
+
+	/**
+	 * Fetch a list
+	 * If source is not provided it will get the latest issue from the all registered sources
+	 *
+	 * @param message
+	 */
+	private fetchHistory(message): INotification[]|object {
+		Finsemble.Clients.Logger.log("Fetch history request with params", message);
+		let {since, filter} = message;
+		let notifications:INotification[] = [];
+
+		if (since) {
+			Finsemble.Clients.Logger.log("Since date", since);
+			since = new Date(since);
+		}
+
+		this.storageAbstraction.notifications.forEach((notification) => {
+			if(since) {
+				// If there is a date and the notification was received before the date - skip it
+				Finsemble.Clients.Logger.log("Notification date", notification.receivedAt);
+				const notificationDate = new Date(notification.receivedAt);
+				if(notificationDate < since) {
+					return;
+				}
+			}
+
+			if (filter && !this.filtersMatch([filter], notification)) {
+				// If there is a filter and the filter does not match the notification - skip it
+				return;
+			}
+
+			// Notification date is greater than date param or not date param is set
+			// Filter matches or not filter is set
+			notifications.push(notification);
+		});
+		return notifications;
 	}
 
 	/**

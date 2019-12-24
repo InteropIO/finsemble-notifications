@@ -41,8 +41,7 @@ if you want some example components to play around with
 3. Copy `example.copy.config.json` to `copy.config.json`
 4. Make sure the `source` path in `copy.config.json` points to this project
 5. The `destination` path should point to a directory inside your `finsemble-seed` components directory.
-6. In your finsemble seed project, add the following to your ./finsemble-seed/configs/application/config.json (make sure the directories match)
-7. If you wish to use the example components and action services add the following to your ./finsemble-seed/configs/application/sample.config.json (make sure the directories match)
+6. In your finsemble seed project, add the following to your `./finsemble-seed/configs/application/config.json`:
 ``` 
 "importConfig": [
     ...
@@ -51,8 +50,9 @@ if you want some example components to play around with
 ]
 ```
 
-1. Run `npm run watch`
-2. In your seed project you can as normal run `npm run dev`.
+1. Keep all your edits in sync by running `npm run watch`.
+3. You will need to install some packages in your seed for it to work. `npm install uuid date-fns`
+2. In your seed project, run as normal `npm run dev`.
 
 
 

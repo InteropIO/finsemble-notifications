@@ -56,7 +56,19 @@ export default class NotificationClient implements INotificationClient {
 	 * TODO: Implement
 	 */
 	fetchHistory(since: string, filter: IFilter): Promise<INotification[]> {
-		return new Promise<INotification[]>((resolve, reject) => {
+		return new Promise<INotification[]>(async (resolve, reject) => {
+			try {
+				let data = await this.routerWrapper.query(
+					ROUTER_ENDPOINTS.FETCH_HISTORY,
+					{
+						"since": since,
+						"filter": filter
+					}
+				);
+				resolve(data);
+			} catch (e) {
+				reject(e);
+			}
 		});
 	}
 
@@ -150,7 +162,7 @@ export default class NotificationClient implements INotificationClient {
 				this.loggerClient.log("Attempting to subscribe: ", subscription);
 				let returnValue = await this.routerWrapper.query(
 					ROUTER_ENDPOINTS.SUBSCRIBE,
-					JSON.parse(JSON.stringify(subscription))
+					JSON.parse(JSON.stringify(subscription)) // ISubscription has a callback that can't be sent across the router
 				);
 
 				// Monitor the channel and execute subscription.onNotification() for each one that arrives.
@@ -159,7 +171,6 @@ export default class NotificationClient implements INotificationClient {
 				if (onSubscriptionSuccess) {
 					onSubscriptionSuccess(returnValue);
 				}
-				// TODO: Make sure a subscription ID is being returned from the service. This is needed to unsubscribe.
 				resolve(returnValue.id);
 			} catch (e) {
 				if (onSubscriptionFault) {

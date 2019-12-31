@@ -1,5 +1,5 @@
 import * as React from "react";
-import useNotifications from "../hooks/useNotifications";
+import useNotifications from "../shared/hooks/useNotifications";
 import INotification from "../../types/Notification-definitions/INotification";
 import "./notification-icon.css";
 

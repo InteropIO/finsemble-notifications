@@ -1,7 +1,7 @@
 import * as React from "react";
 import { StoreProvider } from "../shared/stores/NotificationStore";
 import Drawer from "./components/Drawer";
-import Notification from "../shared/components/Notification";
+import Notification from "./components/Notification";
 import useNotifications from "../shared/hooks/useNotifications";
 import INotification from "../../types/Notification-definitions/INotification";
 

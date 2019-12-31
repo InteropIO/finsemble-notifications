@@ -1,6 +1,7 @@
 import {
   useContext,
   useState,
+  useReducer,
   useEffect,
   DOMElement,
   ReactElement,
@@ -24,36 +25,49 @@ const { RouterClient, LauncherClient } = FSBL.Clients;
 export default function useNotifications() {
   const [notifications, setNotifications] = useState<INotification[] | []>([]);
 
-  const nClient = new NotificationClient();
+  function reducer(state: INotification[] | [], action: any) {
+    switch (action.type) {
+      case "addNotification":
+        return { count: state.count + 1 };
+      case "updateNotification":
+        return { count: state.count + 1 };
+      case "removeNotification":
+        return { count: state.count + 1 };
+
+      default:
+        break;
+    }
+  }
+
+  const notificationClient = new NotificationClient();
+  const { subscribe } = notificationClient;
+
+  // const nClient = new NotificationClient();
+  // nClient.subscribe(
+  //   subscription,
+  //   (data: any) => {
+  //     console.log(data);
+  //   },
+  //   (error: any) => {
+  //     console.log(error);
+  //   }
+  // );
+  // const action = new Action();
+  // const filter = new Filter();
+
+  // action.buttonText = "sdfd";
+  // filter.size = { gte: 30 };
+  // subscription.filters.push(filter);
+
   const subscription = new Subscription();
-  const action = new Action();
-  const filter = new Filter();
-
-  action.buttonText = "sdfd";
-  filter.size = { gte: 30 };
-  subscription.filters.push(filter);
-  subscription.onNotification = (notification: INotification) => {
-    const newNotifications = [notification, ...notifications];
-    // console.log(notification);
-    setNotifications(newNotifications);
-  };
-
-  useEffect(() => console.log("mounted or updated"));
-
   useEffect(() => {
-    // let subscription = new Subscription();
-    // console.warn(subscription);
-    // subscribeToNotification(subscription);
-    nClient.subscribe(
-      subscription,
-      (data: any) => {
-        console.log(data);
-      },
-      (error: any) => {
-        console.log(error);
-      }
-    );
-  }, [nClient, notifications, subscription]);
+    subscription.onNotification = async (notification: INotification) =>
+      await setNotifications(notificationList => [
+        notification,
+        ...notificationList
+      ]);
+    return () => {};
+  }, []); // eslint-disable-line
 
   const groupNotificationsByType = (
     notifications: INotification[]
@@ -192,6 +206,16 @@ export default function useNotifications() {
     return x;
   };
 
+  const setWindowPosition = async (
+    windowId: WindowIdentifier,
+    windowShowParams: SpawnParams
+  ): Promise<any> => {
+    const { windowDescriptor: windowPosition } = (
+      await LauncherClient.showWindow(windowId, windowShowParams)
+    ).data;
+    return windowPosition;
+  };
+
   /**
    * Set the position of the notification window
    * @param param0
@@ -205,22 +229,12 @@ export default function useNotifications() {
       bottom,
       right,
       height: element.current.getBoundingClientRect().height + 20,
-      width: element.current.getBoundingClientRect().width + 20,
+      width: element.current.getBoundingClientRect().width + 40,
       position: "available",
       monitor
     };
 
     await setWindowPosition(windowId, windowShowParams);
-  };
-
-  const setWindowPosition = async (
-    windowId: WindowIdentifier,
-    windowShowParams: SpawnParams
-  ): Promise<any> => {
-    const { windowDescriptor: windowPosition } = (
-      await LauncherClient.showWindow(windowId, windowShowParams)
-    ).data;
-    return windowPosition;
   };
 
   return {

@@ -52,7 +52,7 @@ const Notification = (props: Props) => {
       <hr />
       <div className="action-area">
         {actions.map((action: IAction) => (
-          <button>{action.buttonText}</button>
+          <button onClick={}>{action.buttonText}</button>
         ))}
       </div>
     </div>

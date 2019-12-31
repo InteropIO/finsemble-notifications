@@ -1,5 +1,5 @@
 import * as React from "react";
-import useNotifications from "../hooks/useNotifications";
+import useNotifications from "../shared/hooks/useNotifications";
 import NotificationCenter from "./components/NotificationCenter";
 import FilterPanel from "./components/FilterPanel";
 import NotificationsPanel from "./components/NotificationsPanel";
@@ -8,6 +8,7 @@ import INotification from "../../types/Notification-definitions/INotification";
 
 const App = (): React.ReactElement => {
   const { notifications } = useNotifications();
+  console.log("NOTIOFICATONXZ", notifications);
 
   const types: string[] = Array.from(
     new Set(notifications.map((item: INotification) => item.type))

@@ -4,7 +4,7 @@ import { getDate } from "date-fns";
 
 interface Props {
   children?: React.PropsWithChildren<any>;
-  notifications: INotification;
+  notifications?: INotification;
 }
 
 const NotificationsPanel = (props: Props) => (

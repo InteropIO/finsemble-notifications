@@ -6,10 +6,11 @@ import IAction from "../../../types/Notification-definitions/IAction";
 interface Props {
   children?: React.PropsWithChildren<any>;
   notification: INotification;
+  doAction: Function;
 }
 
 const Notification = (props: Props) => {
-  const { notification } = props;
+  const { notification, doAction } = props;
   const {
     id,
     issuedAt = new Date(),
@@ -52,7 +53,12 @@ const Notification = (props: Props) => {
       <hr />
       <div className="action-area">
         {actions.map((action: IAction) => (
-          <button onClick={}>{action.buttonText}</button>
+          <button
+            key={action.buttonText}
+            onClick={() => doAction(notification, action)}
+          >
+            {action.buttonText}
+          </button>
         ))}
       </div>
     </div>

@@ -1,27 +1,11 @@
 import * as React from "react";
-import useNotifications from "../../shared/hooks/useNotifications";
-
-const { useEffect, useRef } = React;
 
 interface Props {
   children: React.PropsWithChildren<any>;
 }
 
 function Drawer(props: Props): React.ReactElement {
-  // const { setWindowId, setWindowPosition } = useFinsemble();
-  const { setNotificationDrawerPosition } = useNotifications();
-  const inputEl = useRef(null);
-
-  useEffect(() => {
-    inputEl.current.getBoundingClientRect().height;
-    setNotificationDrawerPosition(inputEl, {
-      bottom: 0,
-      left: 100,
-      monitor: "primary"
-    });
-  });
-
-  return <div ref={inputEl}>{props.children}</div>;
+  return <div>{props.children}</div>;
 }
 
 export default Drawer;

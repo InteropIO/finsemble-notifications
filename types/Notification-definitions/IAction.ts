@@ -7,14 +7,16 @@
  * @property {Map<string, any>} spawnParams - params passed to the spawn function.
  * @property {string} channel - channel to transmit payload on.
  * @property payload {any} - payload transmitted along channel.
+ *
+ * TODO: Ensure this interface (or implemented type) is publicly accessible
  */
 export default interface IAction {
-    id: string;
-    buttonText: string;
-    type: string;
-    milliseconds?: number;
-    component?: string;
-    spawnParams?: object;
-    channel?: string;
-    payload?: any;
+	id: string;
+	buttonText: string;
+	type: string;
+	milliseconds?: number;
+	component?: string;
+	spawnParams?: object;
+	channel?: string;
+	payload?: any;
 }

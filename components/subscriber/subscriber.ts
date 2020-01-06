@@ -22,9 +22,6 @@ function init() {
   nClient = new NotificationClient();
   let subscription = new Subscription();
 
-  let action = new Action();
-  action.buttonText = "sdfd";
-
   let filter = new Filter();
   filter.size = { gte: 30 };
   subscription.filters.push(filter);
@@ -36,15 +33,26 @@ function init() {
 
   FSBL.Clients.Logger.log("Starting Subscribe");
 
-  let subscriptionId = nClient.subscribe(
-    subscription,
-    (data: any) => {
-      console.log(data);
-    },
-    (error: any) => {
-      console.log(error);
-    }
-  );
+  nClient.subscribe(
+    subscription
+  ).then((subscriptionId) => {
+    console.log(subscriptionId);
+  });
+
+  document.getElementById('fetch-from-date').value = new Date().toISOString();
+
+  document.getElementById('clear-list').addEventListener('click', () => {
+    document.getElementById('notification-list').innerText = '';
+
+  });
+
+  document.getElementById('fetch-history').addEventListener('click', () => {
+    nClient.fetchHistory(document.getElementById('fetch-from-date').value).then((notifications) => {
+      notifications.forEach((notification) => {
+        addToList(notification);
+      })
+    });
+  })
 
   // TODO: Unsubscribe using the subscription ID
 }

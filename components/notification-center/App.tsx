@@ -8,7 +8,6 @@ import INotification from "../../types/Notification-definitions/INotification";
 
 const App = (): React.ReactElement => {
   const { notifications } = useNotifications();
-  console.log("NOTIOFICATONXZ", notifications);
 
   const types: string[] = Array.from(
     new Set(notifications.map((item: INotification) => item.type))

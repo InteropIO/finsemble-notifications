@@ -6,11 +6,14 @@
         "url": "$applicationRoot/components/finsemble-notifications/components/notification-drawer/notification-drawer.html",
         "resizable": true,
         "autoShow": true,
-        "bottom": 0,
-        "right": 0,
+        "forceOntoMonitor": true,
+        "top": 0,
+        "right": "100%",
         "width": "auto",
-        "height": "auto",
+        "height": "100%",
+        "maxHeight": "100%",
         "position": "available",
+        "monitor": "primary",
         "options": {
           "transparent": true,
           "alwaysOnTop": true
@@ -30,7 +33,7 @@
         },
         "components": {
           "App Launcher": {
-            "launchableByUser": false
+            "launchableByUser": true
           },
           "Window Manager": {
             "title": "notification-drawer",
@@ -39,6 +42,48 @@
           },
           "Toolbar": {
             "iconClass": "notification-drawer"
+          }
+        }
+      }
+    },
+    "notification-toasts": {
+      "window": {
+        "url": "$applicationRoot/components/finsemble-notifications/components/notification-toasts/notification-toasts.html",
+        "resizable": true,
+        "autoShow": true,
+        "bottom": 0,
+        "right": 0,
+        "width": "auto",
+        "height": "auto",
+        "position": "available",
+        "options": {
+          "transparent": true,
+          "alwaysOnTop": true
+        }
+      },
+      "component": {
+        "preload": false,
+        "spawnOnStartup": false,
+        "singleton": true
+      },
+      "foreign": {
+        "services": {
+          "dockingService": {
+            "canGroup": false,
+            "isArrangable": false
+          }
+        },
+        "components": {
+          "App Launcher": {
+            "launchableByUser": false
+          },
+          "Window Manager": {
+            "title": "notification-toasts",
+            "FSBLHeader": false,
+            "persistWindowState": true
+          },
+          "Toolbar": {
+            "iconClass": "notification-toasts"
           }
         }
       }
@@ -57,7 +102,8 @@
       },
       "component": {
         "preload": false,
-        "spawnOnStartup": true
+        "spawnOnStartup": true,
+        "singleton": true
       },
       "foreign": {
         "services": {

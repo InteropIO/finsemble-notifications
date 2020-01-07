@@ -77,6 +77,7 @@ export default class NotificationService extends Finsemble.baseService implement
 		this.readyHandler = this.readyHandler.bind(this);
 		this.handleAction = this.handleAction.bind(this);
 		this.fetchHistory = this.fetchHistory.bind(this);
+		this.unsubscribe = this.unsubscribe.bind(this);
 		this.onBaseServiceReady(this.readyHandler);
 	}
 
@@ -100,6 +101,7 @@ export default class NotificationService extends Finsemble.baseService implement
 		this.setupSubscribe();
 		this.setupAction();
 		this.setupFetchHistory();
+		this.setupUnsubscribe();
 	}
 
 	/**
@@ -428,6 +430,14 @@ export default class NotificationService extends Finsemble.baseService implement
 		this.routerWrapper.addResponder(ROUTER_ENDPOINTS.SUBSCRIBE, this.subscribe);
 	}
 
+
+	/**
+	 * Setup callback on unsubscribe channel
+	 */
+	private setupUnsubscribe() {
+		this.routerWrapper.addResponder(ROUTER_ENDPOINTS.UNSUBSCRIBE, this.unsubscribe);
+	}
+
 	/**
 	 * Setup callback on action channel
 	 */
@@ -587,6 +597,13 @@ export default class NotificationService extends Finsemble.baseService implement
 			notifications.push(notification);
 		});
 		return notifications;
+	}
+
+	public unsubscribe(subscriptionId: string) {
+		if (this.storageAbstraction.subscriptions.has(subscriptionId)) {
+			this.storageAbstraction.subscriptions.delete(subscriptionId);
+		}
+		return;
 	}
 
 	/**

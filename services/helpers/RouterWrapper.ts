@@ -8,6 +8,7 @@ const {RouterClient, Logger} = require("@chartiq/finsemble").Clients;
 export const ROUTER_ENDPOINTS = {
 	NOTIFY: "notify",
 	SUBSCRIBE: "subscribe",
+	UNSUBSCRIBE: "unsubscribe",
 	HANDLE_ACTION: "handle_action",
 	LAST_ISSUED: "last_issued",
 	FETCH_HISTORY: "fetch_history",

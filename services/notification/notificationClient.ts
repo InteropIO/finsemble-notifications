@@ -103,8 +103,6 @@ export default class NotificationClient implements INotificationClient {
    * @param {INotification[]} notifications Notifications to apply action to.
    * @param {IAction} action which has been triggered by user.
    * @throws Error If no error is thrown the service has received the request to perform the action successfully. Note a successful resolution of the promise does not mean successful completion of the action.
-   *
-   * TODO: Discuss this. markActionsHandled(INotification[]) vs markActionHandled(INotification)
    */
   markActionHandled(
     notifications: INotification[],
@@ -206,7 +204,17 @@ export default class NotificationClient implements INotificationClient {
    * TODO: implement
    */
   unsubscribe(subscriptionId: string): Promise<void> {
-    return new Promise<void>((resolve, reject) => {});
+    return new Promise<void>(async (resolve, reject) => {
+      try {
+        await this.routerWrapper.query(
+          ROUTER_ENDPOINTS.UNSUBSCRIBE,
+          subscriptionId
+        );
+        resolve();
+      } catch (e) {
+        reject(e);
+      }
+    });
   }
 
   /**

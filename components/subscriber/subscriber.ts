@@ -18,6 +18,8 @@ if (window.FSBL && FSBL.addEventListener) {
   window.addEventListener("FSBLReady", init);
 }
 
+let subscriptionId = null;
+
 function init() {
   nClient = new NotificationClient();
   let subscription = new Subscription();
@@ -35,15 +37,15 @@ function init() {
 
   nClient.subscribe(
     subscription
-  ).then((subscriptionId) => {
-    console.log(subscriptionId);
+  ).then((subId) => {
+    subscriptionId = subId;
+    console.log(subId);
   });
 
   document.getElementById('fetch-from-date').value = new Date().toISOString();
 
   document.getElementById('clear-list').addEventListener('click', () => {
     document.getElementById('notification-list').innerText = '';
-
   });
 
   document.getElementById('fetch-history').addEventListener('click', () => {
@@ -52,9 +54,17 @@ function init() {
         addToList(notification);
       })
     });
-  })
+  });
 
-  // TODO: Unsubscribe using the subscription ID
+  document.getElementById('unsubscribe').addEventListener('click', ()=> {
+    try {
+      nClient.unsubscribe(subscriptionId).then(() => {
+        // Unsubscribed
+      });
+    } catch (e) {
+
+    }
+  });
 }
 
 /**

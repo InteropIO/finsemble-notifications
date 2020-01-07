@@ -25,9 +25,9 @@ const Notification = (props: Props) => {
     actions,
     timeout,
     meta,
-    dismissedAt,
     actionsHistory
   } = notification;
+
   return (
     <div className="notification">
       <div className="detail-area">
@@ -36,7 +36,7 @@ const Notification = (props: Props) => {
         </div>
         <div>{headerText}</div>
         <div>
-          {formatDistanceToNow(issuedAt, {
+          {formatDistanceToNow(new Date(issuedAt), {
             includeSeconds: true
           })}{" "}
           ago

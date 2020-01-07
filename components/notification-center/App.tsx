@@ -17,8 +17,10 @@ const App = (): React.ReactElement => {
     <div id="app">
       <NotificationCenter title="Notification Center">
         <FilterPanel types={types} />
-        <NotificationsPanel notifications={notifications} />
-        <NotificationDetailPanel />
+        <div>
+          <NotificationsPanel notifications={notifications} />
+          <NotificationDetailPanel />
+        </div>
       </NotificationCenter>
     </div>
   );

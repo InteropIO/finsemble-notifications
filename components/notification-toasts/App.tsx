@@ -1,20 +1,28 @@
 import * as React from "react";
 import { StoreProvider } from "../shared/stores/NotificationStore";
 import Drawer from "./components/Drawer";
-import Notification from "./components/Notification";
+import Notification from "../shared/components/Notification";
 import useNotifications from "../shared/hooks/useNotifications";
 import INotification from "../../types/Notification-definitions/INotification";
+import Animate from "../shared/components/Animate";
 
 function App(): React.ReactElement {
-  const { notifications } = useNotifications();
+  const { notifications, doAction } = useNotifications();
   return (
     <StoreProvider>
       <Drawer>
         {notifications.map((notification: INotification) => (
-          <Notification
-            key={notification.id}
-            notification={notification}
-          ></Notification>
+          <Animate
+            displayDuration={2000}
+            animateIn="slide-in-fwd-bottom"
+            animateOut="slide-out-right"
+          >
+            <Notification
+              key={notification.id}
+              notification={notification}
+              doAction={doAction}
+            ></Notification>
+          </Animate>
         ))}
       </Drawer>
     </StoreProvider>

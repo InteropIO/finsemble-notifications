@@ -1,4 +1,4 @@
-import { useState, useEffect, MutableRefObject } from "react";
+import { useReducer, useEffect, MutableRefObject } from "react";
 import { SpawnParams } from "../../../types/FSBL-definitions/services/window/Launcher/launcher";
 import { WindowIdentifier } from "../../../types/FSBL-definitions/globals";
 import INotification from "../../../types/Notification-definitions/INotification";
@@ -11,36 +11,92 @@ const FSBL = window.FSBL;
 
 const { LauncherClient } = FSBL.Clients;
 
+const initialState = { notifications: [] };
+
+function reducer(
+  state: { notifications: INotification[] },
+  action: { type: string; payload: INotification }
+) {
+  switch (action.type) {
+    case "update":
+      // check to see if the notification exists if so update the values
+      const notificationExistsInArray = state.notifications.find(
+        (notification: INotification) => notification.id === action.payload.id
+      );
+
+      const notifications = notificationExistsInArray
+        ? state.notifications.map((notification: INotification) =>
+            notification.id === action.payload.id
+              ? action.payload
+              : notification
+          )
+        : [...state.notifications, action.payload];
+
+      return { notifications };
+    default:
+      throw new Error();
+  }
+}
+
 export default function useNotifications() {
-  const [notifications, setNotifications] = useState<INotification[] | []>([]);
+  const [state, dispatch] = useReducer(reducer, initialState);
 
-  const notificationClient = new NotificationClient();
+  let nClient: NotificationClient = null;
 
-  // const nClient = new NotificationClient();
-  // nClient.subscribe(
-  //   subscription,
-  //   (data: any) => {
-  //     console.log(data);
-  //   },
-  //   (error: any) => {
-  //     console.log(error);
-  //   }
-  // );
-  // const action = new Action();
-  // const filter = new Filter();
+  // when the button to hide is hit then animate disappearing,
+  // the opposite should happen when it is shown again.
+  function init() {
+    nClient = new NotificationClient();
+    const subscription = new Subscription();
 
-  // action.buttonText = "sdfd";
-  // filter.size = { gte: 30 };
-  // subscription.filters.push(filter);
+    // const action = new Action();
+    // action.buttonText = "sdfd";
 
-  const subscription = new Subscription();
+    // const filter = new Filter();
+    // filter.size = { gte: 30 };
+    // subscription.filters.push(filter);
+
+    subscription.onNotification = function(notification: INotification) {
+      // This function will be called when a notification arrives
+      dispatch({ type: "update", payload: notification });
+    };
+
+    const subscriptionId = nClient.subscribe(
+      subscription,
+      (data: any) => {
+        console.log(data);
+      },
+      (error: any) => {
+        console.log(error);
+      }
+    );
+
+    // TODO: Unsubscribe using the subscription ID
+  }
+
+  /**
+   * Example for setting up button clicks
+   *
+   * @param notification
+   * @param action
+   */
+  function doAction(notification, action) {
+    try {
+      nClient = new NotificationClient();
+      nClient.markActionHandled([notification], action).then(() => {
+        // NOTE: The request to perform the action has be sent to the notifications service successfully
+        // The action itself has not necessarily been perform successfully
+        console.log("ACTION success");
+        dispatch({ type: "update", payload: notification });
+      });
+    } catch (e) {
+      // NOTE: The request to perform the action has failed
+      console.log("fail", e);
+    }
+  }
+
   useEffect(() => {
-    subscription.onNotification = async (notification: INotification) =>
-      await setNotifications(notificationList => [
-        notification,
-        ...notificationList
-      ]);
-    return () => {};
+    init();
   }, []); // eslint-disable-line
 
   const groupNotificationsByType = (
@@ -173,7 +229,8 @@ export default function useNotifications() {
   };
 
   return {
-    notifications,
+    notifications: state.notifications,
+    doAction,
     getAllNotifications,
     groupNotificationsByType,
     setNotificationDrawerPosition

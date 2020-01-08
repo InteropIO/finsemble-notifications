@@ -8,8 +8,8 @@
         "autoShow": true,
         "forceOntoMonitor": true,
         "top": 0,
-        "right": "100%",
-        "width": "auto",
+        "right": 0,
+        "width": 500,
         "height": "100%",
         "maxHeight": "100%",
         "position": "available",
@@ -51,10 +51,11 @@
         "url": "$applicationRoot/components/finsemble-notifications/components/notification-toasts/notification-toasts.html",
         "resizable": true,
         "autoShow": true,
+        "forceOntoMonitor": true,
         "bottom": 0,
         "right": 0,
-        "width": "auto",
-        "height": "auto",
+        "height": 300,
+        "width": 500,
         "position": "available",
         "options": {
           "transparent": true,
@@ -63,7 +64,7 @@
       },
       "component": {
         "preload": false,
-        "spawnOnStartup": false,
+        "spawnOnStartup": true,
         "singleton": true
       },
       "foreign": {
@@ -75,7 +76,7 @@
         },
         "components": {
           "App Launcher": {
-            "launchableByUser": false
+            "launchableByUser": true
           },
           "Window Manager": {
             "title": "notification-toasts",

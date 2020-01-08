@@ -34,7 +34,7 @@ const Notification = (props: Props) => {
         <div>
           <img src="https://lsloz.csb.app/notifications.svg" />
         </div>
-        <div>{headerText}</div>
+        <div>{id}</div>
         <div>
           {formatDistanceToNow(new Date(issuedAt), {
             includeSeconds: true

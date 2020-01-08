@@ -5,12 +5,7 @@ import Notification from "../shared/components/Notification";
 import useNotifications from "../shared/hooks/useNotifications";
 import INotification from "../../types/Notification-definitions/INotification";
 import { useState } from "react";
-import NotificationClient from "../../services/notification/notificationClient";
-import Subscription from "../../types/Notification-definitions/Subscription";
-import Action from "../../types/Notification-definitions/Action";
-import Filter from "../../types/Notification-definitions/Filter";
 import Animate from "../shared/components/Animate";
-const { useEffect } = React;
 
 function App(): React.ReactElement {
   const { notifications, doAction } = useNotifications();

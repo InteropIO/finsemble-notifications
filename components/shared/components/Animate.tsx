@@ -17,7 +17,9 @@ export default function Animate(props: Props) {
     () => {
       let timer1: NodeJS.Timeout;
       if (props.displayDuration) {
-        timer1 = setTimeout(() => setCSS(animateOut), displayDuration);
+        timer1 = setTimeout(() => {
+          setCSS(animateOut);
+        }, displayDuration);
       }
 
       // this will clear Timeout when component unmont like in willComponentUnmount
@@ -29,8 +31,13 @@ export default function Animate(props: Props) {
     //useEffect will run only one time
     //if you pass a value to array, like this [data] than clearTimeout will run every time this value changes (useEffect re-run)
   );
+
+  const hideNotification = () => {
+    css === animateOut && setDisplay({ display: "none" });
+  };
+
   return (
-    <div className={css} style={display}>
+    <div className={css} onAnimationEnd={hideNotification} style={display}>
       {props.children}
     </div>
   );

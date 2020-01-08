@@ -2,7 +2,7 @@
 
 @import "../shared/styles/animations.css";
 
-:root  {
+:root {
   --notification-primary-color: #0f3761;
   --notification-secondary-color: black;
   --notification-contrast-color: white;
@@ -14,9 +14,15 @@
 
 body {
   margin: 0px;
-  /* background-color: red; */
+  /* background-color: turquoise; */
   position: absolute;
   bottom: 0;
+  overflow: hidden;
+  width: 100%;
+}
+#toasts-drawer {
+  display: flex;
+  flex-direction: column-reverse;
 }
 .notification {
   margin: 15px;
@@ -83,23 +89,4 @@ body {
   100% {
     background-color: rgb(126, 126, 19);
   }
-}
-
-/* Notification Centre CSS */
-#notification-center {
-  display: grid;
-  grid-template-rows: 2fr 2fr;
-}
-
-#notification-center__header {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-}
-#notification-center__notifications {
-  display: grid;
-  grid-template-rows: 3fr 1fr;
-}
-
-#notification-center__notification-detail {
-  background-color: black;
 }

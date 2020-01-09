@@ -55,7 +55,7 @@ export default class NotificationClient implements INotificationClient {
 	 * @throws Error
 	 * TODO: Implement
 	 */
-	fetchHistory(since: string, filter: IFilter): Promise<INotification[]> {
+	fetchHistory(since: string, filter?: IFilter): Promise<INotification[]> {
 		return new Promise<INotification[]>(async (resolve, reject) => {
 			try {
 				let data = await this.routerWrapper.query(

@@ -37,7 +37,7 @@ export default interface INotificationClient {
 	 * @returns {INotification[]} array of notifications.
 	 * @throws Error
 	 */
-	fetchHistory(since: string, filter: IFilter): Promise<INotification[]>;
+	fetchHistory(since: string, filter?: IFilter): Promise<INotification[]>;
 
 	/**
 	 * Creates or updates notifications in Finsemble.

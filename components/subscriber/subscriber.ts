@@ -4,7 +4,7 @@ import NotificationClient from "../../services/notification/notificationClient";
 import Subscription from "../../types/Notification-definitions/Subscription";
 import INotification from "../../types/Notification-definitions/INotification";
 import Filter from "../../types/Notification-definitions/Filter";
-import Action from "../../types/Notification-definitions/Action";
+import IAction from "../../types/Notification-definitions/IAction";
 
 /**
  * Basic example of a getting a component to subscribe to notifications
@@ -18,7 +18,7 @@ if (window.FSBL && FSBL.addEventListener) {
   window.addEventListener("FSBLReady", init);
 }
 
-let subscriptionId = null;
+let subscriptionId:string = null;
 
 function init() {
   nClient = new NotificationClient();
@@ -42,14 +42,14 @@ function init() {
     console.log(subId);
   });
 
-  document.getElementById('fetch-from-date').value = new Date().toISOString();
+  (<HTMLInputElement>document.getElementById('fetch-from-date')).value = new Date().toISOString();
 
   document.getElementById('clear-list').addEventListener('click', () => {
     document.getElementById('notification-list').innerText = '';
   });
 
   document.getElementById('fetch-history').addEventListener('click', () => {
-    nClient.fetchHistory(document.getElementById('fetch-from-date').value).then((notifications) => {
+    nClient.fetchHistory((<HTMLInputElement>document.getElementById('fetch-from-date')).value).then((notifications) => {
       notifications.forEach((notification) => {
         addToList(notification);
       })
@@ -73,7 +73,7 @@ function init() {
  * @param notification
  * @param action
  */
-let doAction = (notification, action) => {
+let doAction = (notification:INotification, action:IAction) => {
   try {
     nClient.markActionHandled([notification], action).then(() => {
       // NOTE: The request to perform the action has be sent to the notifications service successfully
@@ -87,7 +87,7 @@ let doAction = (notification, action) => {
 };
 
 let addToList = (notification: INotification) => {
-  let actions = [];
+  let actions:HTMLButtonElement[] = [];
 
   notification.actions.forEach(action => {
     let button = document.createElement("button");
@@ -99,9 +99,18 @@ let addToList = (notification: INotification) => {
   });
 
   let divElement = document.createElement("div");
+  divElement.setAttribute('id', notification.id);
   divElement.className = "notification";
   divElement.innerHTML = `<h5>${notification.headerText}</h5>
                             <div class="actions-container"></div>`;
+
+  if (notification.isSnoozed) {
+    divElement.className += ' snoozed';
+  }
+
+  if (notification.isActionPerformed) {
+    divElement.className += ' dismissed';
+  }
 
   const actionContainer = divElement.getElementsByClassName(
     "actions-container"
@@ -109,5 +118,12 @@ let addToList = (notification: INotification) => {
   actions.forEach(action => {
     actionContainer.item(0).appendChild(action);
   });
-  document.getElementById("notification-list").appendChild(divElement);
+
+  const existingElement = document.getElementById(notification.id);
+  if(existingElement) {
+    existingElement.replaceWith(divElement);
+  } else {
+    document.getElementById("notification-list").appendChild(divElement);
+  }
+
 };

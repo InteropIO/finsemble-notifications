@@ -9,7 +9,7 @@ import Action from "../../types/Notification-definitions/Action";
  */
 let nClient: NotificationClient = null;
 let sendNotifications = () => {
-  let source = document.getElementById('feed-source').value;
+  let source = (<HTMLInputElement>document.getElementById('feed-source')).value;
   let not1 = new Notification();
   not1.issuedAt = new Date().toISOString();
   not1.source = source;
@@ -66,7 +66,7 @@ let sendNotifications = () => {
 };
 
 let getLastIssuedAt = () => {
-  const source = document.getElementById('feed-source').value;
+  const source = (<HTMLInputElement>document.getElementById('feed-source')).value;
 
   nClient.getLastIssuedAt(source).then((issuedDate) => {
     document.getElementById('service-last-issued').innerText = issuedDate;

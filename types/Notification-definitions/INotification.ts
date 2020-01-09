@@ -38,4 +38,5 @@ export default interface INotification {
 	isActionPerformed: boolean;
 	isSnoozed: boolean;
 	actionsHistory?: IPerformedAction[];
+	stateHistory: INotification[];
 }

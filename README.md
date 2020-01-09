@@ -51,7 +51,7 @@ if you want some example components to play around with
 ```
 
 1. Keep all your edits in sync by running `npm run watch`.
-3. You will need to install some packages in your seed for it to work. `npm install uuid date-fns`
+3. You will need to install some packages in your seed for it to work. `npm install uuid date-fns immutable`
 2. In your seed project, run as normal `npm run dev`.
 
 

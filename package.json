@@ -16,6 +16,7 @@
   "homepage": "https://github.com/ChartIQ/finsemble-notifications#readme",
   "dependencies": {
     "date-fns": "^2.8.1",
+    "immutable": "^4.0.0-rc.12",
     "uuid": "^3.3.3"
   },
   "devDependencies": {

@@ -117,19 +117,19 @@ export default class NotificationService extends Finsemble.baseService implement
 	broadcastNotification(notification: INotification): void {
 		Finsemble.Clients.Logger.log('Trying to broadcast', notification);
 		this.storageAbstraction.subscriptions.forEach(((subscription, key) => {
-				// Check if this notification matches any filters
-				if (this.filtersMatch(subscription.filters, notification)) {
-					// For each notification that matches, expect a response and send it out.
-					this.expectReceipt(subscription, notification);
-					this.routerWrapper.query(
-						subscription.channel,
-						notification,
-						null,
-						(error: any, response: any) => {
-							this.setReceivedReceipt(subscription, notification, error, response);
-						}
-					);
-				}
+			// Check if this notification matches any filters
+			if (this.filtersMatch(subscription.filters, notification)) {
+				// For each notification that matches, expect a response and send it out.
+				this.expectReceipt(subscription, notification);
+				this.routerWrapper.query(
+					subscription.channel,
+					notification,
+					null,
+					(error: any, response: any) => {
+						this.setReceivedReceipt(subscription, notification, error, response);
+					}
+				);
+			}
 		}));
 	}
 
@@ -194,14 +194,14 @@ export default class NotificationService extends Finsemble.baseService implement
 		});
 	}
 
-	setNotificationHistory(notification:INotification, notificationList: Map<string, INotification>, defaultPrevious: INotification) {
+	setNotificationHistory(notification: INotification, notificationList: Map<string, INotification>, defaultPrevious: INotification) {
 		let map = ImmutableMap(notification);
 
-		let currentlyStoredNotification:INotification = null;
+		let currentlyStoredNotification: INotification = null;
 
-		let currentHistory:INotification[] = null;
+		let currentHistory: INotification[] = null;
 
-		if(notificationList.has(notification.id)) {
+		if (notificationList.has(notification.id)) {
 			currentlyStoredNotification = notificationList.get(notification.id);
 			currentHistory = currentlyStoredNotification.stateHistory;
 			currentlyStoredNotification.stateHistory = [];
@@ -351,11 +351,11 @@ export default class NotificationService extends Finsemble.baseService implement
 		performedAction.type = action.type;
 		performedAction.datePerformed = new Date().toISOString();
 
-		const actionsHistory:IPerformedAction[] = map.get('actionsHistory').slice(0);
+		const actionsHistory: IPerformedAction[] = map.get('actionsHistory').slice(0);
 		actionsHistory.push(performedAction);
 		map = map.set('actionsHistory', actionsHistory);
 
-		return ImmutableMap.isMap(notification)? map.toObject() : map;
+		return ImmutableMap.isMap(notification) ? map.toObject() : map;
 	}
 
 	validateForwardParams(action: IAction) {
@@ -518,7 +518,7 @@ export default class NotificationService extends Finsemble.baseService implement
 	 * TODO: Implement.
 	 * @Note I just put all the params in here... not sure what info will be needed
 	 */
-	private setReceivedReceipt(subscription: ISubscription, notification: INotification, error: string | null, response:any) {
+	private setReceivedReceipt(subscription: ISubscription, notification: INotification, error: string | null, response: any) {
 		Finsemble.Clients.Logger.log(`Got a receipt on: ${subscription.channel}`);
 		// We've received a response from the client. Process it and set the correct value
 	}
@@ -616,7 +616,7 @@ export default class NotificationService extends Finsemble.baseService implement
 	 *
 	 * @param message
 	 */
-	private fetchHistory(message:any): INotification[] | object {
+	private fetchHistory(message: any): INotification[] | object {
 		Finsemble.Clients.Logger.log("Fetch history request with params", message);
 		let {since, filter} = message;
 		let notifications: INotification[] = [];
@@ -648,7 +648,7 @@ export default class NotificationService extends Finsemble.baseService implement
 		return notifications;
 	}
 
-	private clone(object:any) {
+	private clone(object: any) {
 		return object;
 	}
 

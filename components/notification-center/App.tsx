@@ -16,7 +16,7 @@ const App = (): React.ReactElement => {
   return (
     <div id="app">
       <NotificationCenter title="Notification Center">
-        <FilterPanel types={types} />
+        {/* <FilterPanel types={types} /> */}
         <div>
           <NotificationsPanel notifications={notifications} />
           <NotificationDetailPanel />

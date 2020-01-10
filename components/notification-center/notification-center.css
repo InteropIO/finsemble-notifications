@@ -160,13 +160,13 @@ main {
 
 .notification-center__notifications__rows {
   display: grid;
-  /* grid-template-columns: 1fr 1fr 2fr 1fr 1fr;
-   */
+  /* grid-template-columns: 1fr 1fr 2fr 1fr 1fr; */
   padding: 7px;
-  grid-auto-flow: column;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  /* grid-auto-flow: column; */
+  grid-template-columns: repeat(5, minmax(20px, 1fr));
   overflow-wrap: break-word;
-  grid-column-gap: 2px;
+  grid-column-gap: 31px;
+  border: 1px solid #5a5a5a7a;
 }
 
 /*  */

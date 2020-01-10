@@ -25,6 +25,7 @@ export default function Animate(props: Props) {
       // this will clear Timeout when component unmont like in willComponentUnmount
       return () => {
         timer1 && clearTimeout(timer1);
+        animateOut && setCSS(animateOut);
       };
     },
     [] // eslint-disable-line

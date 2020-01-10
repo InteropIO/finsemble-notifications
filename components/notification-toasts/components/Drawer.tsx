@@ -18,6 +18,7 @@ function Drawer(props: Props): React.ReactElement {
   useEffect(() => {
     console.log("#run");
     inputEl.current.getBoundingClientRect().height;
+    // TODO: replace this for spawn params passed by the client
     setNotificationDrawerPosition(inputEl, {
       bottom: 0,
       left: 100,

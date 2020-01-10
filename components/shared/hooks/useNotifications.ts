@@ -87,7 +87,12 @@ export default function useNotifications() {
         // NOTE: The request to perform the action has be sent to the notifications service successfully
         // The action itself has not necessarily been perform successfully
         console.log("ACTION success");
-        dispatch({ type: "update", payload: notification });
+        // this should not be setting a value is a response of success or fail
+
+        // this should be a delete - delete the DOM node
+        // dispatch({ type: "update", payload: notification });
+
+        // 1) alert user notification has been sent (action may not have completed)
       });
     } catch (e) {
       // NOTE: The request to perform the action has failed

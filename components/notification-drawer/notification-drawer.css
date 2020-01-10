@@ -14,6 +14,7 @@
 body {
   margin: 0px;
   /* position: absolute; */
+  background-color: rgb(35, 71, 80);
   bottom: 0;
 }
 .notification {

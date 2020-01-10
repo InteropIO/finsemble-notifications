@@ -9,25 +9,28 @@ import Animate from "../shared/components/Animate";
 
 function App(): React.ReactElement {
   const { notifications, doAction } = useNotifications();
-  const [visible, setVisible] = useState(false);
-
   return (
     <StoreProvider>
       <Drawer>
         {notifications &&
-          notifications.map((notification: INotification) => (
-            <Animate
-              displayDuration={2000}
-              animateIn="slide-in-fwd-bottom"
-              animateOut="slide-out-right"
-            >
-              <Notification
-                key={notification.id}
-                notification={notification}
-                doAction={doAction}
-              ></Notification>
-            </Animate>
-          ))}
+          notifications.map(
+            (notification: INotification) =>
+              !notification.isSnoozed &&
+              !notification.isActionPerformed && (
+                <Animate
+                  // TODO: this needs a better key to differentiate when notification is updated
+                  key={notification.id}
+                  animateIn="slide-in-fwd-bottom"
+                  animateOut="slide-out-right"
+                >
+                  <Notification
+                    key={notification.id}
+                    notification={notification}
+                    doAction={doAction}
+                  ></Notification>
+                </Animate>
+              )
+          )}
       </Drawer>
     </StoreProvider>
   );

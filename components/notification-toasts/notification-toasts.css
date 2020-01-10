@@ -3,90 +3,85 @@
 @import "../shared/styles/animations.css";
 
 :root {
-  --notification-primary-color: #0f3761;
-  --notification-secondary-color: black;
-  --notification-contrast-color: white;
+	--notification-primary-color: #0f3761;
+	--notification-secondary-color: black;
+	--notification-contrast-color: white;
 
-  --notification-background-color: var(--notification-primary-color);
-  --notification-font-family: "Roboto-Condensed", sans-serif;
-  --notification-font-color: var(--notification-contrast-color);
+	--notification-background-color: var(--notification-primary-color);
+	--notification-font-family: "Roboto-Condensed", sans-serif;
+	--notification-font-color: var(--notification-contrast-color);
 }
 
 body {
-  margin: 0px;
-  /* background-color: turquoise; */
-  position: absolute;
-  bottom: 0;
-  overflow: hidden;
-  width: 100%;
+	margin: 0px;
+	/* background-color: turquoise; */
+	position: absolute;
+	bottom: 0;
+	overflow: hidden;
+	width: 100%;
 }
 #toasts-drawer {
-  display: flex;
-  flex-direction: column-reverse;
+	display: flex;
+	flex-direction: column-reverse;
+	align-items: flex-end;
 }
 .notification {
-  margin: 15px;
-  font-family: var(--notification-font-family);
-  width: 100%;
-  max-width: 500px;
-  min-width: 200px;
-  color: var(--notification-font-color);
-  background-color: var(--notification-background-color);
-  display: grid;
-  grid-auto-rows: auto;
-  padding: 10px;
-  font-size: 13px;
-  box-shadow: 2px 4px 5px 0px #252525;
+	margin-left: 0px;
+	margin-bottom: 6px;
+	margin-top: 2px;
+	margin-right: 10px;
+	font-family: var(--notification-font-family);
+	width: 100%;
+	max-width: 400px;
+	min-width: 200px;
+	color: var(--notification-font-color);
+	background-color: var(--notification-background-color);
+	display: grid;
+	grid-auto-rows: auto;
+	padding: 10px;
+	font-size: 13px;
+	box-shadow: 2px 4px 5px 0px #252525;
 }
 .notification hr {
-  width: 100%;
+	width: 100%;
 }
 .detail-area {
-  --fr-test: 1fr;
-  display: grid;
-  /* grid-auto-flow: column; */
-  grid-template-columns: 20px var(--fr-test) auto 5px;
-  grid-column-gap: 20px;
-  justify-items: flex-start;
-  margin-bottom: 10px;
+	--fr-test: 1fr;
+	display: grid;
+	/* grid-auto-flow: column; */
+	grid-template-columns: 20px var(--fr-test) auto 5px;
+	grid-column-gap: 20px;
+	justify-items: flex-start;
+	margin-bottom: 10px;
 }
 .content-area {
-  display: grid;
-  grid-column-gap: 15px;
-  grid-template-columns: auto 1fr;
-  justify-items: start;
-  margin-bottom: 10px;
+	display: grid;
+	grid-column-gap: 15px;
+	grid-template-columns: auto 1fr;
+	justify-items: start;
+	margin-bottom: 10px;
 }
 .content-area img {
-  width: 40px;
-  /* margin:0 9px; */
-  border-radius: 10px;
+	width: 40px;
+	/* margin:0 9px; */
+	border-radius: 10px;
 }
 .action-area {
-  display: flex;
-  justify-content: flex-end;
-  padding: 5px;
-  color: var(--notification-font-color);
-  height: 20px;
+	display: flex;
+	justify-content: flex-end;
+	padding: 5px;
+	color: var(--notification-font-color);
+	height: 20px;
 }
 .action-area > button {
-  margin-right: 10px;
-  background-color: rgba(255, 255, 255, 0);
-  border: 0px;
-  color: var(--notification-font-color);
-  height: 30px;
-  cursor: pointer;
+	margin-right: 10px;
+	background-color: rgba(255, 255, 255, 0);
+	border: 0px;
+	color: var(--notification-font-color);
+	height: 30px;
+	cursor: pointer;
 }
 .action-area > button:hover {
-  animation-duration: 0.6s;
-  animation-name: fadeIn;
-}
-
-@keyframes fadeIn {
-  0% {
-    background-color: rgba(126, 126, 19, 0);
-  }
-  100% {
-    background-color: rgb(126, 126, 19);
-  }
+	animation-duration: 0.6s;
+	animation-name: fadeIn;
 }

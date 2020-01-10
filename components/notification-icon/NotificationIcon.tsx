@@ -3,66 +3,60 @@ import useNotifications from "../shared/hooks/useNotifications";
 import INotification from "../../types/Notification-definitions/INotification";
 import "./notification-icon.css";
 
-const { useState } = React;
+const { useState, useEffect } = React;
 
 interface NotificationTypeList {
-  type: string;
-  notifications: INotification[];
+	type: string;
+	notifications: INotification[];
 }
 
 function App(): React.ReactElement {
-  const [hover, setHover] = useState(false);
-  const {
-    notifications,
-    getAllNotifications,
-    groupNotificationsByType
-  } = useNotifications();
+	const [activeNotifications, setActiveNotifications] = useState([]);
+	const { notifications, groupNotificationsByType } = useNotifications();
 
-  // const toggleHover = () => {
-  //   setHover(!hover);
-  // };
-  // let hoverStyle;
-  // if (hover) {
-  //   hoverStyle = { display: "none", cursor: "pointer" };
-  // } else {
-  //   hoverStyle = { display: "block" };
-  // }
+	useEffect(() => {
+		const currentNotifications = notifications.filter(
+			(notification: INotification) =>
+				!notification.isSnoozed && !notification.isActionPerformed
+		);
+		setActiveNotifications(currentNotifications);
+	}, [notifications]);
 
-  // Object.entries(groupNotificationsByType(getAllNotifications())).map(
-  //   ([key, values]) => {
-  //     console.log(key, values[0].id);
-  //   }
-  // );
-
-  return (
-    <div id="notification-icon__wrapper">
-      {Object.entries(groupNotificationsByType(getAllNotifications())).map(
-        ([key, values]) => {
-          const colors = {
-            a: "red",
-            b: "yellow",
-            c: "green"
-          };
-          return (
-            <div
-              className="notification-number"
-              style={{ backgroundColor: colors[key] }}
-              key={key}
-            >
-              {/* <span
-                  style={hoverStyle}
-                  onMouseEnter={toggleHover}
-                  onMouseLeave={toggleHover}
-                >
-                  {key}
-                </div> */}
-              {values.length}
-            </div>
-          );
-        }
-      )}
-    </div>
-  );
+	return (
+		<>
+			<span id="notification-icon_vector">
+				<svg
+					width="24"
+					height="24"
+					viewBox="0 0 24 24"
+					xmlns="http://www.w3.org/2000/svg"
+				>
+					<path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z" />
+				</svg>
+			</span>
+			<div id="notification-icon__wrapper">
+				{Object.entries(groupNotificationsByType(activeNotifications)).map(
+					([key, values]) => {
+						console.log(key, values);
+						const colors = {
+							a: "#8b00c596",
+							b: "#005bc5",
+							c: "green"
+						};
+						return (
+							<div
+								className="notification-number"
+								style={{ backgroundColor: colors[key] }}
+								key={key}
+							>
+								{values.length}
+							</div>
+						);
+					}
+				)}
+			</div>
+		</>
+	);
 }
 
 export default App;

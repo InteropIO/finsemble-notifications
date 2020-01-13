@@ -4,8 +4,7 @@
 		"notification-drawer": {
 			"window": {
 				"url": "$applicationRoot/components/finsemble-notifications/components/notification-drawer/notification-drawer.html",
-				"resizable": true,
-				"autoShow": true,
+				"resizable": false,
 				"forceOntoMonitor": true,
 				"top": 0,
 				"right": 0,
@@ -16,7 +15,8 @@
 				"monitor": "primary",
 				"options": {
 					"transparent": true,
-					"alwaysOnTop": true
+					"alwaysOnTop": true,
+					"autoShow": false
 				}
 			},
 			"component": {
@@ -49,7 +49,7 @@
 		"notification-toasts": {
 			"window": {
 				"url": "$applicationRoot/components/finsemble-notifications/components/notification-toasts/notification-toasts.html",
-				"resizable": true,
+				"resizable": false,
 				"autoShow": true,
 				"forceOntoMonitor": true,
 				"bottom": 0,

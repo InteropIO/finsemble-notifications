@@ -17,7 +17,9 @@ const sendNotifications = () => {
 	not1.source = source;
 	not1.headerText = "Internal Actions (No Id)";
 	not1.details = "Should create a new notification in UI every time it's sent";
-	not1.type = "b";
+	not1.type = "email";
+	not1.headerLogo = "http://localhost:3375/assets/img/email.svg";
+	not1.contentLogo = "http://localhost:3375/assets/img/graph.png";
 
 	const dismiss = new Action();
 	dismiss.buttonText = "Dismiss";
@@ -41,7 +43,9 @@ const sendNotifications = () => {
 	not2.source = source;
 	not2.headerText = "Notification Same Id";
 	not2.details = "Should only be in UI once";
-	not2.type = "a";
+	not2.type = "chat";
+	not2.headerLogo = "http://localhost:3375/assets/img/chat.svg";
+	not2.contentLogo = "http://localhost:3375/assets/img/sheild.png";
 
 	const query = new Action();
 	query.buttonText = "Send Query";

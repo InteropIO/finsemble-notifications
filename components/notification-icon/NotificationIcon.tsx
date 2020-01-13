@@ -2,6 +2,8 @@ import * as React from "react";
 import useNotifications from "../shared/hooks/useNotifications";
 import INotification from "../../types/Notification-definitions/INotification";
 import "./notification-icon.css";
+import { FSBL } from "../../types/FSBL-definitions/globals";
+import { FSBLDependencyManager } from "../../../_FINSEMBLE/finsemble/src/common/dependencyManager";
 
 const { useState, useEffect } = React;
 
@@ -22,9 +24,17 @@ function App(): React.ReactElement {
 		setActiveNotifications(currentNotifications);
 	}, [notifications]);
 
+	const iconAction = () => {
+		window.FSBL.Clients.LauncherClient.showWindow(
+			{ windowName: "", componentType: "notification-drawer" },
+			{},
+			console.log
+		);
+	};
+
 	return (
 		<>
-			<span id="notification-icon_vector">
+			<span id="notification-icon_vector" onClick={iconAction}>
 				<svg
 					width="24"
 					height="24"
@@ -39,9 +49,8 @@ function App(): React.ReactElement {
 					([key, values]) => {
 						console.log(key, values);
 						const colors = {
-							a: "#8b00c596",
-							b: "#005bc5",
-							c: "green"
+							chat: "#8b00c596",
+							email: "#005bc5"
 						};
 						return (
 							<div

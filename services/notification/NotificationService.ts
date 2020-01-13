@@ -355,7 +355,7 @@ export default class NotificationService extends Finsemble.baseService implement
 		actionsHistory.push(performedAction);
 		map = map.set('actionsHistory', actionsHistory);
 
-		return ImmutableMap.isMap(notification) ? map.toObject() : map;
+		return ImmutableMap.isMap(notification) ? map : map.toObject();
 	}
 
 	validateForwardParams(action: IAction) {
@@ -428,6 +428,10 @@ export default class NotificationService extends Finsemble.baseService implement
 		Finsemble.Clients.Logger.log('Received', notification);
 		let map = ImmutableMap(notification);
 
+		if (!map.get('id')) {
+			map = map.set('id', this.getUuid(notification));
+		}
+
 		if (!map.get('issuedAt')) {
 			map = map.set('issuedAt', new Date().toISOString());
 		}
@@ -436,7 +440,7 @@ export default class NotificationService extends Finsemble.baseService implement
 			const action = new Action();
 			action.id = this.getUuid();
 			action.type = 'FINSEMBLE:RECEIVED';
-			map = this.addPerformedAction(map.toObject(), action);
+			map = this.addPerformedAction(map, action);
 			map = map.set('receivedAt', new Date().toISOString());
 		}
 		Finsemble.Clients.Logger.log('Fin', map);

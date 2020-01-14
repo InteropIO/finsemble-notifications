@@ -4,5 +4,6 @@
  * TODO: Ensure this interface (or implemented type) is publicly accessible
  */
 export default interface IFilter {
-	[key: string]: object;
+  include: []{ fieldnames: string[] };
+  exclude: { fieldnames: string[] };
 }

@@ -1,6 +1,8 @@
 /// <reference types="../../types/FSBL-definitions/globals" />
 
-import NotificationClient, {ActionTypes} from "../../services/notification/notificationClient";
+import NotificationClient, {
+	ActionTypes
+} from "../../services/notification/notificationClient";
 import Notification from "../../types/Notification-definitions/Notification";
 import Action from "../../types/Notification-definitions/Action";
 
@@ -8,69 +10,74 @@ import Action from "../../types/Notification-definitions/Action";
  * A manual Notifications source
  */
 let nClient: NotificationClient = null;
-let sendNotifications = () => {
-	let source = (<HTMLInputElement>document.getElementById('feed-source')).value;
-	let not1 = new Notification();
+const sendNotifications = () => {
+	const source = document.getElementById("feed-source").value;
+	const not1 = new Notification();
 	not1.issuedAt = new Date().toISOString();
 	not1.source = source;
 	not1.headerText = "Internal Actions (No Id)";
 	not1.details = "Should create a new notification in UI every time it's sent";
+	not1.type = "email";
+	not1.headerLogo = "http://localhost:3375/assets/img/email.svg";
+	not1.contentLogo = "http://localhost:3375/assets/img/graph.png";
 
-	let dismiss = new Action();
+	const dismiss = new Action();
 	dismiss.buttonText = "Dismiss";
 	dismiss.type = ActionTypes.DISMISS;
 
-	let snooze = new Action();
+	const snooze = new Action();
 	snooze.buttonText = "Snooze";
 	snooze.type = ActionTypes.SNOOZE;
 	snooze.milliseconds = 10000;
 
-	let welcome = new Action();
+	const welcome = new Action();
 	welcome.buttonText = "Welcome";
 	welcome.type = ActionTypes.SPAWN;
-	welcome.component = 'Welcome Component';
+	welcome.component = "Welcome Component";
 
 	not1.actions = [snooze, welcome, dismiss];
 
-
-	let not2 = new Notification();
+	const not2 = new Notification();
 	not2.issuedAt = new Date().toISOString();
 	not2.id = "notification_123";
 	not2.source = source;
 	not2.headerText = "Notification Same Id";
 	not2.details = "Should only be in UI once";
+	not2.type = "chat";
+	not2.headerLogo = "http://localhost:3375/assets/img/chat.svg";
+	not2.contentLogo = "http://localhost:3375/assets/img/sheild.png";
 
-	let query = new Action();
+	const query = new Action();
 	query.buttonText = "Send Query";
 	query.type = ActionTypes.QUERY;
 	query.channel = "query-channel";
-	query.payload = {'hello': 'world'};
+	query.payload = { hello: "world" };
 
-	let transmit = new Action();
+	const transmit = new Action();
 	transmit.buttonText = "Send Transmit";
 	transmit.type = ActionTypes.TRANSMIT;
 	transmit.channel = "transmit-channel";
-	transmit.payload = {'foo': 'bar'};
+	transmit.payload = { foo: "bar" };
 
-	let publish = new Action();
+	const publish = new Action();
 	publish.buttonText = "Send Publish";
 	publish.type = ActionTypes.PUBLISH;
 	publish.channel = "publish-channel";
-	publish.payload = {'xyzzy': 'moo'};
+	publish.payload = { xyzzy: "moo" };
 
 	not2.actions = [query, transmit, publish];
 
 	nClient.notify([not1, not2]);
 
-	document.getElementById('feed-last-issued').innerText = not2.issuedAt;
+	document.getElementById("feed-last-issued").innerText = not2.issuedAt;
 };
 
-let getLastIssuedAt = () => {
-	const source = (<HTMLInputElement>document.getElementById('feed-source')).value;
+const getLastIssuedAt = () => {
+	const source = document.getElementById("feed-source").value;
 
-	nClient.getLastIssuedAt(source).then((issuedDate) => {
-		document.getElementById('service-last-issued').innerText = issuedDate;
-	})
+	nClient.getLastIssuedAt(source).then(issuedDate => {
+		document.getElementById("service-last-issued").innerText = issuedDate;
+	});
 };
 
 if (window.FSBL && FSBL.addEventListener) {

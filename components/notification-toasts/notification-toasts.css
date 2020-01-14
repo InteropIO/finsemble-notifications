@@ -14,7 +14,6 @@
 
 body {
 	margin: 0px;
-	/* background-color: turquoise; */
 	position: absolute;
 	bottom: 0;
 	overflow: hidden;
@@ -48,7 +47,6 @@ body {
 .detail-area {
 	--fr-test: 1fr;
 	display: grid;
-	/* grid-auto-flow: column; */
 	grid-template-columns: 20px var(--fr-test) auto 5px;
 	grid-column-gap: 20px;
 	justify-items: flex-start;
@@ -74,13 +72,10 @@ body {
 }
 .content-area img {
 	height: 40px;
-	/* margin:0 9px; */
 	border-radius: 10px;
 }
 .action-area {
 	display: flex;
-	/* justify-content: flex-end; */
-	/* padding: 5px; */
 	color: var(--notification-font-color);
 }
 .action-area > button {

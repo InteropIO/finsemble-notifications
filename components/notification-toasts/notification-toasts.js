@@ -4,7 +4,6 @@ import App from "./App";
 
 const FSBLReady = () => {
 	try {
-		// Do things with FSBL in here.
 		ReactDom.render(<App />, document.getElementById("notifications-toasts"));
 	} catch (e) {
 		FSBL.Clients.Logger.error(e);

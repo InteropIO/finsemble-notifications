@@ -2,15 +2,7 @@ import * as React from "react";
 import useNotifications from "../shared/hooks/useNotifications";
 import INotification from "../../types/Notification-definitions/INotification";
 import "./notification-icon.css";
-import { FSBL } from "../../types/FSBL-definitions/globals";
-import { FSBLDependencyManager } from "../../../_FINSEMBLE/finsemble/src/common/dependencyManager";
-
 const { useState, useEffect } = React;
-
-interface NotificationTypeList {
-	type: string;
-	notifications: INotification[];
-}
 
 function App(): React.ReactElement {
 	const [activeNotifications, setActiveNotifications] = useState([]);

@@ -2,7 +2,7 @@ import * as React from "react";
 import useNotifications from "../../shared/hooks/useNotifications";
 import INotification from "../../../types/Notification-definitions/INotification";
 
-const { useEffect, useState, useContext, useRef } = React;
+const { useEffect, useRef } = React;
 
 interface Props {
 	children: React.PropsWithChildren<any>;
@@ -10,7 +10,6 @@ interface Props {
 }
 
 function Drawer(props: Props): React.ReactElement {
-	// const { setWindowId, setWindowPosition } = useFinsemble();
 	const { setNotificationDrawerPosition } = useNotifications();
 	const inputEl = useRef(null);
 	const { notifications } = props;

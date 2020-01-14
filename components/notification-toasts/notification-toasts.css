@@ -1,8 +1,9 @@
 @import url("https://fonts.googleapis.com/css?family=Roboto+Condensed&display=swap");
+
 @import "../shared/styles/animations.css";
 
 :root {
-	--notification-primary-color: #0f476166;
+	--notification-primary-color: #262d38;
 	--notification-secondary-color: black;
 	--notification-contrast-color: white;
 
@@ -13,14 +14,24 @@
 
 body {
 	margin: 0px;
-	background-color: rgb(22, 35, 45);
+	position: absolute;
 	bottom: 0;
+	overflow: hidden;
+	width: 100%;
+}
+#toasts-drawer {
+	display: flex;
+	flex-direction: column-reverse;
+	align-items: flex-end;
 }
 .notification {
-	margin: 15px;
+	margin-left: 0px;
+	margin-bottom: 6px;
+	margin-top: 2px;
+	margin-right: 30px;
 	font-family: var(--notification-font-family);
 	width: 100%;
-	max-width: 420px;
+	max-width: 400px;
 	min-width: 200px;
 	color: var(--notification-font-color);
 	background-color: var(--notification-background-color);
@@ -57,15 +68,11 @@ body {
 	grid-template-columns: auto 1fr;
 	justify-items: start;
 	margin-bottom: 10px;
-	padding-top: 3px;
 	align-items: center;
 }
 .content-area img {
 	height: 40px;
 	border-radius: 10px;
-}
-.notification hr {
-	border-color: #f5f5f512;
 }
 .action-area {
 	display: flex;
@@ -75,7 +82,7 @@ body {
 	margin-right: 10px;
 	background-color: rgba(255, 255, 255, 0);
 	border: 0px;
-	color: #7ed8d4;
+	color: var(--notification-font-color);
 	height: 20px;
 	cursor: pointer;
 }
@@ -91,18 +98,4 @@ body {
 	100% {
 		background-color: rgb(126, 126, 19);
 	}
-}
-::-webkit-scrollbar {
-	width: 12px;
-}
-
-::-webkit-scrollbar-track {
-	-webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-	background-color: rgb(61, 88, 111);
-}
-
-::-webkit-scrollbar-thumb {
-	border-radius: 10px;
-	-webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
-	background-color: rgb(28, 42, 54);
 }

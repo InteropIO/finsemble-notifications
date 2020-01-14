@@ -19,6 +19,7 @@ export default class Notification implements INotification {
 	title: string;
 	type: string;
 	source: string;
+	stateHistory: INotification[];
 
 	constructor() {
 		this.actions = [];
@@ -26,5 +27,6 @@ export default class Notification implements INotification {
 		this.isSnoozed = false;
 		this.actionsHistory = [];
 		this.meta = new Map<string, any>();
+		this.stateHistory = [];
 	}
 }

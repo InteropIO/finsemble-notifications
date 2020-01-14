@@ -35,10 +35,10 @@ export default interface INotificationService {
 	/**
 	 * When incoming notification arrive, lookup matching subscriptions and call necessary
 	 * callbacks on subscription.
-	 * @param {INotification[]} notifications of INotification objects to broadcast.
+	 * @param {INotification} notification of INotification objects to broadcast.
 	 * @private
 	 */
-	broadcastNotifications(notifications: INotification[]): void;
+	broadcastNotification(notification: INotification): void;
 
 	/**
 	 *

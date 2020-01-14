@@ -6,5 +6,5 @@
   "components/subscriber/subscriber.ts",
   "components/notification-center/notification-center.js",
   "components/notification-drawer/notification-drawer.js",
-  "preloads/notifications.ts"
+  "components/notification-toasts/notification-toasts.js"
 ]

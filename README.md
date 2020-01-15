@@ -26,13 +26,24 @@ To use the Notification Service, you'll need to add the the services to your con
 "importConfig": [
     ...
     "$applicationRoot/components/finsemble-notifications/config.json",
+    "$applicationRoot/components/finsemble-notifications/sample.config.json"
 ]
-
-Also add "$applicationRoot/components/finsemble-notifications/sample.config.json" 
-if you want some example components to play around with
 ```
+_**Note:** sample.config.json includes debug components and services that give examples of sending, receiving and 
+performing custom actions notifications. This should be omitted in production environments.
+config.json includes the entire suite of notification components_  
 
-**_TODO: Split into 2 or 3 configs: ui-only/services-only_**
+Alternatively, if you wish to use only specific components, you will need to follow the following method:
+``` 
+"importConfig": [
+    // This config is required for notifcations to funtion.
+    "$applicationRoot/components/finsemble-notifications/services/notification/config.json"
+    ...
+    // Select from the configs below to customise the experience.
+    "$applicationRoot/components/finsemble-notifications/components/notification-center/config.json",
+    "$applicationRoot/components/finsemble-notifications/components/notification-drawer/config.json",
+    "$applicationRoot/components/finsemble-notifications/components/notification-toasts/config.json",
+]
 
 
 ### Developing the Notification Service:
@@ -49,6 +60,10 @@ if you want some example components to play around with
     "$applicationRoot/components/finsemble-notifications/sample.config.json"
 ]
 ```
+Note: // sample.config.json includes debug components and services that give examples 
+      // of sending reciveing and perfoming custom actions notificaions could be  
+
+Alternatively if you wish to use only specific components
 
 1. Keep all your edits in sync by running `npm run watch`.
 3. You will need to install some packages in your seed for it to work. `npm install uuid date-fns immutable`

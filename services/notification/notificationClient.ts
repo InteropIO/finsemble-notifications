@@ -3,13 +3,15 @@ import INotification from "../../types/Notification-definitions/INotification";
 import IFilter from "../../types/Notification-definitions/IFilter";
 import IAction from "../../types/Notification-definitions/IAction";
 import ISubscription from "../../types/Notification-definitions/ISubscription";
-import RouterWrapper, {ROUTER_ENDPOINTS, ROUTER_NAMESPACE} from "../helpers/RouterWrapper";
-import {ActionTypes} from "../../types/Notification-definitions/ActionTypes";
-import {IRouterClient} from "../../types/FSBL-definitions/clients/IRouterClient";
-import {ILogger} from "../../types/FSBL-definitions/clients/logger.interface";
+import RouterWrapper, {
+  ROUTER_ENDPOINTS,
+  ROUTER_NAMESPACE
+} from "../helpers/RouterWrapper";
+import { ActionTypes } from "../../types/Notification-definitions/ActionTypes";
+import { IRouterClient } from "../../types/FSBL-definitions/clients/IRouterClient";
+import { ILogger } from "../../types/FSBL-definitions/clients/logger.interface";
 
-const {Logger} = require("@chartiq/finsemble").Clients;
-
+const { Logger } = require("@chartiq/finsemble").Clients;
 
 /**
  * Notification Client
@@ -229,8 +231,4 @@ export default class NotificationClient implements INotificationClient {
 	}
 }
 
-export {
-	ActionTypes,
-	NotificationClient,
-	ROUTER_NAMESPACE
-};
+export { ActionTypes, NotificationClient, ROUTER_NAMESPACE };

@@ -2,7 +2,7 @@ import INotificationService from "../../types/Notification-definitions/INotifica
 import INotification from "../../types/Notification-definitions/INotification";
 import IAction from "../../types/Notification-definitions/IAction";
 import ISubscription from "../../types/Notification-definitions/ISubscription";
-import RouterWrapper, {ROUTER_ENDPOINTS} from "../helpers/RouterWrapper";
+import RouterWrapper, { ROUTER_ENDPOINTS } from "../helpers/RouterWrapper";
 import PerformedAction from "../../types/Notification-definitions/PerformedAction";
 import {ActionTypes} from "../../types/Notification-definitions/ActionTypes";
 import ILastIssued from "../../types/Notification-definitions/ILastIssued";

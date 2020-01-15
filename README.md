@@ -44,6 +44,7 @@ Alternatively, if you wish to use only specific components, you will need to fol
     "$applicationRoot/components/finsemble-notifications/components/notification-drawer/config.json",
     "$applicationRoot/components/finsemble-notifications/components/notification-toasts/config.json",
 ]
+```
 
 
 ### Developing the Notification Service:

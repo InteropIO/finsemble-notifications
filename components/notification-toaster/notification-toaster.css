@@ -1,0 +1,33 @@
+@import url("https://fonts.googleapis.com/css?family=Roboto+Condensed&display=swap");
+
+@import "../shared/styles/animations.css";
+
+:root {
+	--notification-primary-color: #262d38;
+	--notification-secondary-color: black;
+	--notification-contrast-color: white;
+
+	--notification-background-color: var(--notification-primary-color);
+	--notification-font-family: "Roboto-Condensed", sans-serif;
+	--notification-font-color: var(--notification-contrast-color);
+}
+
+body {
+	margin: 0px;
+	/* position: absolute; */
+	/* bottom: 0; */
+	overflow: hidden;
+	height: 100px;
+	width: 100%;
+	background-color: red;
+}
+
+.drag-area {
+	-webkit-app-region: drag;
+}
+
+.drag-box {
+	width: 100%;
+	height: 20px;
+	background: yellow;
+}

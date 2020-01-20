@@ -3,10 +3,15 @@ import useNotifications from "../shared/hooks/useNotifications";
 import INotification from "../../types/Notification-definitions/INotification";
 import "./notification-icon.css";
 const { useState, useEffect } = React;
+interface Props {
+	action: Function;
+}
 
-function App(): React.ReactElement {
+function App(props: Props): React.ReactElement {
 	const [activeNotifications, setActiveNotifications] = useState([]);
 	const { notifications, groupNotificationsByType } = useNotifications();
+
+	const { action } = props;
 
 	useEffect(() => {
 		const currentNotifications = notifications.filter(
@@ -17,11 +22,7 @@ function App(): React.ReactElement {
 	}, [notifications]);
 
 	const iconAction = () => {
-		window.FSBL.Clients.LauncherClient.showWindow(
-			{ windowName: "", componentType: "notification-drawer" },
-			{},
-			console.log
-		);
+		action || null;
 	};
 
 	return (

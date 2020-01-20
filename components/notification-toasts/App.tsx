@@ -8,6 +8,9 @@ import Animate from "../shared/components/Animate";
 
 function App(): React.ReactElement {
 	const { notifications, doAction } = useNotifications();
+	// TODO: a local state of the notifications would be a good, any changes then add or remove to this from the global state
+	// TODO: FSBL.Clients.WindowClient.minimize, this might be a good option when all the toasts have been removed from the drawer
+
 	return (
 		<StoreProvider>
 			<Drawer notifications={notifications}>

@@ -80,7 +80,7 @@ export default function useNotifications() {
 	 * @param notification
 	 * @param action
 	 */
-	function doAction(notification, action) {
+	function doAction(notification: INotification, action) {
 		try {
 			nClient = new NotificationClient();
 			nClient.markActionHandled([notification], action).then(() => {

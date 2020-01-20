@@ -324,7 +324,7 @@ export default class NotificationService extends Finsemble.baseService implement
 
 	spawn(notification: INotification, action: IAction): INotification {
 		notification.isActionPerformed = true;
-		// TODO: spawn component using .component and .spawnParams
+		Finsemble.Clients.LauncherClient.spawn(action.component, action.spawnParams);
 		return notification;
 	}
 

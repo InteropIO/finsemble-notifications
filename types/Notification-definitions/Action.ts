@@ -6,7 +6,7 @@ export default class Action implements IAction {
 	type: string;
 	milliseconds?: number;
 	component?: string;
-	spawnParams?: Map<string, any>;
+	spawnParams?: Object;
 	channel?: string;
 	payload?: any;
 }

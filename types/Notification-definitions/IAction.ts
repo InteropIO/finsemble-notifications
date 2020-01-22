@@ -16,7 +16,7 @@ export default interface IAction {
 	type: string;
 	milliseconds?: number;
 	component?: string;
-	spawnParams?: object;
+	spawnParams?: Object;
 	channel?: string;
 	payload?: any;
 }

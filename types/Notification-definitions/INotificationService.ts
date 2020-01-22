@@ -45,5 +45,5 @@ export default interface INotificationService {
 	 * @param {ISubscription} subscription
 	 * @return {string} a router channel on which notifications for this subscription will be sent.
 	 */
-	subscribe(subscription: ISubscription): object;
+	subscribe(subscription: ISubscription): Object;
 }

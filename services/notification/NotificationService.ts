@@ -2,7 +2,7 @@ import INotificationService from "../../types/Notification-definitions/INotifica
 import INotification from "../../types/Notification-definitions/INotification";
 import IAction from "../../types/Notification-definitions/IAction";
 import ISubscription from "../../types/Notification-definitions/ISubscription";
-import RouterWrapper, { ROUTER_ENDPOINTS } from "../helpers/RouterWrapper";
+import RouterWrapper, {ROUTER_ENDPOINTS} from "../helpers/RouterWrapper";
 import PerformedAction from "../../types/Notification-definitions/PerformedAction";
 import {ActionTypes} from "../../types/Notification-definitions/ActionTypes";
 import ILastIssued from "../../types/Notification-definitions/ILastIssued";
@@ -12,6 +12,7 @@ import LastIssued from "../../types/Notification-definitions/LastIssued";
 import IFilter from "../../types/Notification-definitions/IFilter";
 import Action from "../../types/Notification-definitions/Action";
 import IPerformedAction from "../../types/Notification-definitions/IPerformedAction";
+import ServiceHelper from "../helpers/ServiceHelper";
 
 const ImmutableMap = require('immutable').Map;
 const uuidv4 = require('uuid/v4');
@@ -49,6 +50,8 @@ export default class NotificationService extends Finsemble.baseService implement
 
 	private routerWrapper: RouterWrapper;
 
+	private config: object;
+
 	/**
 	 * Initializes a new instance of the NotificationService class.
 	 */
@@ -81,6 +84,7 @@ export default class NotificationService extends Finsemble.baseService implement
 		this.handleAction = this.handleAction.bind(this);
 		this.fetchHistory = this.fetchHistory.bind(this);
 		this.unsubscribe = this.unsubscribe.bind(this);
+		this.applyConfigChange = this.applyConfigChange.bind(this);
 		this.onBaseServiceReady(this.readyHandler);
 	}
 
@@ -92,6 +96,8 @@ export default class NotificationService extends Finsemble.baseService implement
 		this.routerWrapper = new RouterWrapper(Finsemble.Clients.RouterClient, Finsemble.Clients.Logger);
 		this.createRouterEndpoints();
 		Finsemble.Clients.Logger.log("notification Service ready");
+		Finsemble.Clients.ConfigClient.addListener({"field": "finsemble.servicesConfig.notifications"}, this.applyConfigChange);
+		Finsemble.Clients.ConfigClient.getValue({"field": "finsemble.servicesConfig.notifications"}, this.applyConfigChange);
 		callback();
 	}
 
@@ -153,7 +159,7 @@ export default class NotificationService extends Finsemble.baseService implement
 	 *
 	 * @param message
 	 */
-	handleAction(message: any): object {
+	handleAction(message: any): Object {
 		Finsemble.Clients.Logger.log("Got some actions", message);
 		const {notifications, action} = message;
 		let response = {
@@ -222,7 +228,7 @@ export default class NotificationService extends Finsemble.baseService implement
 	 * @param {ISubscription} subscription
 	 * @return {string} a router channel on which notifications for this subscription will be sent.
 	 */
-	subscribe(subscription: ISubscription): object {
+	subscribe(subscription: ISubscription): Object {
 		const channel = this.getChannel(subscription);
 		// TODO: Set the subscriptionId correctly in accordance with the spec
 		subscription.id = this.getUuid();
@@ -424,8 +430,15 @@ export default class NotificationService extends Finsemble.baseService implement
 		this.notify([notification]);
 	}
 
+	/**
+	 * TODO: Move this function into the Helper
+	 * @param notification
+	 */
 	private receiveNotification(notification: INotification): INotification {
 		Finsemble.Clients.Logger.log('Received', notification);
+		notification = ServiceHelper.applyDefaults(this.config, notification);
+		Finsemble.Clients.Logger.log('defaults applied', notification);
+
 		let map = ImmutableMap(notification);
 
 		if (!map.get('id')) {
@@ -620,7 +633,7 @@ export default class NotificationService extends Finsemble.baseService implement
 	 *
 	 * @param message
 	 */
-	private fetchHistory(message: any): INotification[] | object {
+	private fetchHistory(message: any): INotification[] | Object {
 		Finsemble.Clients.Logger.log("Fetch history request with params", message);
 		let {since, filter} = message;
 		let notifications: INotification[] = [];
@@ -652,8 +665,13 @@ export default class NotificationService extends Finsemble.baseService implement
 		return notifications;
 	}
 
-	private clone(object: any) {
-		return object;
+	private applyConfigChange(err, config) {
+		console.log(err, config);
+		this.config = ServiceHelper.normaliseConfig(
+			config && config.servicesConfig && config.servicesConfig.hasOwnProperty('notifications') ?
+				config.servicesConfig.notifications :
+				null
+		);
 	}
 
 	/**

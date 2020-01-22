@@ -7,10 +7,11 @@ interface Props {
 	children?: React.PropsWithChildren<any>;
 	notification: INotification;
 	doAction: Function;
+	closeAction?: Function;
 }
 
 const Notification = (props: Props) => {
-	const { notification, doAction } = props;
+	const { notification, doAction, closeAction } = props;
 	const {
 		id,
 		issuedAt = new Date(),
@@ -18,8 +19,8 @@ const Notification = (props: Props) => {
 		title,
 		details,
 		headerText,
-		headerLogo = "https://lsloz.csb.app/notifications.svg",
-		contentLogo = "https://si.wsj.net/public/resources/images/IF-AC796_JUNKST_GR_20161103121700.jpg",
+		headerLogo,
+		contentLogo,
 		actions,
 		timeout,
 		meta,
@@ -39,7 +40,7 @@ const Notification = (props: Props) => {
 					})}{" "}
 					ago
 				</div>
-				{/* <div>^</div> */}
+				<img src="../shared/assets/close.svg" id="close-icon" onClick={()=>closeAction()}/>
 			</div>
 			<div className="content-area">
 				<div>

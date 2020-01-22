@@ -18,7 +18,10 @@ function App(): React.ReactElement {
 		bottom: 0,
 		right: 0,
 		monitor: 0,
-		position: "available"
+		position: "available",
+		displayDuration: 6000,
+		animateIn: "slide-in-right",
+		animateOut: "slide-out-right"
 	};
 	// const config = getWindowSpawnData().config || spawnConfig;
 	const config = spawnConfig;
@@ -33,9 +36,9 @@ function App(): React.ReactElement {
 							!notification.isSnoozed && (
 								<Animate
 									key={notification.id}
-									displayDuration={6000}
-									animateIn="slide-in-right"
-									animateOut="slide-out-right"
+									displayDuration={config.displayDuration}
+									animateIn={config.animateIn}
+									animateOut={config.animateOut}
 									animateOutComplete={() => removeNotification(notification)}
 								>
 									<Notification

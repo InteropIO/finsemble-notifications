@@ -45,7 +45,7 @@ body {
 .detail-area {
 	--fr-test: 1fr;
 	display: grid;
-	grid-template-columns: 20px var(--fr-test) auto 5px;
+	grid-template-columns: 20px var(--fr-test) auto 11px;
 	grid-column-gap: 20px;
 	justify-items: flex-start;
 	margin-bottom: 10px;
@@ -53,6 +53,14 @@ body {
 .detail-area img {
 	height: 16px;
 	padding-top: 1px;
+}
+img#close-icon {
+    filter: invert(1);
+    margin-top: -7px;
+		cursor:pointer;
+}
+img#close-icon:hover {
+
 }
 .detail-area_time {
 	font-size: 12px;

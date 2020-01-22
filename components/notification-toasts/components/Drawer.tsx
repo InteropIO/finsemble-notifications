@@ -1,28 +1,27 @@
 import * as React from "react";
 import useNotifications from "../../shared/hooks/useNotifications";
 import INotification from "../../../types/Notification-definitions/INotification";
+import { SpawnParams } from "../../../types/FSBL-definitions/services/window/Launcher/launcher";
 
 const { useEffect, useRef } = React;
 
 interface Props {
 	children: React.PropsWithChildren<any>;
 	notifications?: INotification[];
+	windowShowParams: SpawnParams;
 }
 
 function Drawer(props: Props): React.ReactElement {
-	const { setNotificationDrawerPosition } = useNotifications();
+	const { setNotificationDrawerPosition, minimizeWindow } = useNotifications();
 	const inputEl = useRef(null);
-	const { notifications } = props;
+	const { notifications, windowShowParams } = props;
 
 	useEffect(() => {
-		console.log("#run");
-		inputEl.current.getBoundingClientRect().height;
-		// TODO: replace this for spawn params passed by the client
-		setNotificationDrawerPosition(inputEl, {
-			bottom: 0,
-			right: 0,
-			monitor: "primary"
-		});
+		windowShowParams.height = inputEl.current.getBoundingClientRect().height;
+
+		notifications.length === 0
+			? minimizeWindow()
+			: setNotificationDrawerPosition(windowShowParams);
 	}, [notifications, setNotificationDrawerPosition]);
 
 	return (

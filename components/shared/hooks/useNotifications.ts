@@ -1,15 +1,15 @@
-import { useReducer, useEffect, MutableRefObject } from "react";
-import { SpawnParams } from "../../../types/FSBL-definitions/services/window/Launcher/launcher";
+import * as react from "react";
 import { WindowIdentifier } from "../../../types/FSBL-definitions/globals";
 import INotification from "../../../types/Notification-definitions/INotification";
 import Subscription from "../../../types/Notification-definitions/Subscription";
 import NotificationClient from "../../../services/notification/notificationClient";
 import Filter from "../../../types/Notification-definitions/Filter";
 import {} from "date-fns";
+import { SpawnParams } from "../../../types/FSBL-definitions/services/window/Launcher/launcher";
 
 const FSBL = window.FSBL;
 
-const { LauncherClient } = FSBL.Clients;
+const { LauncherClient, WindowClient } = FSBL.Clients;
 
 const initialState = { notifications: [] };
 
@@ -33,13 +33,19 @@ function reducer(
 				: [...state.notifications, action.payload];
 
 			return { notifications };
+		case "remove":
+			return {
+				notifications: state.notifications.filter(
+					notification => notification.id !== action.payload.id
+				)
+			};
 		default:
 			throw new Error();
 	}
 }
 
 export default function useNotifications() {
-	const [state, dispatch] = useReducer(reducer, initialState);
+	const [state, dispatch] = react.useReducer(reducer, initialState);
 
 	let nClient: NotificationClient = null;
 
@@ -100,7 +106,7 @@ export default function useNotifications() {
 		}
 	}
 
-	useEffect(() => {
+	react.useEffect(() => {
 		init();
 	}, []); // eslint-disable-line
 
@@ -131,6 +137,10 @@ export default function useNotifications() {
 		return groupBy(notifications, "type");
 	};
 
+	const removeNotification = (notification: INotification) => {
+		dispatch({ type: "remove", payload: notification });
+	};
+
 	const setWindowPosition = async (
 		windowId: WindowIdentifier,
 		windowShowParams: SpawnParams
@@ -146,26 +156,27 @@ export default function useNotifications() {
 	 * @param param0
 	 */
 	const setNotificationDrawerPosition = async (
-		element: MutableRefObject<any>,
-		{ bottom, right, monitor }: SpawnParams
+		windowShowParams: SpawnParams
 	) => {
 		const windowId: WindowIdentifier = await LauncherClient.getMyWindowIdentifier();
-		const windowShowParams: SpawnParams = {
-			bottom,
-			right,
-			height: element.current.getBoundingClientRect().height + 20,
-			// width: "460px",
-			position: "available",
-			monitor
-		};
-
 		await setWindowPosition(windowId, windowShowParams);
+	};
+
+	const minimizeWindow = () => {
+		WindowClient.minimize(console.log);
+	};
+
+	const getWindowSpawnData = () => {
+		return WindowClient.getSpawnData();
 	};
 
 	return {
 		notifications: state.notifications,
 		doAction,
 		groupNotificationsByType,
-		setNotificationDrawerPosition
+		setNotificationDrawerPosition,
+		minimizeWindow,
+		removeNotification,
+		getWindowSpawnData
 	};
 }

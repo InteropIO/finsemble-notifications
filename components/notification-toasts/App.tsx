@@ -7,27 +7,46 @@ import INotification from "../../types/Notification-definitions/INotification";
 import Animate from "../shared/components/Animate";
 
 function App(): React.ReactElement {
-	const { notifications, doAction } = useNotifications();
-	// TODO: a local state of the notifications would be a good, any changes then add or remove to this from the global state
-	// TODO: FSBL.Clients.WindowClient.minimize, this might be a good option when all the toasts have been removed from the drawer
+	const {
+		notifications,
+		doAction,
+		removeNotification,
+		getWindowSpawnData
+	} = useNotifications();
+
+	const spawnConfig = {
+		bottom: 0,
+		right: 0,
+		monitor: 0,
+		position: "available"
+	};
+	// const config = getWindowSpawnData().config || spawnConfig;
+	const config = spawnConfig;
 
 	return (
 		<StoreProvider>
-			<Drawer notifications={notifications}>
+			<Drawer notifications={notifications} windowShowParams={config}>
 				{notifications &&
-					notifications.map((notification: INotification) => (
-						<Animate
-							displayDuration={3000}
-							animateIn="slide-in-fwd-bottom"
-							animateOut="slide-out-right"
-						>
-							<Notification
-								key={notification.id}
-								notification={notification}
-								doAction={doAction}
-							></Notification>
-						</Animate>
-					))}
+					notifications.map(
+						(notification: INotification) =>
+							!notification.isActionPerformed &&
+							!notification.isSnoozed && (
+								<Animate
+									key={notification.id}
+									displayDuration={6000}
+									animateIn="slide-in-right"
+									animateOut="slide-out-right"
+									animateOutComplete={() => removeNotification(notification)}
+								>
+									<Notification
+										key={notification.id}
+										notification={notification}
+										doAction={doAction}
+										closeAction={() => removeNotification(notification)}
+									></Notification>
+								</Animate>
+							)
+					)}
 			</Drawer>
 		</StoreProvider>
 	);

@@ -12,7 +12,6 @@ interface Props {
 export default function Animate(props: Props) {
 	const { animateIn, animateOut, displayDuration, animateOutComplete } = props;
 	const [css, setCSS] = useState(animateIn);
-	const [display, setDisplay] = useState({});
 
 	useEffect(
 		() => {
@@ -23,26 +22,24 @@ export default function Animate(props: Props) {
 				}, displayDuration);
 			}
 
-			// this will clear Timeout when component unmont like in willComponentUnmount
+			// this will clear Timeout when component unmount like in willComponentUnmount
 			return () => {
 				timer1 && clearTimeout(timer1);
-				if (animateOut) {
 					setCSS(animateOut);
-					animateOutComplete();
-				}
 			};
 		},
-		[] // eslint-disable-line
+		[]
+		// eslint-disable-line
 		//useEffect will run only one time
 		//if you pass a value to array, like this [data] than clearTimeout will run every time this value changes (useEffect re-run)
 	);
 
 	const hideNotification = () => {
-		css === animateOut && setDisplay({ display: "none" });
+		css === animateOut && animateOutComplete();
 	};
 
 	return (
-		<div className={css} onAnimationEnd={hideNotification} style={display}>
+		<div className={css} onAnimationEnd={hideNotification}>
 			{props.children}
 		</div>
 	);

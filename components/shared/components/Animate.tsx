@@ -25,7 +25,8 @@ export default function Animate(props: Props) {
 			// this will clear Timeout when component unmount like in willComponentUnmount
 			return () => {
 				timer1 && clearTimeout(timer1);
-					setCSS(animateOut);
+
+				setCSS(animateOut);
 			};
 		},
 		[]

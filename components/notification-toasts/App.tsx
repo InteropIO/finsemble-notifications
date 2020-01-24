@@ -14,6 +14,9 @@ function App(): React.ReactElement {
 		getWindowSpawnData
 	} = useNotifications();
 
+	// TODO: might need to get the main config for monitor and position
+	// const config = getWindowSpawnData();
+
 	const spawnConfig = {
 		bottom: 0,
 		right: 0,

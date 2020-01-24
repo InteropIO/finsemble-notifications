@@ -1,47 +1,55 @@
 {
-  "components": {
-    "notification-toasts": {
-      "window": {
-        "url": "$applicationRoot/components/finsemble-notifications/components/notification-toasts/notification-toasts.html",
-        "resizable": false,
-        "autoShow": true,
-        "forceOntoMonitor": true,
-        "bottom": 0,
-        "right": 0,
-        "maxHeight": "100%",
-        "width": 450,
-        "position": "available",
-        "options": {
-          "transparent": true,
-          "alwaysOnTop": true
-        }
-      },
-      "component": {
-        "preload": false,
-        "spawnOnStartup": true,
-        "singleton": true
-      },
-      "foreign": {
-        "services": {
-          "dockingService": {
-            "canGroup": false,
-            "isArrangable": false
-          }
-        },
-        "components": {
-          "App Launcher": {
-            "launchableByUser": true
-          },
-          "Window Manager": {
-            "title": "notification-toasts",
-            "FSBLHeader": false,
-            "persistWindowState": true
-          },
-          "Toolbar": {
-            "iconClass": "notification-toasts"
-          }
-        }
-      }
-    }
-  }
+	"components": {
+		"notification-toasts": {
+			"window": {
+				"url": "$applicationRoot/components/finsemble-notifications/components/notification-toasts/notification-toasts.html",
+				"resizable": false,
+				"autoShow": true,
+				"forceOntoMonitor": true,
+				"bottom": 0,
+				"right": 0,
+				"maxHeight": "100%",
+				"width": 450,
+				"position": "available",
+				"data": {
+					"displayDuration": 6000,
+					"animateIn": "slide-in-right",
+					"animateOut": "slide-out-right",
+					"bottom": 0,
+					"right": 0,
+					"monitor": 0
+				},
+				"options": {
+					"transparent": true,
+					"alwaysOnTop": true
+				}
+			},
+			"component": {
+				"preload": false,
+				"spawnOnStartup": true,
+				"singleton": true
+			},
+			"foreign": {
+				"services": {
+					"dockingService": {
+						"canGroup": false,
+						"isArrangable": false
+					}
+				},
+				"components": {
+					"App Launcher": {
+						"launchableByUser": true
+					},
+					"Window Manager": {
+						"title": "notification-toasts",
+						"FSBLHeader": false,
+						"persistWindowState": true
+					},
+					"Toolbar": {
+						"iconClass": "notification-toasts"
+					}
+				}
+			}
+		}
+	}
 }

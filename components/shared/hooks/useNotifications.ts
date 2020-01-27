@@ -137,6 +137,10 @@ export default function useNotifications() {
 		return groupBy(notifications, "type");
 	};
 
+	const getNotificationHistory = () =>
+		// TODO: remove the default test value from 2000
+		nClient.fetchHistory("2000-01-01T00:00:00.000Z");
+
 	const removeNotification = (notification: INotification) => {
 		dispatch({ type: "remove", payload: notification });
 	};
@@ -177,6 +181,7 @@ export default function useNotifications() {
 		setNotificationDrawerPosition,
 		minimizeWindow,
 		removeNotification,
-		getWindowSpawnData
+		getWindowSpawnData,
+		getNotificationHistory
 	};
 }

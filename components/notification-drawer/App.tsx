@@ -7,11 +7,21 @@ import INotification from "../../types/Notification-definitions/INotification";
 import Animate from "../shared/components/Animate";
 
 function App(): React.ReactElement {
-	const { notifications, doAction } = useNotifications();
+	const {
+		notifications,
+		doAction,
+		getNotificationHistory
+	} = useNotifications();
+
+	const notificationsWithHistory = async () => [
+		...(await getNotificationHistory()),
+		...notifications
+	];
+
 	return (
 		<Drawer>
-			{notifications &&
-				notifications.map(
+			{notificationsWithHistory &&
+				notificationsWithHistory.map(
 					(notification: INotification) =>
 						!notification.isSnoozed &&
 						!notification.isActionPerformed && (

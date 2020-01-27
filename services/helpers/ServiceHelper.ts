@@ -60,7 +60,7 @@ export default class ServiceHelper {
 		}
 
 		// A config has not been supplied at all
-		if (typeof configToApply !== "undefined") {
+		if (configToApply) {
 			let returnValue = notification;
 
 			if (configToApply.hasOwnProperty(KEY_NAME_DEFAULT_FIELDS)) {

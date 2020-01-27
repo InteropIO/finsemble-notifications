@@ -4,7 +4,6 @@ import Drawer from "./components/Drawer";
 import Notification from "../shared/components/Notification";
 import useNotifications from "../shared/hooks/useNotifications";
 import INotification from "../../types/Notification-definitions/INotification";
-import { useEffect } from "react";
 import Animate from "../shared/components/Animate";
 
 function App(): React.ReactElement {

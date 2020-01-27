@@ -14,21 +14,7 @@ function App(): React.ReactElement {
 		getWindowSpawnData
 	} = useNotifications();
 
-	// TODO: might need to get the main config for monitor and position
-	// const config = getWindowSpawnData();
-
-	const spawnConfig = {
-		bottom: 0,
-		right: 0,
-		monitor: 0,
-		position: "available",
-		displayDuration: 6000,
-		animateIn: "slide-in-right",
-		animateOut: "slide-out-right"
-	};
-	// const config = getWindowSpawnData().config || spawnConfig;
-	const config = spawnConfig;
-
+	const config = getWindowSpawnData();
 	return (
 		<StoreProvider>
 			<Drawer notifications={notifications} windowShowParams={config}>

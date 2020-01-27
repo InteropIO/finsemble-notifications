@@ -3,8 +3,6 @@ import { WindowIdentifier } from "../../../types/FSBL-definitions/globals";
 import INotification from "../../../types/Notification-definitions/INotification";
 import Subscription from "../../../types/Notification-definitions/Subscription";
 import NotificationClient from "../../../services/notification/notificationClient";
-import Filter from "../../../types/Notification-definitions/Filter";
-import {} from "date-fns";
 import { SpawnParams } from "../../../types/FSBL-definitions/services/window/Launcher/launcher";
 
 const FSBL = window.FSBL;

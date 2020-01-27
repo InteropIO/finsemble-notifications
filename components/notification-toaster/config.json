@@ -8,7 +8,7 @@
 				"forceOntoMonitor": true,
 				"bottom": 0,
 				"right": 0,
-				"height":150,
+				"height": 150,
 				"width": 200,
 				"position": "available",
 				"options": {
@@ -18,7 +18,7 @@
 			},
 			"component": {
 				"preload": false,
-				"spawnOnStartup": true,
+				"spawnOnStartup": false,
 				"singleton": true
 			},
 			"foreign": {

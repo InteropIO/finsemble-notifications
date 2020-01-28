@@ -4,6 +4,7 @@
   "description": "Notifications services and UI",
   "scripts": {
     "watch": "nodemon --delay 500ms -e js,ts,tsx,jsx,html,css,json copy.js",
+    "copy-files":"node copy.js",
     "lint:fix": "eslint ./components --fix "
   },
   "repository": {

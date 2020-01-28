@@ -1,10 +1,10 @@
+
 import * as react from "react";
 import { WindowIdentifier } from "../../../types/FSBL-definitions/globals";
 import INotification from "../../../types/Notification-definitions/INotification";
 import Subscription from "../../../types/Notification-definitions/Subscription";
 import NotificationClient from "../../../services/notification/notificationClient";
 import Filter from "../../../types/Notification-definitions/Filter";
-import {} from "date-fns";
 import { SpawnParams } from "../../../types/FSBL-definitions/services/window/Launcher/launcher";
 import type IFilter from "../../../types/Notification-definitions/IFilter";
 
@@ -58,8 +58,8 @@ export default function useNotifications() {
 		const {includes,excludes } = config;
 
 		const filter:IFilter = new Filter();
-		filter.includes.push(includes);
-		filter.excludes.push(excludes);
+		includes && filter.includes.push(includes);
+		excludes && filter.excludes.push(excludes);
 		subscription.filter = filter;
 
 		subscription.onNotification = function(notification: INotification) {
@@ -104,8 +104,7 @@ export default function useNotifications() {
 	// start receiving Notifications and putting them in state
 	react.useEffect(() => {
 
-		// get config
-		const config = {}
+		const config = getWindowSpawnData().data ?? {}
 		const subscribe = init(config);
 		return (() => {
 			// Unsubscribe using the subscription ID

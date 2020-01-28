@@ -5,7 +5,8 @@
   "scripts": {
     "watch": "nodemon --delay 500ms -e js,ts,tsx,jsx,html,css,json copy.js",
     "lint:fix": "eslint ./components --fix",
-    "test": "mocha --color --bail"
+    "test": "mocha --color --bail",
+    "test:watch": "nodemon --delay 500ms -e ts --exec \"mocha --color --bail\""
   },
   "repository": {
     "type": "git",
@@ -19,6 +20,7 @@
   "dependencies": {
     "date-fns": "^2.8.1",
     "immutable": "^4.0.0-rc.12",
+    "searchjs": "^1.0.2",
     "uuid": "^3.3.3"
   },
   "devDependencies": {

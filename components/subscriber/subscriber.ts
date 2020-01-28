@@ -24,9 +24,9 @@ function init() {
 	nClient = new NotificationClient();
 	let subscription = new Subscription();
 
-	let filter = new Filter();
-	filter.size = {gte: 30};
-	subscription.filters.push(filter);
+	// Set the filter to match INotification fields
+	subscription.filter = new Filter();
+	// subscription.filter.include.push({"type": "chat"});
 
 	subscription.onNotification = function (notification: INotification) {
 		// This function will be called when a notification arrives

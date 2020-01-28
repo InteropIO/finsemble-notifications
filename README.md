@@ -63,7 +63,7 @@ Note: // sample.config.json includes debug components and services that give exa
 Alternatively if you wish to use only specific components
 
 1. Keep all your edits in sync by running `npm run watch`.
-3. You will need to install some packages in your seed for it to work. `npm install uuid date-fns immutable`
+3. You will need to install some packages in your seed for it to work. `npm install uuid date-fns immutable searchjs`
 2. In your seed project, run as normal `npm run dev`.
 
 

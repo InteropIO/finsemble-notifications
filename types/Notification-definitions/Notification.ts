@@ -19,7 +19,7 @@ export default class Notification implements INotification {
 	isSnoozed: boolean;
 
 	actions?: IAction[];
-	meta?: Map<string, any>;
+	meta?: Object;
 	actionsHistory?: IPerformedAction[];
 	stateHistory: INotification[];
 

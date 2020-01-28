@@ -1,8 +1,11 @@
 import INotification from "../../types/Notification-definitions/INotification";
 import Action from "../../types/Notification-definitions/Action";
 import {ActionTypes} from "../../types/Notification-definitions/ActionTypes";
+import IFilter from "../../types/Notification-definitions/IFilter";
 
-const {Map: ImmutableMap, mergeDeepWith} = require('immutable');
+
+const searchJS = require("searchjs");
+const {Map: ImmutableMap, mergeDeepWith, mergeDeep} = require('immutable');
 
 
 const DEFAULT_TYPE_NAME = 'default';
@@ -71,7 +74,6 @@ export default class ServiceHelper {
 					configToApply[KEY_NAME_DEFAULT_FIELDS]
 				);
 				returnValue = map.toObject();
-				returnValue.meta = new Map(Object.entries(map.get('meta')));
 			}
 
 			const showDismissAction = configToApply.hasOwnProperty(KEY_NAME_SHOW_DISMISS_ACTION) ? configToApply[KEY_NAME_SHOW_DISMISS_ACTION] : false;
@@ -79,9 +81,9 @@ export default class ServiceHelper {
 			if (showDismissAction) {
 				let dismissText = DISMISS_BUTTON_TEXT_FALLBACK;
 
-				if(configToApply.hasOwnProperty(KEY_NAME_DISMISS_BUTTON_TEXT)) {
+				if (configToApply.hasOwnProperty(KEY_NAME_DISMISS_BUTTON_TEXT)) {
 					dismissText = configToApply[KEY_NAME_DISMISS_BUTTON_TEXT];
-				} else if(config.hasOwnProperty("service") && config.service.hasOwnProperty(KEY_NAME_DISMISS_BUTTON_TEXT)) {
+				} else if (config.hasOwnProperty("service") && config.service.hasOwnProperty(KEY_NAME_DISMISS_BUTTON_TEXT)) {
 					dismissText = config.service[KEY_NAME_DISMISS_BUTTON_TEXT];
 				}
 				returnValue = ServiceHelper.addDismissActionToNotification(returnValue, dismissText);
@@ -131,4 +133,25 @@ export default class ServiceHelper {
 		}
 	}
 
+	public static filterMatches(filter: IFilter, notification: INotification): boolean {
+		if(filter.include && filter.include.length === 0 && filter.include && filter.exclude.length === 0) {
+			return true
+		}
+
+		let isMatch = false;
+
+		filter.include.forEach((filterToMatch) => {
+			if(searchJS.matchObject(notification, filterToMatch)) {
+				isMatch = true;
+			}
+		});
+
+		filter.exclude.forEach((filterToMatch) => {
+			if(searchJS.matchObject(notification, filterToMatch)) {
+				isMatch = false;
+			}
+		});
+
+		return isMatch;
+	}
 }

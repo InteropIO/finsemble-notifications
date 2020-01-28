@@ -6,6 +6,7 @@ import NotificationClient from "../../../services/notification/notificationClien
 import Filter from "../../../types/Notification-definitions/Filter";
 import {} from "date-fns";
 import { SpawnParams } from "../../../types/FSBL-definitions/services/window/Launcher/launcher";
+import type IFilter from "../../../types/Notification-definitions/IFilter";
 
 const FSBL = window.FSBL;
 
@@ -50,23 +51,23 @@ export default function useNotifications() {
 
 	let nClient: NotificationClient = null;
 
-	function init() {
+	function init(config) {
 		nClient = new NotificationClient();
 		const subscription = new Subscription();
 
-		// const action = new Action();
-		// action.buttonText = "sdfd";
+		const {includes,excludes } = config;
 
-		// const filter = new Filter();
-		// filter.size = { gte: 30 };
-		// subscription.filters.push(filter);
+		const filter:IFilter = new Filter();
+		filter.includes.push(includes);
+		filter.excludes.push(excludes);
+		subscription.filter = filter;
 
 		subscription.onNotification = function(notification: INotification) {
 			// This function will be called when a notification arrives
 			dispatch({ type: "update", payload: notification });
 		};
 
-		const subscriptionId = nClient.subscribe(
+		return nClient.subscribe(
 			subscription,
 			(data: any) => {
 				console.log(data);
@@ -76,7 +77,6 @@ export default function useNotifications() {
 			}
 		);
 
-		// TODO: Unsubscribe using the subscription ID
 	}
 
 	/**
@@ -103,7 +103,18 @@ export default function useNotifications() {
 
 	// start receiving Notifications and putting them in state
 	react.useEffect(() => {
-		init();
+
+		// get config
+		const config = {}
+		const subscribe = init(config);
+		return (() => {
+			// Unsubscribe using the subscription ID
+			(async () => {
+				nClient = new NotificationClient();
+				nClient.unsubscribe(await subscribe)
+			})()
+
+		})
 	}, []); // eslint-disable-line
 
 	/**

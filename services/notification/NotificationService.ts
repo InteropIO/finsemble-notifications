@@ -9,7 +9,6 @@ import ILastIssued from "../../types/Notification-definitions/ILastIssued";
 import ISnoozeTimer from "../../types/Notification-definitions/ISnoozeTimer";
 import SnoozeTimer from "../../types/Notification-definitions/SnoozeTimer";
 import LastIssued from "../../types/Notification-definitions/LastIssued";
-import IFilter from "../../types/Notification-definitions/IFilter";
 import Action from "../../types/Notification-definitions/Action";
 import IPerformedAction from "../../types/Notification-definitions/IPerformedAction";
 import ServiceHelper from "../helpers/ServiceHelper";
@@ -124,7 +123,7 @@ export default class NotificationService extends Finsemble.baseService implement
 		Finsemble.Clients.Logger.log('Trying to broadcast', notification);
 		this.storageAbstraction.subscriptions.forEach(((subscription, key) => {
 			// Check if this notification matches any filters
-			if (this.filtersMatch(subscription.filters, notification)) {
+			if (ServiceHelper.filterMatches(subscription.filter, notification)) {
 				// For each notification that matches, expect a response and send it out.
 				this.expectReceipt(subscription, notification);
 				this.routerWrapper.query(
@@ -270,19 +269,6 @@ export default class NotificationService extends Finsemble.baseService implement
 				new LastIssued(source, issuedAt)
 			);
 		}
-	}
-
-	/**
-	 * Check if the filters for a subscription match a notification
-	 *
-	 * @param filters
-	 * @param notification
-	 * @return boolean
-	 *
-	 * TODO: Implement
-	 */
-	filtersMatch(filters: IFilter[], notification: INotification): boolean {
-		return true;
 	}
 
 	/**
@@ -653,7 +639,7 @@ export default class NotificationService extends Finsemble.baseService implement
 				}
 			}
 
-			if (filter && !this.filtersMatch([filter], notification)) {
+			if (filter && !ServiceHelper.filterMatches(filter, notification)) {
 				// If there is a filter and the filter does not match the notification - skip it
 				return;
 			}

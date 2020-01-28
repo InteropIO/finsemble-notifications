@@ -4,18 +4,18 @@ import IFilter from "./IFilter";
 
 export default class Subscription implements ISubscription {
 	id: string;
-	filters: IFilter[];
+	filter: IFilter;
 	onNotification: (notification: INotification) => void;
 
 	/**
 	 *
 	 * @param {string|null} id
-	 * @param {IFilter[]|null} filters
+	 * @param {IFilter[]|null} filter
 	 * @param onNotification
 	 */
-	constructor(id?: string, filters?: IFilter[], onNotification?: (notification: INotification) => void) {
+	constructor(id?: string, filter?: IFilter, onNotification?: (notification: INotification) => void) {
 		this.id = id ? id : null;
-		this.filters = filters ? filters : [];
+		this.filter = filter;
 		this.onNotification = onNotification ? onNotification : null;
 	}
 }

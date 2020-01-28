@@ -1,11 +1,11 @@
-import { equal } from "assert";
+import Filter from "../../types/Notification-definitions/Filter";
+
 const expect = require("chai").expect;
 import ServiceHelper from "../../services/helpers/ServiceHelper";
 import Notification from "../../types/Notification-definitions/Notification";
-import INotification from "../../types/Notification-definitions/INotification";
-import IAction from "../../types/Notification-definitions/IAction";
 import Action from "../../types/Notification-definitions/Action"
 import {ActionTypes} from "../../types/Notification-definitions/ActionTypes";
+const {Map: ImmutableMap} = require('immutable');
 
 describe("Configuration", () => {
 	let normalisedConfig;
@@ -183,7 +183,7 @@ describe("Configuration", () => {
 		let defaultNotification = new Notification();
 		defaultNotification.type = "should-apply-default";
 		defaultNotification = ServiceHelper.applyDefaults(normalisedConfig, defaultNotification);
-		defaultNotification.meta.set('notificationAlertSound', 'already set');
+		defaultNotification.meta['notificationAlertSound'] = 'already set';
 
 		expect(defaultNotification).to.be.an("object");
 		expect(defaultNotification.timeout).to.equal(1234, "timeout not set");
@@ -192,9 +192,9 @@ describe("Configuration", () => {
 		expect(defaultNotification.title).to.equal("defaultTitle", "Title not set");
 		expect(defaultNotification.details).to.equal("defaultDetails", "Detail not set");
 		expect(defaultNotification.headerText).to.equal("defaultHeaderText", "Header text not set");
-		expect(defaultNotification.meta).to.be.a("Map", "Meta is not a map");
-		expect(defaultNotification.meta.get('cssClassName')).to.equal("cssClassName", "Css class name not set");
-		expect(defaultNotification.meta.get('notificationAlertSound')).to.equal("already set", "Should not override sound");
+		expect(defaultNotification.meta).to.be.an("Object", "Meta is not an object");
+		expect(defaultNotification.meta['cssClassName']).to.equal("cssClassName", "Css class name not set");
+		expect(defaultNotification.meta['notificationAlertSound']).to.equal("already set", "Should not override sound");
 		expect(ServiceHelper.hasDismissAction(defaultNotification)).to.equal(true, "No dismiss action");
 		expect(defaultNotification.actions[0].buttonText).to.equal("Default Button Text", "Button text not set correctly");
 
@@ -241,5 +241,103 @@ describe("Configuration", () => {
 		expect(() => {
 			ServiceHelper.applyDefaults({}, defaultNotification)
 		}).to.not.throw(Error);
+	});
+});
+
+describe("Filtering", () => {
+
+	it("Can match an empty filter", () => {
+		const cheese = new Notification();
+		const filter = new Filter();
+
+		expect(ServiceHelper.filterMatches(filter, cheese)).to.equal(true, "Empty filter should always return true");
+	});
+
+	it("Only matches if fields are the same", () => {
+		const cheese = new Notification();
+		const filter = new Filter();
+
+		filter.include.push({
+			"source": "cheese"
+		});
+
+		expect(ServiceHelper.filterMatches(filter, cheese)).to.equal(false, "Does not match on source");
+
+		cheese.source = "cheese";
+
+		expect(ServiceHelper.filterMatches(filter, cheese)).to.equal(true, "Notification comes from `cheese`, should match");
+	});
+
+	it("Does not match if fields are not the same", () => {
+		const cheese = new Notification();
+		cheese.source = "cheese";
+		const cake = new Notification();
+		cake.source = "cake";
+
+		const filter = new Filter();
+		filter.include.push({
+			"source": "cheese"
+		});
+
+		expect(ServiceHelper.filterMatches(filter, cake)).to.equal(false, "Should not match cake");
+
+		filter.include.push({"source": "cake"});
+
+		expect(ServiceHelper.filterMatches(filter, cheese)).to.equal(true, "Multiple include filters. Should match cheese");
+		expect(ServiceHelper.filterMatches(filter, cake)).to.equal(true, "Multiple include filters. Should match cake");
+	});
+
+	it("Can exclude only", () => {
+		const cheese = new Notification();
+		const filter = new Filter();
+
+		filter.exclude.push({
+			"source": "cheese"
+		});
+
+		cheese.source = "cheese";
+
+		expect(ServiceHelper.filterMatches(filter, cheese)).to.equal(false, "It should not exclude cheese");
+	});
+
+	it("Exclude overrides include", () => {
+		const cheese = new Notification();
+		const filter = new Filter();
+
+		filter.include.push({"source": "cheese"});
+
+		cheese.source = "cheese";
+
+		expect(ServiceHelper.filterMatches(filter, cheese)).to.equal(true, "It should exclude cheese");
+
+		cheese.type = "toast";
+
+		filter.exclude.push({"type": "toast"});
+
+		expect(ServiceHelper.filterMatches(filter, cheese)).to.equal(false, "Don't include 'cheese toast'");
+	});
+
+	it("Can match meta", () => {
+		const cheese = new Notification();
+		const filter = new Filter();
+		cheese.meta["tomato"] = "yes";
+
+		filter.include.push({"meta.tomato": "yes"});
+
+		expect(ServiceHelper.filterMatches(filter, cheese)).to.equal(true, "It should have tomato");
+	});
+
+	it("Can include some and exclude some", () => {
+		const cheese = new Notification();
+		const filter = new Filter();
+
+		cheese.meta["tomato"] = "yes";
+
+		filter.include.push({"meta.tomato": "yes"});
+		filter.exclude.push({"source": "cheese"});
+		expect(ServiceHelper.filterMatches(filter, cheese)).to.equal(true, "It should have tomato");
+
+		cheese.source = "cheese";
+		expect(ServiceHelper.filterMatches(filter, cheese)).to.equal(false, "It should not have cheese");
 	});
 });

@@ -10,7 +10,7 @@ import IFilter from "./IFilter";
  */
 export default interface ISubscription {
 	id: string;
-	filters?: IFilter[];
+	filter: IFilter;
 	channel?: string;
 
 	onNotification: (notification: INotification) => void;

@@ -24,6 +24,7 @@ function reducer(
 				(notification: INotification) => notification.id === action.payload.id
 			);
 
+			//if the notification exists then do nothing and return the current state else add the the new notification to the state
 			const notifications = notificationExistsInArray
 				? state.notifications.map((notification: INotification) =>
 						notification.id === action.payload.id
@@ -49,8 +50,6 @@ export default function useNotifications() {
 
 	let nClient: NotificationClient = null;
 
-	// when the button to hide is hit then animate disappearing,
-	// the opposite should happen when it is shown again.
 	function init() {
 		nClient = new NotificationClient();
 		const subscription = new Subscription();
@@ -93,10 +92,6 @@ export default function useNotifications() {
 				// NOTE: The request to perform the action has be sent to the notifications service successfully
 				// The action itself has not necessarily been perform successfully
 				console.log("ACTION success");
-				// this should not be setting a value is a response of success or fail
-
-				// this should be a delete - delete the DOM node
-				// dispatch({ type: "update", payload: notification });
 
 				// 1) alert user notification has been sent (action may not have completed)
 			});
@@ -106,10 +101,15 @@ export default function useNotifications() {
 		}
 	}
 
+	// start receiving Notifications and putting them in state
 	react.useEffect(() => {
 		init();
 	}, []); // eslint-disable-line
 
+	/**
+	 * Group Notifications by Type
+	 * @param notifications
+	 */
 	const groupNotificationsByType = (
 		notifications: INotification[]
 	): { [type: string]: INotification[] } => {
@@ -137,10 +137,17 @@ export default function useNotifications() {
 		return groupBy(notifications, "type");
 	};
 
+	/**
+	 * get the past notifications
+	 */
 	const getNotificationHistory = () =>
 		// TODO: remove the default test value from 2000
 		nClient.fetchHistory("2000-01-01T00:00:00.000Z");
 
+	/**
+	 * Remove Notification from state
+	 * @param notification
+	 */
 	const removeNotification = (notification: INotification) => {
 		dispatch({ type: "remove", payload: notification });
 	};
@@ -156,7 +163,7 @@ export default function useNotifications() {
 	};
 
 	/**
-	 * Set the position of the notification window
+	 * Set the position of the notification drawer based on params
 	 * @param param0
 	 */
 	const setNotificationDrawerPosition = async (
@@ -175,13 +182,13 @@ export default function useNotifications() {
 	};
 
 	return {
-		notifications: state.notifications,
 		doAction,
-		groupNotificationsByType,
-		setNotificationDrawerPosition,
-		minimizeWindow,
-		removeNotification,
 		getWindowSpawnData,
-		getNotificationHistory
+		getNotificationHistory,
+		groupNotificationsByType,
+		minimizeWindow,
+		notifications: state.notifications,
+		removeNotification,
+		setNotificationDrawerPosition
 	};
 }

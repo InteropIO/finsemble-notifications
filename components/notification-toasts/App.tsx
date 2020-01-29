@@ -11,13 +11,29 @@ function App(): React.ReactElement {
 		notifications,
 		doAction,
 		removeNotification,
-		getWindowSpawnData
+		getWindowSpawnData,
+		getNotificationConfig
 	} = useNotifications();
 
-	const config = getWindowSpawnData();
+	const config1 = getNotificationConfig("notification-toasts");
+	console.log(config1);
+
+	const config = {
+		displayDuration: 6000,
+		animateIn: "slide-in-right",
+		animateOut: "slide-out-right"
+	};
+
 	return (
 		<StoreProvider>
-			<Drawer notifications={notifications} windowShowParams={config}>
+			<Drawer
+				notifications={notifications}
+				windowShowParams={{
+					bottom: 0,
+					right: 0,
+					monitor: 0
+				}}
+			>
 				{notifications &&
 					notifications.map(
 						(notification: INotification) =>

@@ -1,4 +1,4 @@
-
+import { FinsembleWindow } from "./../../../../finsemble-notifications-seed/finsemble/common/window/FinsembleWindow";
 import * as react from "react";
 import { WindowIdentifier } from "../../../types/FSBL-definitions/globals";
 import INotification from "../../../types/Notification-definitions/INotification";
@@ -6,7 +6,6 @@ import Subscription from "../../../types/Notification-definitions/Subscription";
 import NotificationClient from "../../../services/notification/notificationClient";
 import Filter from "../../../types/Notification-definitions/Filter";
 import { SpawnParams } from "../../../types/FSBL-definitions/services/window/Launcher/launcher";
-import type IFilter from "../../../types/Notification-definitions/IFilter";
 
 const FSBL = window.FSBL;
 
@@ -51,32 +50,37 @@ export default function useNotifications() {
 
 	let nClient: NotificationClient = null;
 
-	function init(config) {
-		nClient = new NotificationClient();
-		const subscription = new Subscription();
+	async function init() {
+		try {
+			nClient = new NotificationClient();
+			const subscription = new Subscription();
 
-		const {includes,excludes } = config;
+			const { includes = null, excludes = null } = await getNotificationConfig(
+				WindowClient.getWindowIdentifier().componentType
+			);
 
-		const filter:IFilter = new Filter();
-		includes && filter.includes.push(includes);
-		excludes && filter.excludes.push(excludes);
-		subscription.filter = filter;
+			const filter: IFilter = new Filter();
+			includes && filter.includes.push(includes);
+			excludes && filter.excludes.push(excludes);
+			subscription.filter = filter;
 
-		subscription.onNotification = function(notification: INotification) {
-			// This function will be called when a notification arrives
-			dispatch({ type: "update", payload: notification });
-		};
+			subscription.onNotification = function(notification: INotification) {
+				// This function will be called when a notification arrives
+				dispatch({ type: "update", payload: notification });
+			};
 
-		return nClient.subscribe(
-			subscription,
-			(data: any) => {
-				console.log(data);
-			},
-			(error: any) => {
-				console.log(error);
-			}
-		);
-
+			return nClient.subscribe(
+				subscription,
+				(data: any) => {
+					console.log(data);
+				},
+				(error: any) => {
+					console.log(error);
+				}
+			);
+		} catch (error) {
+			console.error(error);
+		}
 	}
 
 	/**
@@ -103,17 +107,14 @@ export default function useNotifications() {
 
 	// start receiving Notifications and putting them in state
 	react.useEffect(() => {
-
-		const config = getWindowSpawnData().data ?? {}
-		const subscribe = init(config);
-		return (() => {
+		const subscribe = init();
+		return () => {
 			// Unsubscribe using the subscription ID
 			(async () => {
 				nClient = new NotificationClient();
-				nClient.unsubscribe(await subscribe)
-			})()
-
-		})
+				nClient.unsubscribe(await subscribe);
+			})();
+		};
 	}, []); // eslint-disable-line
 
 	/**
@@ -191,6 +192,22 @@ export default function useNotifications() {
 		return WindowClient.getSpawnData();
 	};
 
+	const getNotificationConfig = async (
+		componentType: string
+	): Promise<object | false> => {
+		const { data: config } = await LauncherClient.getComponentDefaultConfig(
+			componentType
+		);
+
+		const notificationsConfigExists =
+			config &&
+			config.window &&
+			config.window.data &&
+			config.window.data.notifications;
+
+		return notificationsConfigExists ? config.window.data.notifications : false;
+	};
+
 	return {
 		doAction,
 		getWindowSpawnData,
@@ -199,6 +216,7 @@ export default function useNotifications() {
 		minimizeWindow,
 		notifications: state.notifications,
 		removeNotification,
-		setNotificationDrawerPosition
+		setNotificationDrawerPosition,
+		getNotificationConfig
 	};
 }

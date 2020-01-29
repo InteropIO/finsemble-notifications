@@ -34,7 +34,7 @@ export default interface INotification {
 	contentLogo?: string;
 	actions?: IAction[];
 	timeout?: number;
-	meta?: Map<string, any>;
+	meta?: Object;
 	isActionPerformed: boolean;
 	isSnoozed: boolean;
 	actionsHistory?: IPerformedAction[];

@@ -167,13 +167,13 @@ To run the examples make sure you've followed the steps outlined in the [setup](
 ```
 
 ### Sending Notifications
-See out the [notifier component example](components/notify/Readme.md)
+See out the [notifier component example](components/notify)
 
 ### Receiving Notifications
-See out the [Subscriber component example](components/subscriber/Readme.md)
+See out the [Subscriber component example](components/subscriber)
 
 ### Custom Actions
-See out the [Custom Action Service example](services/exampleCustomAction/Readme.md)
+See out the [Custom Action Service example](services/exampleCustomAction)
 
 #### Making changes to this project?  
 Follow the instructions [how to setup the project up for development](./docs/developing.md). 

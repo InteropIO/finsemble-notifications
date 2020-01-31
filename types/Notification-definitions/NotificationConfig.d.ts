@@ -3,22 +3,23 @@ import { SpawnParams } from "./../../../finsemble-notifications-seed/finsemble/s
 type SpawnParamsWithoutData = Omit<SpawnParams, "data">;
 
 export interface NotificationsConfig {
-	notifications?: {
-		filter?: {
-			include?: [];
-			exclude?: [];
-		};
-		position?: {};
-		animation?: {
-			displayDuration: number;
-			animateIn: string;
-			animateOut: string;
-		};
+	filter?: {
+		include?: [];
+		exclude?: [];
 	};
+	position?: {};
+	animation?: {
+		displayDuration: number;
+		animateIn: string;
+		animateOut: string;
+	};
+	notificationsHistory?: boolean;
 }
 
 export interface WindowParams extends SpawnParamsWithoutData {
-	data: NotificationsConfig | any;
+	data?: {
+		notifications: NotificationsConfig;
+	};
 }
 
 export default interface WindowConfig {

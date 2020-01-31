@@ -52,10 +52,23 @@ function reducer(
 export default function useNotifications() {
 	const [state, dispatch] = react.useReducer(reducer, initialState);
 
-	let nClient: NotificationClient = null;
+	let NOTFICICATION_CLIENT: NotificationClient = null;
+
+	// start receiving Notifications and putting them in state
+	react.useEffect(() => {
+		const subscribe = init();
+		return () => {
+			// Unsubscribe using the subscription ID
+			(async () => {
+				NOTFICICATION_CLIENT = new NotificationClient();
+				NOTFICICATION_CLIENT.unsubscribe(await subscribe);
+			})();
+		};
+	}, []); // eslint-disable-line
+
 	async function init() {
 		try {
-			nClient = new NotificationClient();
+			NOTFICICATION_CLIENT = new NotificationClient();
 			const subscription = new Subscription();
 
 			const notificationConfig = await getNotificationConfig(
@@ -63,7 +76,7 @@ export default function useNotifications() {
 			);
 
 			const filter: IFilter = new Filter();
-
+			// make filters from the config
 			(await notificationConfig.filter.include) &&
 				filter.include.push(...notificationConfig.filter.include);
 			(await notificationConfig.filter.exclude) &&
@@ -75,7 +88,7 @@ export default function useNotifications() {
 				dispatch({ type: "update", payload: notification });
 			};
 
-			return nClient.subscribe(
+			return NOTFICICATION_CLIENT.subscribe(
 				subscription,
 				(data: any) => {
 					console.log(data);
@@ -97,31 +110,21 @@ export default function useNotifications() {
 	 */
 	function doAction(notification: INotification, action) {
 		try {
-			nClient = new NotificationClient();
-			nClient.markActionHandled([notification], action).then(() => {
-				// NOTE: The request to perform the action has be sent to the notifications service successfully
-				// The action itself has not necessarily been perform successfully
-				console.log("ACTION success");
+			NOTFICICATION_CLIENT = new NotificationClient();
+			NOTFICICATION_CLIENT.markActionHandled([notification], action).then(
+				() => {
+					// NOTE: The request to perform the action has be sent to the notifications service successfully
+					// The action itself has not necessarily been perform successfully
+					console.log("ACTION success");
 
-				// 1) alert user notification has been sent (action may not have completed)
-			});
+					// 1) alert user notification has been sent (action may not have completed)
+				}
+			);
 		} catch (e) {
 			// NOTE: The request to perform the action has failed
 			console.log("fail", e);
 		}
 	}
-
-	// start receiving Notifications and putting them in state
-	react.useEffect(() => {
-		const subscribe = init();
-		return () => {
-			// Unsubscribe using the subscription ID
-			(async () => {
-				nClient = new NotificationClient();
-				nClient.unsubscribe(await subscribe);
-			})();
-		};
-	}, []); // eslint-disable-line
 
 	/**
 	 * Group Notifications by Type
@@ -159,7 +162,7 @@ export default function useNotifications() {
 	 */
 	const getNotificationHistory = () =>
 		// TODO: remove the default test value from 2000
-		nClient.fetchHistory("2000-01-01T00:00:00.000Z");
+		NOTFICICATION_CLIENT.fetchHistory("2000-01-01T00:00:00.000Z");
 
 	/**
 	 * Remove Notification from state
@@ -198,6 +201,10 @@ export default function useNotifications() {
 		return WindowClient.getSpawnData();
 	};
 
+	/**
+	 * Get Notification's config from
+	 * @param componentType Finsemble component type e.g "Welcome-Component"
+	 */
 	const getNotificationConfig = async (
 		componentType: string
 	): Promise<NotificationsConfig | {}> => {

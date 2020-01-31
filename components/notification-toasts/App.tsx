@@ -4,7 +4,6 @@ import Notification from "../shared/components/Notification";
 import useNotifications from "../shared/hooks/useNotifications";
 import INotification from "../../types/Notification-definitions/INotification";
 import Animate from "../shared/components/Animate";
-import NotificationConfig from "../../types/Notification-definitions/NotificationConfig";
 
 const { useEffect, useState } = React;
 
@@ -13,7 +12,6 @@ function App(): React.ReactElement {
 		notifications,
 		doAction,
 		removeNotification,
-		getWindowSpawnData,
 		getNotificationConfig
 	} = useNotifications();
 
@@ -23,7 +21,6 @@ function App(): React.ReactElement {
 		(async () =>
 			setConfig(await getNotificationConfig("notification-toasts")))();
 	}, []);
-	console.log(config);
 	return (
 		<Drawer
 			notifications={notifications}
@@ -41,7 +38,9 @@ function App(): React.ReactElement {
 						!notification.isSnoozed && (
 							<Animate
 								key={notification.id}
-								displayDuration={config.animation.displayDuration}
+								displayDuration={
+									notification.timeout || config.animation.displayDuration
+								}
 								animateIn={config.animation.animateIn}
 								animateOut={config.animation.animateOut}
 								animateOutComplete={() => removeNotification(notification)}

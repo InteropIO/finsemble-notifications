@@ -16,6 +16,11 @@
 					"transparent": true,
 					"alwaysOnTop": true,
 					"autoShow": false
+				},
+				"data": {
+					"notifications": {
+						"notificationsHistory": true
+					}
 				}
 			},
 			"component": {

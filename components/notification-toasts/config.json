@@ -16,7 +16,7 @@
 						"filter": {
 							"include": [
 								{
-									"type": "toast"
+									"type": "email"
 								}
 							],
 							"exclude": []

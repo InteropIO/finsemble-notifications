@@ -6,6 +6,10 @@ import Subscription from "../../../types/Notification-definitions/Subscription";
 import NotificationClient from "../../../services/notification/notificationClient";
 import Filter from "../../../types/Notification-definitions/Filter";
 import { SpawnParams } from "../../../types/FSBL-definitions/services/window/Launcher/launcher";
+import WindowData, {
+	NotificationsConfig
+} from "../../../types/Notification-definitions/NotificationConfig";
+import IFilter from "../../../types/Notification-definitions/IFilter";
 
 const FSBL = window.FSBL;
 
@@ -49,19 +53,21 @@ export default function useNotifications() {
 	const [state, dispatch] = react.useReducer(reducer, initialState);
 
 	let nClient: NotificationClient = null;
-
 	async function init() {
 		try {
 			nClient = new NotificationClient();
 			const subscription = new Subscription();
 
-			const { includes = null, excludes = null } = await getNotificationConfig(
-				WindowClient.getWindowIdentifier().componentType
+			const notificationConfig = await getNotificationConfig(
+				await WindowClient.getWindowIdentifier().componentType
 			);
 
 			const filter: IFilter = new Filter();
-			includes && filter.includes.push(includes);
-			excludes && filter.excludes.push(excludes);
+
+			(await notificationConfig.filter.include) &&
+				filter.include.push(...notificationConfig.filter.include);
+			(await notificationConfig.filter.exclude) &&
+				filter.exclude.push(...notificationConfig.filter.exclude);
 			subscription.filter = filter;
 
 			subscription.onNotification = function(notification: INotification) {
@@ -194,18 +200,20 @@ export default function useNotifications() {
 
 	const getNotificationConfig = async (
 		componentType: string
-	): Promise<object | false> => {
-		const { data: config } = await LauncherClient.getComponentDefaultConfig(
+	): Promise<NotificationsConfig | {}> => {
+		const { data } = await LauncherClient.getComponentDefaultConfig(
 			componentType
 		);
 
-		const notificationsConfigExists =
+		const config: WindowData = data;
+
+		const notificationsConfigExists: boolean =
 			config &&
 			config.window &&
 			config.window.data &&
 			config.window.data.notifications;
 
-		return notificationsConfigExists ? config.window.data.notifications : false;
+		return notificationsConfigExists ? config.window.data.notifications : {};
 	};
 
 	return {

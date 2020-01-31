@@ -1,4 +1,3 @@
-import { FinsembleWindow } from "./../../../../finsemble-notifications-seed/finsemble/common/window/FinsembleWindow";
 import * as react from "react";
 import { WindowIdentifier } from "../../../types/FSBL-definitions/globals";
 import INotification from "../../../types/Notification-definitions/INotification";
@@ -10,6 +9,7 @@ import WindowData, {
 	NotificationsConfig
 } from "../../../types/Notification-definitions/NotificationConfig";
 import IFilter from "../../../types/Notification-definitions/IFilter";
+import WindowConfig from "../../../types/Notification-definitions/NotificationConfig";
 
 const FSBL = window.FSBL;
 
@@ -17,12 +17,26 @@ const { LauncherClient, WindowClient } = FSBL.Clients;
 
 const initialState = { notifications: [] };
 
+/*
+Action Types
+*/
+const CREATE_MULTIPLE = "CREATE_MULTIPLE";
+const UPDATE = "UPDATE";
+const REMOVE = "REMOVE";
+
+/*
+	Reducer
+	*/
 function reducer(
 	state: { notifications: INotification[] },
-	action: { type: string; payload: INotification }
+	action: { type: string; payload: any }
 ) {
 	switch (action.type) {
-		case "update":
+		case CREATE_MULTIPLE:
+			return {
+				notifications: [...state.notifications, ...action.payload]
+			};
+		case UPDATE:
 			// check to see if the notification exists if so update the values
 			const notificationExistsInArray = state.notifications.find(
 				(notification: INotification) => notification.id === action.payload.id
@@ -38,7 +52,7 @@ function reducer(
 				: [...state.notifications, action.payload];
 
 			return { notifications };
-		case "remove":
+		case REMOVE:
 			return {
 				notifications: state.notifications.filter(
 					notification => notification.id !== action.payload.id
@@ -52,7 +66,22 @@ function reducer(
 export default function useNotifications() {
 	const [state, dispatch] = react.useReducer(reducer, initialState);
 
-	let NOTFICICATION_CLIENT: NotificationClient = null;
+	let NOTIFICATION_CLIENT: NotificationClient = null;
+
+	/*
+		Action Creators
+	*/
+	const removeNotification = (notification: INotification) => {
+		dispatch({ type: REMOVE, payload: notification });
+	};
+
+	const addNotification = (notification: INotification) => {
+		dispatch({ type: UPDATE, payload: notification });
+	};
+
+	const addMultipleNotifications = (notifications: INotification[]) => {
+		dispatch({ type: CREATE_MULTIPLE, payload: notifications });
+	};
 
 	// start receiving Notifications and putting them in state
 	react.useEffect(() => {
@@ -60,35 +89,47 @@ export default function useNotifications() {
 		return () => {
 			// Unsubscribe using the subscription ID
 			(async () => {
-				NOTFICICATION_CLIENT = new NotificationClient();
-				NOTFICICATION_CLIENT.unsubscribe(await subscribe);
+				NOTIFICATION_CLIENT = new NotificationClient();
+				NOTIFICATION_CLIENT.unsubscribe(await subscribe);
 			})();
 		};
 	}, []); // eslint-disable-line
 
 	async function init() {
 		try {
-			NOTFICICATION_CLIENT = new NotificationClient();
+			NOTIFICATION_CLIENT = new NotificationClient();
 			const subscription = new Subscription();
 
-			const notificationConfig = await getNotificationConfig(
+			const notificationConfig: NotificationsConfig = await getNotificationConfig(
 				await WindowClient.getWindowIdentifier().componentType
 			);
 
 			const filter: IFilter = new Filter();
+
 			// make filters from the config
-			(await notificationConfig.filter.include) &&
-				filter.include.push(...notificationConfig.filter.include);
-			(await notificationConfig.filter.exclude) &&
-				filter.exclude.push(...notificationConfig.filter.exclude);
+			if (notificationConfig) {
+				notificationConfig.filter &&
+					notificationConfig.filter.include &&
+					filter.include.push(...notificationConfig.filter.include);
+
+				notificationConfig.filter &&
+					notificationConfig.filter.exclude &&
+					filter.exclude.push(...notificationConfig.filter.exclude);
+			}
+
 			subscription.filter = filter;
 
+			if (notificationConfig && notificationConfig.notificationsHistory) {
+				// const { since, filter } = notificationConfig.notificationsHistory;
+				const pastNotifications = await getNotificationHistory();
+				addMultipleNotifications(pastNotifications);
+			}
 			subscription.onNotification = function(notification: INotification) {
 				// This function will be called when a notification arrives
-				dispatch({ type: "update", payload: notification });
+				addNotification(notification);
 			};
 
-			return NOTFICICATION_CLIENT.subscribe(
+			return NOTIFICATION_CLIENT.subscribe(
 				subscription,
 				(data: any) => {
 					console.log(data);
@@ -110,16 +151,14 @@ export default function useNotifications() {
 	 */
 	function doAction(notification: INotification, action) {
 		try {
-			NOTFICICATION_CLIENT = new NotificationClient();
-			NOTFICICATION_CLIENT.markActionHandled([notification], action).then(
-				() => {
-					// NOTE: The request to perform the action has be sent to the notifications service successfully
-					// The action itself has not necessarily been perform successfully
-					console.log("ACTION success");
+			NOTIFICATION_CLIENT = new NotificationClient();
+			NOTIFICATION_CLIENT.markActionHandled([notification], action).then(() => {
+				// NOTE: The request to perform the action has be sent to the notifications service successfully
+				// The action itself has not necessarily been perform successfully
+				console.log("ACTION success");
 
-					// 1) alert user notification has been sent (action may not have completed)
-				}
-			);
+				// 1) alert user notification has been sent (action may not have completed)
+			});
 		} catch (e) {
 			// NOTE: The request to perform the action has failed
 			console.log("fail", e);
@@ -158,19 +197,44 @@ export default function useNotifications() {
 	};
 
 	/**
-	 * get the past notifications
+	 * 	 * get the past notifications
+	 * using a generic date from 2000 as a default
+	 * @param since
+	 * @param filter
 	 */
-	const getNotificationHistory = () =>
-		// TODO: remove the default test value from 2000
-		NOTFICICATION_CLIENT.fetchHistory("2000-01-01T00:00:00.000Z");
+	const getNotificationHistory = (
+		since: string = "2000-01-01T00:00:00.000Z",
+		filter: null | IFilter = null
+	): Promise<INotification[]> => {
+		NOTIFICATION_CLIENT = new NotificationClient();
+		return NOTIFICATION_CLIENT.fetchHistory(since, filter);
+	};
 
 	/**
-	 * Remove Notification from state
-	 * @param notification
+	 * Get Notification's config from
+	 * @param componentType Finsemble component type e.g "Welcome-Component"
 	 */
-	const removeNotification = (notification: INotification) => {
-		dispatch({ type: "remove", payload: notification });
+	const getNotificationConfig = async (
+		componentType: string
+	): Promise<NotificationsConfig | boolean> => {
+		const { data }: any = await LauncherClient.getComponentDefaultConfig(
+			componentType
+		);
+
+		const config: WindowData = data;
+
+		const notificationsConfigExists: WindowConfig | undefined =
+			config &&
+			config.window &&
+			config.window.data &&
+			config.window.data.notifications;
+
+		return notificationsConfigExists && config.window.data.notifications;
 	};
+
+	/*
+	Finsemble Window manipulation
+*/
 
 	const setWindowPosition = async (
 		windowId: WindowIdentifier,
@@ -199,28 +263,6 @@ export default function useNotifications() {
 
 	const getWindowSpawnData = () => {
 		return WindowClient.getSpawnData();
-	};
-
-	/**
-	 * Get Notification's config from
-	 * @param componentType Finsemble component type e.g "Welcome-Component"
-	 */
-	const getNotificationConfig = async (
-		componentType: string
-	): Promise<NotificationsConfig | {}> => {
-		const { data } = await LauncherClient.getComponentDefaultConfig(
-			componentType
-		);
-
-		const config: WindowData = data;
-
-		const notificationsConfigExists: boolean =
-			config &&
-			config.window &&
-			config.window.data &&
-			config.window.data.notifications;
-
-		return notificationsConfigExists ? config.window.data.notifications : {};
 	};
 
 	return {

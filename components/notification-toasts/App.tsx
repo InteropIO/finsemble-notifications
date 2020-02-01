@@ -21,6 +21,7 @@ function App(): React.ReactElement {
 		(async () =>
 			setConfig(await getNotificationConfig("notification-toasts")))();
 	}, []);
+
 	return (
 		<Drawer
 			notifications={notifications}
@@ -50,6 +51,7 @@ function App(): React.ReactElement {
 									notification={notification}
 									doAction={doAction}
 									closeAction={() => removeNotification(notification)}
+									closeButton
 								></Notification>
 							</Animate>
 						)

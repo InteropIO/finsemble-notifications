@@ -10,25 +10,43 @@ function App(): React.ReactElement {
 
 	return (
 		<Drawer>
-			{notifications &&
-				notifications.map(
-					(notification: INotification) =>
-						!notification.isSnoozed &&
-						!notification.isActionPerformed && (
-							<Animate
-								// TODO: this needs a better key to differentiate when notification is updated
-								key={notification.id}
-								animateIn="slide-in-fwd-bottom"
-								animateOut="slide-out-right"
-							>
-								<Notification
+			<div id="notifications-drawer__menu">
+				<img
+					src="../shared/assets/double_arrow.svg"
+					id="hide-icon"
+					onClick={() => FSBL.Clients.WindowClient.minimize()}
+				/>
+				<img
+					src="../shared/assets/dashboard.svg"
+					id="notification-center-icon"
+					onClick={() =>
+						FSBL.Clients.LauncherClient.showWindow({
+							componentType: "notification-center"
+						})
+					}
+				/>
+			</div>
+			<div>
+				{notifications &&
+					[...notifications].reverse().map(
+						(notification: INotification) =>
+							!notification.isSnoozed &&
+							!notification.isActionPerformed && (
+								<Animate
+									// TODO: this needs a better key to differentiate when notification is updated
 									key={notification.id}
-									notification={notification}
-									doAction={doAction}
-								></Notification>
-							</Animate>
-						)
-				)}
+									animateIn="slide-in-fwd-bottom"
+									animateOut="slide-out-right"
+								>
+									<Notification
+										key={notification.id}
+										notification={notification}
+										doAction={doAction}
+									></Notification>
+								</Animate>
+							)
+					)}
+			</div>
 		</Drawer>
 	);
 }

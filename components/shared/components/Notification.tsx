@@ -8,10 +8,12 @@ interface Props {
 	notification: INotification;
 	doAction: Function;
 	closeAction?: Function;
+	closeButton?: boolean;
 }
 
 const Notification = (props: Props) => {
-	const { notification, doAction, closeAction } = props;
+	const { useEffect, useState } = React;
+	const { notification, doAction, closeAction, closeButton = false } = props;
 	const {
 		id,
 		issuedAt = new Date(),
@@ -27,6 +29,18 @@ const Notification = (props: Props) => {
 		actionsHistory
 	} = notification;
 
+	const [time, setTime] = useState("");
+	useEffect(() => {
+		let id = setInterval(() => {
+			setTime(
+				formatDistanceToNow(new Date(issuedAt), {
+					includeSeconds: true
+				})
+			);
+		}, 10000);
+		return () => clearInterval(id);
+	});
+
 	return (
 		<div className="notification">
 			<div className="detail-area">
@@ -34,13 +48,14 @@ const Notification = (props: Props) => {
 					<img src={headerLogo} />
 				</div>
 				<div className="detail-area_type">{type}</div>
-				<div className="detail-area_time">
-					{formatDistanceToNow(new Date(issuedAt), {
-						includeSeconds: true
-					})}{" "}
-					ago
-				</div>
-				<img src="../shared/assets/close.svg" id="close-icon" onClick={()=>closeAction()}/>
+				<div className="detail-area_time">{time} ago</div>
+				{closeButton && (
+					<img
+						src="../shared/assets/close.svg"
+						id="close-icon"
+						onClick={() => closeAction()}
+					/>
+				)}
 			</div>
 			<div className="content-area">
 				<div>

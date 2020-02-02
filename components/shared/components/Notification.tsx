@@ -29,7 +29,11 @@ const Notification = (props: Props) => {
 		actionsHistory
 	} = notification;
 
-	const [time, setTime] = useState("");
+	const [time, setTime] = useState(
+		formatDistanceToNow(new Date(issuedAt), {
+			includeSeconds: true
+		})
+	);
 	useEffect(() => {
 		let id = setInterval(() => {
 			setTime(

@@ -12,11 +12,6 @@ function App(): React.ReactElement {
 		<Drawer>
 			<div id="notifications-drawer__menu">
 				<img
-					src="../shared/assets/double_arrow.svg"
-					id="hide-icon"
-					onClick={() => FSBL.Clients.WindowClient.minimize()}
-				/>
-				<img
 					src="../shared/assets/dashboard.svg"
 					id="notification-center-icon"
 					onClick={() =>
@@ -24,6 +19,11 @@ function App(): React.ReactElement {
 							componentType: "notification-center"
 						})
 					}
+				/>
+				<img
+					src="../shared/assets/double_arrow.svg"
+					id="hide-icon"
+					onClick={() => FSBL.Clients.WindowClient.minimize()}
 				/>
 			</div>
 			<div>

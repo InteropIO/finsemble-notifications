@@ -17,17 +17,17 @@ body {
 	bottom: 0;
 }
 .notification {
-	margin: 15px;
+	margin: 12px;
 	font-family: var(--notification-font-family);
-	width: 100%;
-	max-width: 420px;
+	/* width: 100%; */
+	/* max-width: 420px; */
 	min-width: 200px;
 	color: var(--notification-font-color);
 	background-color: var(--notification-background-color);
 	display: grid;
 	grid-auto-rows: auto;
-	padding: 10px;
-	font-size: 13px;
+	padding: 7px;
+	font-size: 12px;
 	box-shadow: 3px 3px 2px 0px #00000030;
 }
 .notification hr {
@@ -56,8 +56,8 @@ body {
 	grid-column-gap: 15px;
 	grid-template-columns: auto 1fr;
 	justify-items: start;
-	margin-bottom: 10px;
-	padding-top: 3px;
+	/* margin-bottom: 10px; */
+	/* padding-top: 3px; */
 	align-items: center;
 }
 .content-area img {
@@ -75,13 +75,15 @@ body {
 	margin-right: 10px;
 	background-color: rgba(255, 255, 255, 0);
 	border: 0px;
-	color: #7ed8d4;
-	height: 20px;
+	color: #b0e8a6;
+	/* height: 20px; */
 	cursor: pointer;
 }
 .action-area > button:hover {
 	animation-duration: 0.6s;
 	animation-name: fadeIn;
+	animation-fill-mode: forwards;
+	border-radius: 2px;
 }
 
 @keyframes fadeIn {
@@ -89,7 +91,8 @@ body {
 		background-color: rgba(126, 126, 19, 0);
 	}
 	100% {
-		background-color: rgb(126, 126, 19);
+		background-color: rgba(82, 82, 82, 0.47);
+		border-bottom: 1px solid #e4e48e3b;
 	}
 }
 ::-webkit-scrollbar {
@@ -118,10 +121,36 @@ body {
 	width: 100%;
 	border-bottom: solid 1px #9090903b;
 	z-index: 2;
+	justify-content: space-between;
 }
 
+img#notification-center-icon {
+	filter: invert(27%) sepia(51%) saturate(2878%) hue-rotate(163deg)
+		brightness(104%) contrast(97%);
+	margin-top: 0px;
+	height: 28px;
+	padding: 5px;
+	cursor: pointer;
+}
 img#hide-icon {
 	filter: invert(1);
-	margin-top: -7px;
+	margin-right: 5px;
 	cursor: pointer;
+}
+#hide-icon:hover {
+	animation-duration: 0.6s;
+	animation-name: slideBackAndForth;
+	animation-iteration-count: infinite;
+}
+
+@keyframes slideBackAndForth {
+	0% {
+		transform: translateX(0);
+	}
+	50% {
+		transform: translateX(5px);
+	}
+	100% {
+		transform: translateX(0);
+	}
 }

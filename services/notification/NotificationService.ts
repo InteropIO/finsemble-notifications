@@ -12,6 +12,7 @@ import LastIssued from "../../types/Notification-definitions/LastIssued";
 import Action from "../../types/Notification-definitions/Action";
 import IPerformedAction from "../../types/Notification-definitions/IPerformedAction";
 import ServiceHelper from "../helpers/ServiceHelper";
+import IFilter from "../../types/Notification-definitions/IFilter";
 
 const ImmutableMap = require('immutable').Map;
 const uuidv4 = require('uuid/v4');
@@ -47,6 +48,7 @@ export default class NotificationService extends Finsemble.baseService implement
 		lastIssued: Map<string, ILastIssued>
 	};
 
+	private proxyToWebAPiFilter: IFilter|false;
 	private routerWrapper: RouterWrapper;
 
 	private config: object;
@@ -68,6 +70,7 @@ export default class NotificationService extends Finsemble.baseService implement
 			}
 		});
 
+		this.proxyToWebAPiFilter = false;
 		this.storageAbstraction = {
 			subscriptions: new Map<string, ISubscription>(),
 			snoozeTimers: new Map<string, ISnoozeTimer>(),
@@ -136,6 +139,36 @@ export default class NotificationService extends Finsemble.baseService implement
 				);
 			}
 		}));
+		console.log(this.proxyToWebAPiFilter);
+		if (this.proxyToWebAPiFilter &&ServiceHelper.filterMatches(this.proxyToWebAPiFilter, notification)) {
+			this.webApiNotify(notification);
+		}
+	}
+
+	webApiNotify(notification: INotification): void {
+
+		let options = convertNotificationToWebApi(notification);
+
+		new window.Notification(notification.headerText, options);
+
+		function convertNotificationToWebApi(notification: INotification) {
+			function getActions(actions: IAction[]) {
+				let webActions = [];
+
+				actions.forEach(action => {
+					webActions.push({
+						"title": "Action title"
+					})
+				});
+				return webActions;
+			}
+
+			return {
+				"body": notification.details,
+				// "icon": "",
+				// "actions": getActions(notification.actions)
+			}
+		}
 	}
 
 
@@ -652,12 +685,17 @@ export default class NotificationService extends Finsemble.baseService implement
 	}
 
 	private applyConfigChange(err, config) {
-		console.log(err, config);
+		console.log(config);
 		this.config = ServiceHelper.normaliseConfig(
 			config && config.servicesConfig && config.servicesConfig.hasOwnProperty('notifications') ?
 				config.servicesConfig.notifications :
 				null
 		);
+
+		if (config.hasOwnProperty('proxyToWebAPiFilter') && config['proxyToWebAPiFilter']) {
+			// TODO: Input validation
+			this.proxyToWebAPiFilter = config['proxyToWebAPiFilter'];
+		}
 	}
 
 	/**

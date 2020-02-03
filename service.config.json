@@ -1,90 +1,90 @@
 {
-  "servicesConfig": {
-    "notifications": {
-      "defaultDismissButtonText": "Dismiss",
-      "maxNotificationsToRetain": 1000,
-      "maxNotificationRetentionPeriodHours": 24,
-      "presentationComponents": {
-        "toast": {
-          "component": "toast",
-          "configuration": {
-            "filter": {
-              "include": [
-                {
-                  "type": "toast"
-                }
-              ]
-            },
-            "position": {
-              "monitor": "primary",
-              "bottom": 0,
-              "left": 100
-            }
-          }
-        },
-        "center": {
-          "component": "center",
-          "configuration": {
-            "showAllTimelines": false
-          }
-        },
-        "drawer": {
-          "component": "drawer",
-          "configuration": {
-            "filter": {
-              "exclude": [
-                {
-                  "type": "toast"
-                }
-              ]
-            },
-            "muteFilters": [
+  "servicesConfig": {    "notifications": {
+    "defaultDismissButtonText": "Dismiss",
+    "maxNotificationsToRetain": 1000,
+    "maxNotificationRetentionPeriodHours": 24,
+    "presentationComponents": {
+      "toast": {
+        "component": "toast",
+        "configuration": {
+          "filter": {
+            "include": [
               {
-                "field": "meta.source",
-                "value": "/execution notifications|fx markets/"
+                "type": "toast"
               }
-            ],
-            "position": {
-              "monitor": "primary",
-              "bottom": 0,
-              "left": 100
-            }
+            ]
+          },
+          "position": {
+            "monitor": "primary",
+            "bottom": 0,
+            "left": 100
           }
         }
       },
-      "types": {
-        "default": {
-          "component": "drawer",
-          "showDismissAction": true,
-          "defaultDismissButtonText": "Default Button Text",
-          "defaults": {
-            "timeout": 1234,
-            "headerLogo": "defaultHeaderLogo",
-            "contentLogo": "defaultContentLogo",
-            "title": "defaultTitle",
-            "details": "defaultDetails",
-            "headerText": "defaultHeaderText",
-            "meta": {
-              "cssClassName": "cssClassName",
-              "notificationAlertSound": "defaultNotificationSound"
+      "center": {
+        "component": "center",
+        "configuration": {
+          "showAllTimelines": false
+        }
+      },
+      "drawer": {
+        "component": "drawer",
+        "configuration": {
+          "filter": {
+            "exclude": [
+              {
+                "type": "toast"
+              }
+            ]
+          },
+          "muteFilters": [
+            {
+              "field": "meta.source",
+              "value": "/execution notifications|fx markets/"
             }
-          },
-          "displayPriority": 2
-        },
-        "toast": {
-          "component": "toast",
-          "showDismissAction": false,
-          "defaults": {
-            "timeout": 2000,
-            "headerLogo": "toast logo",
-            "contentLogo": "toast content logo"
-          },
-          "displayPriority": 2
-        },
-        "type3": {
-          "showDismissAction": true
+          ],
+          "position": {
+            "monitor": "primary",
+            "bottom": 0,
+            "left": 100
+          }
         }
       }
+    },
+    "types": {
+      "default": {
+        "component": "drawer",
+        "showDismissAction": true,
+        "defaultDismissButtonText": "Default Button Text",
+        "defaults": {
+          "timeout": 1234,
+          "headerLogo": "defaultHeaderLogo",
+          "contentLogo": "defaultContentLogo",
+          "title": "defaultTitle",
+          "details": "defaultDetails",
+          "headerText": "defaultHeaderText",
+          "meta": {
+            "cssClassName": "cssClassName",
+            "notificationAlertSound": "defaultNotificationSound"
+          }
+        },
+        "displayPriority": 2
+      },
+      "toast": {
+        "component": "toast",
+        "showDismissAction": false,
+        "defaults": {
+          "timeout": 2000,
+          "headerLogo": "toast logo",
+          "contentLogo": "toast content logo"
+        },
+        "displayPriority": 2
+      },
+      "type3": {
+        "showDismissAction": true
+      }
     }
+  }
+
   }
 }

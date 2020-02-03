@@ -35,6 +35,7 @@ export default class ServiceHelper {
 	}
 
 	public static getServiceDefaults(config: Object): Object {
+		// TODO: Fix. does not work!
 		const defaults = Object.assign({}, config);
 		if (defaults.hasOwnProperty("types")) {
 			delete defaults["types"];

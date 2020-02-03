@@ -5,6 +5,9 @@ import NotificationClient, {
 } from "../../services/notification/notificationClient";
 import Notification from "../../types/Notification-definitions/Notification";
 import Action from "../../types/Notification-definitions/Action";
+import {FSBL} from "../../types/FSBL-definitions/globals";
+import INotification from "../../types/Notification-definitions/INotification";
+import IAction from "../../types/Notification-definitions/IAction";
 
 /**
  * A manual Notifications source
@@ -43,7 +46,7 @@ const sendNotifications = () => {
 	not2.source = source;
 	not2.headerText = "Notification Same Id";
 	not2.details = "Should only be in UI once";
-	not2.type = "chat";
+	not2.type = "web";
 	not2.headerLogo = "http://localhost:3375/components/finsemble-notifications/components/shared/assets/chat.svg";
 	not2.contentLogo = "http://localhost:3375/components/finsemble-notifications/components/shared/assets/sheild.png";
 
@@ -66,6 +69,9 @@ const sendNotifications = () => {
 	publish.payload = { xyzzy: "moo" };
 
 	not2.actions = [query, transmit, publish];
+
+	// webApiNotify(not1);
+	// webApiNotify(not2);
 
 	nClient.notify([not1, not2]);
 

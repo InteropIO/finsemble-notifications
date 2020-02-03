@@ -4,7 +4,7 @@
  * @property {string} type - Type of action.
  * @property {number} milliseconds - Milliseconds to snooze for.
  * @property {string} component - Component to spawn.
- * @property {Map<string, any>} spawnParams - params passed to the spawn function.
+ * @property {Object} spawnParams - params passed to the spawn function.
  * @property {string} channel - channel to transmit payload on.
  * @property payload {any} - payload transmitted along channel.
  *

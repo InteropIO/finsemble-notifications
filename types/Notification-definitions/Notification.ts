@@ -1,6 +1,7 @@
 import INotification from "./INotification";
 import IPerformedAction from "./IPerformedAction";
 import IAction from "./IAction";
+import Meta from "./NotificationMeta";
 
 export default class Notification implements INotification {
 	id?: string;
@@ -19,7 +20,7 @@ export default class Notification implements INotification {
 	isSnoozed: boolean;
 
 	actions?: IAction[];
-	meta?: Object;
+	meta?: Meta;
 	actionsHistory?: IPerformedAction[];
 	stateHistory: INotification[];
 
@@ -28,7 +29,7 @@ export default class Notification implements INotification {
 		this.isActionPerformed = false;
 		this.isSnoozed = false;
 		this.actionsHistory = [];
-		this.meta = {};
+		this.meta = new Meta();
 		this.stateHistory = [];
 	}
 }

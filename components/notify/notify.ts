@@ -22,7 +22,6 @@ const sendNotifications = () => {
 		"http://localhost:3375/components/finsemble-notifications/components/shared/assets/email.svg";
 	not1.contentLogo =
 		"http://localhost:3375/components/finsemble-notifications/components/shared/assets/graph.png";
-	not1.meta.cssClassName = "border-red";
 
 	const dismiss = new Action();
 	dismiss.buttonText = "Dismiss";
@@ -51,6 +50,7 @@ const sendNotifications = () => {
 		"http://localhost:3375/components/finsemble-notifications/components/shared/assets/chat.svg";
 	not2.contentLogo =
 		"http://localhost:3375/components/finsemble-notifications/components/shared/assets/sheild.png";
+	not2.meta.cssClassName = "border-red";
 
 	const query = new Action();
 	query.buttonText = "Send Query";

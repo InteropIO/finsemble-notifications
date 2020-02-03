@@ -1,5 +1,6 @@
 import IAction from "./IAction";
 import IPerformedAction from "./IPerformedAction";
+import Meta from "./Meta";
 
 /**
  * @property {string} id - Either sent when notification is created to refer to id an external |
@@ -34,7 +35,7 @@ export default interface INotification {
 	contentLogo?: string;
 	actions?: IAction[];
 	timeout?: number;
-	meta?: Object;
+	meta?: Meta;
 	isActionPerformed: boolean;
 	isSnoozed: boolean;
 	actionsHistory?: IPerformedAction[];

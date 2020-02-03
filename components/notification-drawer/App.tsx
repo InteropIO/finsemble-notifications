@@ -10,22 +10,6 @@ function App(): React.ReactElement {
 
 	return (
 		<Drawer>
-			<div id="notifications-drawer__menu">
-				<img
-					src="../shared/assets/dashboard.svg"
-					id="notification-center-icon"
-					onClick={() =>
-						FSBL.Clients.LauncherClient.showWindow({
-							componentType: "notification-center"
-						})
-					}
-				/>
-				<img
-					src="../shared/assets/double_arrow.svg"
-					id="hide-icon"
-					onClick={() => FSBL.Clients.WindowClient.minimize()}
-				/>
-			</div>
 			<div>
 				{notifications &&
 					[...notifications].reverse().map(

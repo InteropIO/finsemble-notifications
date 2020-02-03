@@ -101,6 +101,13 @@ const timedNotification = () => {
 		customNot.contentLogo =
 			"http://localhost:3375/components/finsemble-notifications/components/shared/assets/call-center-agent.svg";
 		customNot.meta.cssClassName = "inverted";
+
+		const dismiss = new Action();
+		dismiss.buttonText = "Dismiss";
+		dismiss.type = ActionTypes.DISMISS;
+
+		customNot.actions = [dismiss];
+
 		nClient.notify([customNot]);
 	}, 30000);
 };

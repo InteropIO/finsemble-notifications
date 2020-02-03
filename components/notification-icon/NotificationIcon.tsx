@@ -48,7 +48,8 @@ function App(props: Props): React.ReactElement {
 						console.log(key, values);
 						const colors = {
 							chat: "#8b00c596",
-							email: "#005bc5"
+							email: "#005bc5",
+							timed: "#818400"
 						};
 						return (
 							<div

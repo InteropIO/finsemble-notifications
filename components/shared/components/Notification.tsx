@@ -41,12 +41,12 @@ const Notification = (props: Props) => {
 					includeSeconds: true
 				})
 			);
-		}, 10000);
+		}, 20000);
 		return () => clearInterval(id);
 	});
 
 	return (
-		<div className="notification">
+		<div className={`notification ${(meta && meta.cssClassName) || ""}`}>
 			<div className="detail-area">
 				<div>
 					<img src={headerLogo} />

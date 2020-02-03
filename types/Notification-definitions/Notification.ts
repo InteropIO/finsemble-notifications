@@ -28,7 +28,7 @@ export default class Notification implements INotification {
 		this.isActionPerformed = false;
 		this.isSnoozed = false;
 		this.actionsHistory = [];
-		this.meta = new Map<string, any>();
+		this.meta = {};
 		this.stateHistory = [];
 	}
 }

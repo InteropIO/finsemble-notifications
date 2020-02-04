@@ -17,6 +17,9 @@
 							"include": [
 								{
 									"type": "email"
+								},
+								{
+									"type": "timed"
 								}
 							],
 							"exclude": []

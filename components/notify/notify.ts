@@ -109,7 +109,7 @@ const timedNotification = () => {
 		customNot.actions = [dismiss];
 
 		nClient.notify([customNot]);
-	}, 30000);
+	}, 20000);
 };
 
 if (window.FSBL && FSBL.addEventListener) {

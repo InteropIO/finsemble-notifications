@@ -29,7 +29,7 @@ function Drawer(props: Props): React.ReactElement {
 			className={animationClass}
 			onAnimationEnd={animationComplete}
 		>
-						<div id="notifications-drawer__menu">
+			<div id="notifications-drawer__menu">
 				<img
 					src="../shared/assets/dashboard.svg"
 					id="notification-center-icon"
@@ -42,7 +42,7 @@ function Drawer(props: Props): React.ReactElement {
 				<img
 					src="../shared/assets/double_arrow.svg"
 					id="hide-icon"
-					onClick={() => setAnimationClass("slide-out-right");}
+					onClick={() => setAnimationClass("slide-out-right")}
 				/>
 			</div>
 			{props.children}

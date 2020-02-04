@@ -41,7 +41,7 @@ const Notification = (props: Props) => {
 					includeSeconds: true
 				})
 			);
-		}, 20000);
+		}, 10000);
 		return () => clearInterval(id);
 	});
 

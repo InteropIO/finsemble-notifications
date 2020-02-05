@@ -24,6 +24,7 @@ export default class ServiceHelper {
 	 */
 
 	public static normaliseConfig(config: Object): Object {
+		// TODO: Input validation
 		return {
 			"service": ServiceHelper.getServiceDefaults(config),
 			"types": ServiceHelper.getTypes(config)
@@ -136,11 +137,13 @@ export default class ServiceHelper {
 
 	public static filterMatches(filter: IFilter, notification: INotification): boolean {
 		// All notifications match if the filters are empty
-		if(filter.include && !filter.include.length && filter.exclude && !filter.exclude.length) {
+		const hasIncludeFilters = filter.include && filter.include.length > 0;
+		const hasExcludeFilters = filter.exclude && filter.exclude.length > 0;
+		if(!hasIncludeFilters && !hasExcludeFilters) {
 			return true
 		}
 
-		let isMatch = false;
+		let isMatch = !hasIncludeFilters;
 
 		filter.include.forEach((filterToMatch) => {
 			if(searchJS.matchObject(notification, filterToMatch)) {

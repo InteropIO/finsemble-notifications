@@ -308,13 +308,13 @@ describe("Filtering", () => {
 
 		cheese.source = "cheese";
 
-		expect(ServiceHelper.filterMatches(filter, cheese)).to.equal(true, "It should exclude cheese");
+		expect(ServiceHelper.filterMatches(filter, cheese)).to.equal(true, "Should include result");
 
 		cheese.type = "toast";
 
 		filter.exclude.push({"type": "toast"});
 
-		expect(ServiceHelper.filterMatches(filter, cheese)).to.equal(false, "Don't include 'cheese toast'");
+		expect(ServiceHelper.filterMatches(filter, cheese)).to.equal(false, "Don't exclude result'");
 	});
 
 	it("Can match meta", () => {
@@ -324,7 +324,7 @@ describe("Filtering", () => {
 
 		filter.include.push({"meta.tomato": "yes"});
 
-		expect(ServiceHelper.filterMatches(filter, cheese)).to.equal(true, "It should have tomato");
+		expect(ServiceHelper.filterMatches(filter, cheese)).to.equal(true, "filters matches on meta data");
 	});
 
 	it("Can include some and exclude some", () => {
@@ -333,11 +333,10 @@ describe("Filtering", () => {
 
 		cheese.meta["tomato"] = "yes";
 
-		filter.include.push({"meta.tomato": "yes"});
 		filter.exclude.push({"source": "cheese"});
-		expect(ServiceHelper.filterMatches(filter, cheese)).to.equal(true, "It should have tomato");
+		expect(ServiceHelper.filterMatches(filter, cheese)).to.equal(true, "Can use filter with exclude only - does not exclude if no match");
 
 		cheese.source = "cheese";
-		expect(ServiceHelper.filterMatches(filter, cheese)).to.equal(false, "It should not have cheese");
+		expect(ServiceHelper.filterMatches(filter, cheese)).to.equal(false, "Can use filter with exclude only - excludes if match");
 	});
 });

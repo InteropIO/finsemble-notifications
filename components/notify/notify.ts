@@ -46,7 +46,7 @@ const sendNotifications = () => {
 	not2.source = source;
 	not2.headerText = "Notification Same Id";
 	not2.details = "Should only be in UI once";
-	not2.type = "web";
+	not2.type = "chat";
 	not2.headerLogo = "http://localhost:3375/components/finsemble-notifications/components/shared/assets/chat.svg";
 	not2.contentLogo = "http://localhost:3375/components/finsemble-notifications/components/shared/assets/sheild.png";
 

@@ -51,7 +51,10 @@ export default class NotificationService extends Finsemble.baseService implement
 	private proxyToWebAPiFilter: IFilter|false;
 	private routerWrapper: RouterWrapper;
 
-	private config: object;
+	private config: object = {
+		"service": {},
+		"types": {}
+	};
 
 	/**
 	 * Initializes a new instance of the NotificationService class.
@@ -139,8 +142,7 @@ export default class NotificationService extends Finsemble.baseService implement
 				);
 			}
 		}));
-		console.log(this.proxyToWebAPiFilter);
-		if (this.proxyToWebAPiFilter &&ServiceHelper.filterMatches(this.proxyToWebAPiFilter, notification)) {
+		if (this.config['service']['proxyToWebAPiFilter'] && ServiceHelper.filterMatches(this.config['service']['proxyToWebAPiFilter'], notification)) {
 			this.webApiNotify(notification);
 		}
 	}
@@ -685,17 +687,7 @@ export default class NotificationService extends Finsemble.baseService implement
 	}
 
 	private applyConfigChange(err, config) {
-		console.log(config);
-		this.config = ServiceHelper.normaliseConfig(
-			config && config.servicesConfig && config.servicesConfig.hasOwnProperty('notifications') ?
-				config.servicesConfig.notifications :
-				null
-		);
-
-		if (config.hasOwnProperty('proxyToWebAPiFilter') && config['proxyToWebAPiFilter']) {
-			// TODO: Input validation
-			this.proxyToWebAPiFilter = config['proxyToWebAPiFilter'];
-		}
+		this.config = ServiceHelper.normaliseConfig(config);
 	}
 
 	/**

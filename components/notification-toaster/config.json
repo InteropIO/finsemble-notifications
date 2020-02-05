@@ -18,7 +18,7 @@
 			},
 			"component": {
 				"preload": false,
-				"spawnOnStartup": false,
+				"spawnOnStartup": true,
 				"singleton": true
 			},
 			"foreign": {

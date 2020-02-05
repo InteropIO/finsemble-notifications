@@ -38,6 +38,7 @@ You can do this by doing the following:
 2. cd into the submodule directory: `cd finsemble-notifications`
 3. Install the required packages to run `npm install --production`
 5. Make sure your seed can transpile tsx by adding `"jsx": "react"` to your seed's `compilerOptions` in the `tsconfig.json`
+5. In the seed, edit _./build/webpack/defaultWebpackConfig.js_ in the section for the `ts-loader`, set `"test": /\.ts(x)?$/` if it's not already.
 
 ### Finsemble Config
 You now have the source in your seed. Now you need to tell Finsemble to use it.  

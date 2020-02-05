@@ -310,12 +310,12 @@ export default class NotificationService extends Finsemble.baseService implement
 	}
 
 	dismiss(notification: INotification, action: IAction): INotification {
-		notification.isActionPerformed = true;
+		notification.isRead = true;
 		return notification;
 	}
 
 	spawn(notification: INotification, action: IAction): INotification {
-		notification.isActionPerformed = true;
+		notification.isRead = true;
 		Finsemble.Clients.LauncherClient.spawn(action.component, action.spawnParams);
 		return notification;
 	}
@@ -538,7 +538,7 @@ export default class NotificationService extends Finsemble.baseService implement
 	private forwardAsQuery(notification: INotification, action: IAction): INotification {
 		this.validateForwardParams(action);
 		try {
-			notification.isActionPerformed = true;
+			notification.isRead = true;
 			this.routerWrapper.query(
 				action.channel,
 				{
@@ -549,7 +549,7 @@ export default class NotificationService extends Finsemble.baseService implement
 			);
 		} catch (error) {
 			Finsemble.Clients.Logger.error(`Error performing action on channel channel: '${action.channel}'`);
-			notification.isActionPerformed = false;
+			notification.isRead = false;
 		}
 
 		return notification;
@@ -566,7 +566,7 @@ export default class NotificationService extends Finsemble.baseService implement
 			''
 		);
 
-		notification.isActionPerformed = true;
+		notification.isRead = true;
 		return notification;
 	}
 
@@ -581,7 +581,7 @@ export default class NotificationService extends Finsemble.baseService implement
 			''
 		);
 
-		notification.isActionPerformed = true;
+		notification.isRead = true;
 		return notification;
 	}
 

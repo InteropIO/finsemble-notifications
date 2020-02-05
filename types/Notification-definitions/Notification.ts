@@ -15,7 +15,7 @@ export default class Notification implements INotification {
 	contentLogo?: string;
 	timeout?: number;
 
-	isActionPerformed: boolean;
+	isRead: boolean;
 	isSnoozed: boolean;
 
 	actions?: IAction[];
@@ -25,7 +25,7 @@ export default class Notification implements INotification {
 
 	constructor() {
 		this.actions = [];
-		this.isActionPerformed = false;
+		this.isRead = false;
 		this.isSnoozed = false;
 		this.actionsHistory = [];
 		this.meta = {};

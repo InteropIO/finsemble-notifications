@@ -149,23 +149,14 @@ export default class NotificationService extends Finsemble.baseService implement
 
 	webApiNotify(notification: INotification): void {
 		let options = convertNotificationToWebApi(notification);
-		let title = notification.title + notification.headerText? ` - ${notification.headerText}`: '';
+		let title =  [];
+		notification.title ? title.push(notification.title):null;
+		notification.title ? title.push(notification.headerText):null;
 
 		// TODO: Implement Actions by using ServiceWorkerRegistration.showNotification()
-		new window.Notification(title, options);
+		new window.Notification(title.join(' - '), options);
 
 		function convertNotificationToWebApi(notification: INotification) {
-			function getActions(actions: IAction[]) {
-				let webActions:{}[] = [];
-
-				actions.forEach(action => {
-					webActions.push({
-						"title": "Action title"
-					})
-				});
-				return webActions;
-			}
-
 			return {
 				"body": notification.details,
 				"icon": notification.contentLogo? notification.contentLogo : notification.headerLogo,

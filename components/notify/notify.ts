@@ -6,15 +6,13 @@ import NotificationClient, {
 import Notification from "../../types/Notification-definitions/Notification";
 import Action from "../../types/Notification-definitions/Action";
 import {FSBL} from "../../types/FSBL-definitions/globals";
-import INotification from "../../types/Notification-definitions/INotification";
-import IAction from "../../types/Notification-definitions/IAction";
 
 /**
  * A manual Notifications source
  */
 let nClient: NotificationClient = null;
 const sendNotifications = () => {
-	const source = document.getElementById("feed-source").value;
+	const source = (<HTMLInputElement>document.getElementById("feed-source")).value;
 	const not1 = new Notification();
 	not1.issuedAt = new Date().toISOString();
 	not1.source = source;
@@ -70,16 +68,13 @@ const sendNotifications = () => {
 
 	not2.actions = [query, transmit, publish];
 
-	// webApiNotify(not1);
-	// webApiNotify(not2);
-
 	nClient.notify([not1, not2]);
 
 	document.getElementById("feed-last-issued").innerText = not2.issuedAt;
 };
 
 const getLastIssuedAt = () => {
-	const source = document.getElementById("feed-source").value;
+	const source = (<HTMLInputElement>document.getElementById("feed-source")).value;
 
 	nClient.getLastIssuedAt(source).then(issuedDate => {
 		document.getElementById("service-last-issued").innerText = issuedDate;

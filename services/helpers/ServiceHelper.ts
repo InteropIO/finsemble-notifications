@@ -137,8 +137,8 @@ export default class ServiceHelper {
 
 	public static filterMatches(filter: IFilter, notification: INotification): boolean {
 		// All notifications match if the filters are empty
-		const hasIncludeFilters = filter.include && filter.include.length > 0;
-		const hasExcludeFilters = filter.exclude && filter.exclude.length > 0;
+		const hasIncludeFilters = filter && filter.include && filter.include.length > 0;
+		const hasExcludeFilters = filter && filter.exclude && filter.exclude.length > 0;
 		if(!hasIncludeFilters && !hasExcludeFilters) {
 			return true
 		}

@@ -248,6 +248,20 @@ describe("Filtering", () => {
 
 	it("Can match an empty filter", () => {
 		const cheese = new Notification();
+
+		expect(ServiceHelper.filterMatches(new Filter(), cheese)).to.equal(true, "Empty filter should always return true");
+
+		// @ts-ignore
+		expect(ServiceHelper.filterMatches({}, cheese)).to.equal(true, "Empty filter should always return true");
+
+		expect(ServiceHelper.filterMatches(null, cheese)).to.equal(true, "Empty filter should always return true");
+
+	});
+
+
+
+	it("Can match an empty filter", () => {
+		const cheese = new Notification();
 		const filter = new Filter();
 
 		expect(ServiceHelper.filterMatches(filter, cheese)).to.equal(true, "Empty filter should always return true");

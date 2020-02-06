@@ -78,7 +78,8 @@ Providing defaults and changing the behaviour of the Service and Components
 
 ### Configuring the Service
 Certain directives can be provided to the service. 
-You can do this by adding a `notifications` object to the `servicesConfig` object in `./configs/application/config.json` in the finsemble seed:
+You can do this by adding a `notifications` object to the `servicesConfig` object in `./configs/application/config.json` in the finsemble seed.
+All the configuration below is optional:
 
 ```
 {
@@ -86,6 +87,15 @@ You can do this by adding a `notifications` object to the `servicesConfig` objec
     "servicesConfig": {
         ...
         "notifications": {
+            // Broadcast any notifications that match this filter to the Notication Web API to appear in the OS.
+            // See 'Receiveing Notifications' for more details
+            "proxyToWebAPiFilter": {
+                "include": [{
+                    "type": "web"
+                }],
+                "exclude": []
+            },
+
             // If the service needs to add dismiss actions to the button. The text will default 
             // to the value set here as a last resort. There is a hardcoded value if this not set.
             "defaultDismissButtonText": "Dismiss",
@@ -153,7 +163,7 @@ notifications using the [selective configuration method](#selective-finsemble-co
 
 ## Using the Notifications API
 
-This package also includes two example components and one example service to give an example how to send, receive and 
+This package includes two example components and an example service to give an example how to send, receive and 
 performing custom actions on notifications.
 
 ### Running the examples

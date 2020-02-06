@@ -20,24 +20,26 @@ function App(): React.ReactElement {
 			<Drawer notifications={notifications} windowShowParams={config}>
 				{notifications &&
 					notifications.map(
-						(notification: INotification) =>
-							!notification.isActionPerformed &&
-							!notification.isSnoozed && (
-								<Animate
-									key={notification.id}
-									displayDuration={config.displayDuration}
-									animateIn={config.animateIn}
-									animateOut={config.animateOut}
-									animateOutComplete={() => removeNotification(notification)}
-								>
-									<Notification
+						(notification: INotification) => {
+							const displayDuration = (notification.timeout) ? notification.timeout : config.displayDuration;
+							if(!notification.isActionPerformed && !notification.isSnoozed) { 
+								return (
+									<Animate
 										key={notification.id}
-										notification={notification}
-										doAction={doAction}
-										closeAction={() => removeNotification(notification)}
-									></Notification>
-								</Animate>
-							)
+										displayDuration={displayDuration}
+										animateIn={config.animateIn}
+										animateOut={config.animateOut}
+										animateOutComplete={() => removeNotification(notification)}
+									>
+										<Notification
+											key={notification.id}
+											notification={notification}
+											doAction={doAction}
+											closeAction={() => removeNotification(notification)}
+										></Notification>
+									</Animate>)
+								}
+						}
 					)}
 			</Drawer>
 		</StoreProvider>

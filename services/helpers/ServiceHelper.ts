@@ -146,17 +146,21 @@ export default class ServiceHelper {
 
 		let isMatch = !includeExists;
 
-		filter.include.forEach((filterToMatch) => {
-			if(searchJS.matchObject(notification, filterToMatch)) {
-				isMatch = true;
-			}
-		});
+		if (includeExists) {
+			filter.include.forEach((filterToMatch) => {
+				if(searchJS.matchObject(notification, filterToMatch)) {
+					isMatch = true;
+				}
+			});
+		}
 
-		filter.exclude.forEach((filterToMatch) => {
-			if(searchJS.matchObject(notification, filterToMatch)) {
-				isMatch = false;
-			}
-		});
+		if(excludeExists) {
+			filter.exclude.forEach((filterToMatch) => {
+				if(searchJS.matchObject(notification, filterToMatch)) {
+					isMatch = false;
+				}
+			});
+		}
 
 		return isMatch;
 	}

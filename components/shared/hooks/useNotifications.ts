@@ -198,7 +198,7 @@ export default function useNotifications() {
 
 	/**
 	 * 	 * get the past notifications
-	 * using a generic date from 2000 as a default
+	 * WARNING - The default will get all notifications all the way back from 1969!!!
 	 * @param since
 	 * @param filter
 	 */

@@ -148,14 +148,15 @@ export default class NotificationService extends Finsemble.baseService implement
 	}
 
 	webApiNotify(notification: INotification): void {
-
 		let options = convertNotificationToWebApi(notification);
+		let title = notification.title + notification.headerText? ` - ${notification.headerText}`: '';
 
-		new window.Notification(notification.headerText, options);
+		// TODO: Implement Actions by using ServiceWorkerRegistration.showNotification()
+		new window.Notification(title, options);
 
 		function convertNotificationToWebApi(notification: INotification) {
 			function getActions(actions: IAction[]) {
-				let webActions = [];
+				let webActions:{}[] = [];
 
 				actions.forEach(action => {
 					webActions.push({
@@ -167,8 +168,7 @@ export default class NotificationService extends Finsemble.baseService implement
 
 			return {
 				"body": notification.details,
-				// "icon": "",
-				// "actions": getActions(notification.actions)
+				"icon": notification.contentLogo? notification.contentLogo : notification.headerLogo,
 			}
 		}
 	}
@@ -686,7 +686,7 @@ export default class NotificationService extends Finsemble.baseService implement
 		return notifications;
 	}
 
-	private applyConfigChange(err, config) {
+	private applyConfigChange(err:any, config:any) {
 		this.config = ServiceHelper.normaliseConfig(config);
 	}
 

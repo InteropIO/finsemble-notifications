@@ -33,8 +33,6 @@ function init() {
 		addToList(notification);
 	};
 
-	FSBL.Clients.Logger.log("Starting Subscribe");
-
 	nClient.subscribe(
 		subscription
 	).then((subId) => {

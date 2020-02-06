@@ -155,18 +155,17 @@ export default class NotificationClient implements INotificationClient {
 	 * TODO: onSubscriptionSuccess and onSubscriptionFault can do a better job of explaining what params will be passed in
 	 */
 	subscribe(subscription: ISubscription, onSubscriptionSuccess?: Function, onSubscriptionFault?: Function): Promise<string> {
-		this.loggerClient.log("Attempting to subscribe: ", subscription);
+		this.loggerClient.log("Creating subscription: ", subscription);
 		return new Promise<string>(async (resolve, reject) => {
 			try {
 				// Get a channel from the service to monitor
-				this.loggerClient.log("Attempting to subscribe: ", subscription);
 				let returnValue = await this.routerWrapper.query(
 					ROUTER_ENDPOINTS.SUBSCRIBE,
 					JSON.parse(JSON.stringify(subscription)) // ISubscription has a callback that can't be sent across the router
 				);
 
 				// Monitor the channel and execute subscription.onNotification() for each one that arrives.
-				this.loggerClient.log("Got a return value containing a channel", returnValue);
+				this.loggerClient.info("Got a return value containing a channel", returnValue);
 				await this.monitorChannel(returnValue.channel, subscription.onNotification);
 				if (onSubscriptionSuccess) {
 					onSubscriptionSuccess(returnValue);
@@ -211,8 +210,7 @@ export default class NotificationClient implements INotificationClient {
 			this.routerWrapper.addResponder(
 				channel,
 				(queryMessage) => {
-					this.loggerClient.log("Incoming message on channel: ", queryMessage);
-					this.loggerClient.log(`Heard message on channel: ${channel}`, queryMessage);
+					this.loggerClient.log("Notification received: ", queryMessage.id);
 
 					// Catching user-code errors to allow for successful sending of receipt.
 					// TODO: 2nd pair of eyes: Is there situation where this will be confusing to anyone trying to debug an issue

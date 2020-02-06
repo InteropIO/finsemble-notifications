@@ -136,13 +136,15 @@ export default class ServiceHelper {
 
 	public static filterMatches(filter: IFilter, notification: INotification): boolean {
 		// All notifications match if the filters are empty
-		const hasIncludeFilters = filter && filter.include && filter.include.length > 0;
-		const hasExcludeFilters = filter && filter.exclude && filter.exclude.length > 0;
-		if(!hasIncludeFilters && !hasExcludeFilters) {
+		const includeExists:boolean = filter && filter.include && filter.include.length > 0;
+		const excludeExists:boolean = filter && filter.exclude && filter.exclude.length > 0;
+
+		if(!includeExists && !excludeExists) {
+			// Empty filters will match everything
 			return true
 		}
 
-		let isMatch = !hasIncludeFilters;
+		let isMatch = !includeExists;
 
 		filter.include.forEach((filterToMatch) => {
 			if(searchJS.matchObject(notification, filterToMatch)) {

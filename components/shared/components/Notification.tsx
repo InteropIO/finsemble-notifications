@@ -48,6 +48,9 @@ const Notification = (props: Props) => {
 				</div>
 				<div>
 					<p>{details}</p>
+					<p>
+						<i>Message ID:{id}</i>
+					</p>
 				</div>
 			</div>
 			<hr />

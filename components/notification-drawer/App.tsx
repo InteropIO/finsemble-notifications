@@ -20,7 +20,6 @@ function App(): React.ReactElement {
 								key={notification.id}
 								animateIn="slide-in-fwd-bottom"
 								animateOut="slide-out-right"
-								displayDuration={notification.timeout}
 							>
 								<Notification
 									key={notification.id}

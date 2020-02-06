@@ -1,4 +1,4 @@
-import { SpawnParams } from "./../../../finsemble-notifications-seed/finsemble/services/window/Launcher/launcher";
+import { SpawnParams } from "../../FSBL-definitions/services/window/Launcher/launcher";
 
 type SpawnParamsWithoutData = Omit<SpawnParams, "data">;
 

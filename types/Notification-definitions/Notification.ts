@@ -1,7 +1,7 @@
 import INotification from "./INotification";
 import IPerformedAction from "./IPerformedAction";
 import IAction from "./IAction";
-import Meta from "./NotificationMeta";
+import Meta from "./Meta";
 
 export default class Notification implements INotification {
 	id?: string;

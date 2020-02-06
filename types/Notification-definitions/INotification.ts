@@ -1,6 +1,6 @@
 import IAction from "./IAction";
 import IPerformedAction from "./IPerformedAction";
-import Meta from "./NotificationMeta";
+import Meta from "./Meta";
 
 /**
  * @property {string} id - Either sent when notification is created to refer to id an external |
@@ -10,7 +10,7 @@ import Meta from "./NotificationMeta";
  * @property {string} title - Main display title.
  * @property {string} source - The source that the notification originates from.
  * @property {string} details - Details about the notification mainly for display purposes.
- * @property {string} headerText - Display header.
+ * @property {string} headerText - An informational header additional to the title usually referencing the source.
  * @property {string} headerLogo - Logo to display in header section of a notification. HTML source data URI or URL, or CSS class. Defaults set by type in configuration.
  * @property {string} contentLogo - Logo to display in content section of a notification.HTML source data URI or URL, or CSS class. Defaults set by type in configuration.
  * @property {IAction[]} actions - List of actions which can be performed on a notification.
@@ -38,6 +38,7 @@ export default interface INotification {
 	meta?: Meta;
 	isActionPerformed: boolean;
 	isSnoozed: boolean;
+
 	actionsHistory?: IPerformedAction[];
 	stateHistory: INotification[];
 }

@@ -16,8 +16,6 @@ Initialise the client
 const client = new NotificationClient();
 ```
 
-**Note:** Initialising the client is different in a service. See the [example service](services/exampleCustomAction) for more details
-
 Create a notification and set the values
 ```typescript
 let notification = new Notification();

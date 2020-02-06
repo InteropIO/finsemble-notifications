@@ -1,6 +1,6 @@
 import * as React from "react";
 import INotification from "../../../types/Notification-definitions/INotification";
-import { getDate } from "date-fns";
+import { format, parseISO } from "date-fns";
 
 interface Props {
 	children?: React.PropsWithChildren<any>;
@@ -11,11 +11,11 @@ interface Props {
 const NotificationsPanel = (props: Props) => (
 	<section id="notification-center__notifications">
 		<div className="notification-center__notifications__rows">
-			<div>ID</div>
-			<div>Title</div>
-			<div>Details</div>
-			<div>Created</div>
-			<div>Type</div>
+			<h4>ID</h4>
+			<h4>Title</h4>
+			<h4>Header Text</h4>
+			<h4>Created</h4>
+			<h4>Type</h4>
 		</div>
 
 		{props.notifications.map((notification: INotification) => (
@@ -25,10 +25,12 @@ const NotificationsPanel = (props: Props) => (
 				onClick={() => props.setActiveNotification(notification)}
 			>
 				<div>{notification.id}</div>
+				<div>{notification.title} </div>
 				<div>{notification.headerText} </div>
-				<div>{notification.details} </div>
-				<div>{notification.issuedAt || getDate(new Date())} </div>
-				<div>{notification.type || "any"} </div>
+				<div>
+					{format(parseISO(notification.issuedAt), "yyyy-MM-dd' at 'HH:mm:ss")}
+				</div>
+				<div>{notification.type} </div>
 			</div>
 		))}
 	</section>

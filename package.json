@@ -4,7 +4,8 @@
   "description": "Notifications services and UI",
   "scripts": {
     "watch": "nodemon --delay 500ms -e js,ts,tsx,jsx,html,css,json copy.js",
-    "lint:fix": "eslint ./components --fix",
+    "copy-files":"node copy.js",
+    "lint:fix": "eslint ./components --fix ",
     "test": "mocha --color --bail",
     "test:watch": "nodemon --delay 500ms -e ts --exec \"mocha --color --bail\""
   },

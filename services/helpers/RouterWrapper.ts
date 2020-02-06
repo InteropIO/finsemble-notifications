@@ -77,11 +77,18 @@ export default class RouterWrapper {
 					data,
 					() => {} // Ignoring callback. Use the promise to get the result
 				);
-				this.loggerClient.log(`${channel} raw response: `, response);
-				if (callback) {
-					callback(null, response.response.data.data);
+
+				if(response.err) {
+					this.loggerClient.log(`Error: `, response.err);
+					reject(response.err);
+				} else {
+					this.loggerClient.log(`${channel} raw response: `, response);
+					if (callback) {
+						callback(null, response.response.data.data);
+					}
+					resolve(response.response.data.data);
 				}
-				resolve(response.response.data.data);
+
 			} catch (e) {
 				this.loggerClient.log(`Error: `, e);
 				if (callback) {
@@ -121,6 +128,15 @@ export default class RouterWrapper {
 				message.sendQueryResponse(err);
 			}
 		});
+	}
+
+	public removeResponder(channel: string, channelPrefix?: string) {
+		if (channelPrefix == null) {
+			channelPrefix = ROUTER_ENDPOINTS.CHANNEL_PREFIX;
+		}
+
+		this.routerClient.removeResponder(channelPrefix + channel);
+
 	}
 
 	/**

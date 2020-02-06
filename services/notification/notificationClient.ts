@@ -28,6 +28,8 @@ export default class NotificationClient implements INotificationClient {
 	 */
 	private loggerClient: any;
 
+	private subscriptions: any[] = [];
+
 	/**
 	 * Constructor
 	 * Params are options but need to be set if intending to use in a services
@@ -45,6 +47,12 @@ export default class NotificationClient implements INotificationClient {
 
 		if (!this.loggerClient) {
 			this.loggerClient = typeof FSBL !== "undefined" ? FSBL.Clients.Logger : Logger;
+		}
+
+		if(window && window.addEventListener) {
+			window.addEventListener('unload', () => {
+				this.unsubscribeAll()
+			})
 		}
 	}
 
@@ -171,6 +179,8 @@ export default class NotificationClient implements INotificationClient {
 				if (onSubscriptionSuccess) {
 					onSubscriptionSuccess(returnValue);
 				}
+
+				this.subscriptions.push(returnValue);
 				resolve(returnValue.id);
 			} catch (e) {
 				if (onSubscriptionFault) {
@@ -191,11 +201,32 @@ export default class NotificationClient implements INotificationClient {
 		return new Promise<void>(async (resolve, reject) => {
 			try {
 				await this.routerWrapper.query(ROUTER_ENDPOINTS.UNSUBSCRIBE, subscriptionId);
+				this.cleanupSubscription(subscriptionId);
 				resolve();
 			} catch (e) {
 				reject(e);
 			}
 		});
+	}
+
+	public unsubscribeAll():void {
+		this.subscriptions.forEach((subscription) => {
+			this.routerWrapper.query(ROUTER_ENDPOINTS.UNSUBSCRIBE, subscription.id);
+			this.routerWrapper.removeResponder(subscription.id);
+		});
+
+		this.subscriptions = [];
+	}
+
+	private  cleanupSubscription(subscriptionId: string) {
+		const index = this.subscriptions.findIndex((element:any) => {
+			element.id = subscriptionId
+		});
+
+		if(index > -1) {
+			this.routerWrapper.removeResponder(this.subscriptions[index].channel);
+			this.subscriptions.splice(index, 1);
+		}
 	}
 
 

@@ -12,6 +12,7 @@ import LastIssued from "../../types/Notification-definitions/LastIssued";
 import Action from "../../types/Notification-definitions/Action";
 import IPerformedAction from "../../types/Notification-definitions/IPerformedAction";
 import ServiceHelper from "../helpers/ServiceHelper";
+import IFilter from "../../types/Notification-definitions/IFilter";
 
 const ImmutableMap = require('immutable').Map;
 const uuidv4 = require('uuid/v4');
@@ -47,9 +48,13 @@ export default class NotificationService extends Finsemble.baseService implement
 		lastIssued: Map<string, ILastIssued>
 	};
 
+	private proxyToWebAPiFilter: IFilter|false;
 	private routerWrapper: RouterWrapper;
 
-	private config: object;
+	private config: object = {
+		"service": {},
+		"types": {}
+	};
 
 	/**
 	 * Initializes a new instance of the NotificationService class.
@@ -68,6 +73,7 @@ export default class NotificationService extends Finsemble.baseService implement
 			}
 		});
 
+		this.proxyToWebAPiFilter = false;
 		this.storageAbstraction = {
 			subscriptions: new Map<string, ISubscription>(),
 			snoozeTimers: new Map<string, ISnoozeTimer>(),
@@ -136,6 +142,26 @@ export default class NotificationService extends Finsemble.baseService implement
 				);
 			}
 		}));
+		if (this.config['service']['proxyToWebAPiFilter'] && ServiceHelper.filterMatches(this.config['service']['proxyToWebAPiFilter'], notification)) {
+			this.webApiNotify(notification);
+		}
+	}
+
+	webApiNotify(notification: INotification): void {
+		let options = convertNotificationToWebApi(notification);
+		let title =  [];
+		notification.title ? title.push(notification.title):null;
+		notification.title ? title.push(notification.headerText):null;
+
+		// TODO: Implement Actions by using ServiceWorkerRegistration.showNotification()
+		new window.Notification(title.join(' - '), options);
+
+		function convertNotificationToWebApi(notification: INotification) {
+			return {
+				"body": notification.details,
+				"icon": notification.contentLogo? notification.contentLogo : notification.headerLogo,
+			}
+		}
 	}
 
 
@@ -357,6 +383,7 @@ export default class NotificationService extends Finsemble.baseService implement
 	}
 
 	public unsubscribe(subscriptionId: string) {
+		Finsemble.Clients.Logger.log(`Removing notification subscription: ${subscriptionId}`);
 		if (this.storageAbstraction.subscriptions.has(subscriptionId)) {
 			this.storageAbstraction.subscriptions.delete(subscriptionId);
 		}
@@ -651,13 +678,8 @@ export default class NotificationService extends Finsemble.baseService implement
 		return notifications;
 	}
 
-	private applyConfigChange(err, config) {
-		console.log(err, config);
-		this.config = ServiceHelper.normaliseConfig(
-			config && config.servicesConfig && config.servicesConfig.hasOwnProperty('notifications') ?
-				config.servicesConfig.notifications :
-				null
-		);
+	private applyConfigChange(err:any, config:any) {
+		this.config = ServiceHelper.normaliseConfig(config);
 	}
 
 	/**

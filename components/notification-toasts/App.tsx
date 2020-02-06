@@ -25,7 +25,7 @@ function App(): React.ReactElement {
 							!notification.isSnoozed && (
 								<Animate
 									key={notification.id}
-									displayDuration={config.displayDuration}
+									displayDuration={(notification.timeout) ? notification.timeout : config.displayDuration}
 									animateIn={config.animateIn}
 									animateOut={config.animateOut}
 									animateOutComplete={() => removeNotification(notification)}

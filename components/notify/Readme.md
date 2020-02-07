@@ -8,7 +8,6 @@ Import the NotificationClient and Notification classes.
 ```typescript
 import NotificationClient from '../finsemble-notifications/services/notification/notificationClient';
 import Notification from '../finsemble-notifications/types/Notification-definitions/Notification';
-
 ```
  
 Initialise the client

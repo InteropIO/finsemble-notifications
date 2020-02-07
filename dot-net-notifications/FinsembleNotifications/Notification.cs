@@ -68,9 +68,6 @@ namespace ChartIQ.Finsemble.Notifications
 			//	}
 			//	}
 			//});
-		}
+	}
 
-    }
-
-	
 }

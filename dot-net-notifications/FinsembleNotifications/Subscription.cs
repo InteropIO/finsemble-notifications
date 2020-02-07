@@ -13,6 +13,11 @@ namespace ChartIQ.Finsemble.Notifications
 		public Filter filter { get; set; }
 		public String channel { get; set; }
 
+		public Subscription(Filter filter)
+		{
+			this.filter = filter;
+		}
+
 		public static Subscription fromJObject(JObject obj)
 		{
 			//convert JOBject to Subscription:

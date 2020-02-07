@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Windows;
 using log4net;
 
-namespace WPFExample
+namespace NotifyComponent
 {
 	/// <summary>
 	/// Interaction logic for App.xaml

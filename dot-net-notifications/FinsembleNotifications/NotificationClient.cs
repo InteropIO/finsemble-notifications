@@ -52,7 +52,7 @@ namespace ChartIQ.Finsemble.Notifications
 					JToken subIdToken = args.response["data"];
 					String subId = subIdToken.ToString();
 					bridge.RPC("Logger.log", new List<JToken> { "Got subscription id: " + subId });
-					setupSubscriptionResponder(onNotification, subId);
+					setupSubscriptionResponder(subId, onNotification);
 
 					onSubscription(s, new FinsembleEventArgs(args.error, subIdToken));
 				}
@@ -127,7 +127,7 @@ namespace ChartIQ.Finsemble.Notifications
 			}
 			if (filter != null)
 			{
-				args.Add("filter, filter.toJObject());
+				args.Add("filter", filter.toJObject());
 			}
 			routerClient.Query(ROUTER_ENDPOINT_LAST_ISSUED, args, responseHandler);
 			//TODO convert to array of notifications before passing to callback

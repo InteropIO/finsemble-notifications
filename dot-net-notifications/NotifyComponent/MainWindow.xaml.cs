@@ -8,7 +8,7 @@ using log4net;
 using Newtonsoft.Json.Linq;
 using ChartIQ.Finsemble.Notifications;
 
-namespace NotifyExample
+namespace NotifyComponent
 {
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
@@ -38,12 +38,8 @@ namespace NotifyExample
 			FSBL.Connect();
 		}
 
-		private void SpawnComponent_Click(object sender, RoutedEventArgs e)
+		private void Notification_1_Click(object sender, RoutedEventArgs e)
 		{
-
-
-
-
 			//object selected = ComponentSelect.SelectedValue;
 			//if (selected != null)
 			//{
@@ -53,6 +49,16 @@ namespace NotifyExample
 			//		new JObject { ["addToWorkspace"] = true }
 			//	}, (s, a) => { });
 			//}
+		}
+
+		private void Notification_2_Click(object sender, RoutedEventArgs e)
+		{
+			
+		}
+
+		private void Notification_3_Click(object sender, RoutedEventArgs e)
+		{
+			
 		}
 
 		private void Finsemble_Connected(object sender, EventArgs e)

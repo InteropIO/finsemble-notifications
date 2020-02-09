@@ -4,6 +4,7 @@ import useNotifications from "../shared/hooks/useNotifications";
 import INotification from "../../types/Notification-definitions/INotification";
 import Animate from "../shared/components/Animate";
 import NotificationIcon from "../notification-icon/NotificationIcon";
+import Center from "../shared/assets/center.svg";
 
 function App(): React.ReactElement {
 	const { notifications, doAction } = useNotifications();
@@ -18,7 +19,8 @@ function App(): React.ReactElement {
 	return (
 		<>
 			<div className="drag-area drag-box"></div>
-			<NotificationIcon action={showDrawer} />
+			<NotificationIcon className="toaster-icons" action={showDrawer} />
+			<Center />
 		</>
 	);
 }

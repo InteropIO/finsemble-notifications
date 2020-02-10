@@ -10,7 +10,7 @@ namespace ChartIQ.Finsemble.Notifications
     public class Notification
     {
 		public String id;
-		public String issuedAt;
+		public DateTime issuedAt;
 		public String receivedAt;
 		public String type;
 		public String source;

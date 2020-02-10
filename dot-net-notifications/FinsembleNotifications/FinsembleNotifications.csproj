@@ -100,6 +100,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Action.cs" />
+    <Compile Include="ActionTypes.cs" />
     <Compile Include="NotificationClient.cs" />
     <Compile Include="Filter.cs" />
     <Compile Include="Notification.cs" />

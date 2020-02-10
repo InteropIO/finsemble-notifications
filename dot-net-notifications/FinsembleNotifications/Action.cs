@@ -30,6 +30,7 @@ namespace ChartIQ.Finsemble.Notifications
 		{
 			return JObject.FromObject(this);
 		}
+
 	}
 
 	

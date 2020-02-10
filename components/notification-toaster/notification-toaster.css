@@ -14,10 +14,15 @@
 
 body {
 	margin: 0px;
-	/* position: absolute; */
-	/* bottom: 0; */
+}
+#notifications-toaster {
+	display: flex;
+	align-items: center;
+	justify-content: space-around;
+	margin: 0;
+	padding: 0;
 	overflow: hidden;
-	width: 158px;
+	width: 120px;
 	height: 32px;
 	background: #22262f;
 	border-radius: 13px;
@@ -25,6 +30,7 @@ body {
 
 .drag-area {
 	-webkit-app-region: drag;
+	cursor: pointer;
 }
 
 .drag-box {
@@ -39,7 +45,30 @@ body {
 }
 
 .toaster-icons {
-	width: 20px;
-	height: 20px;
-	padding: 5px;
+	cursor: pointer;
+}
+.toaster-icons:hover > path {
+	fill: rgb(145, 62, 240);
+}
+
+#toaster-divider {
+	height: 24px;
+	border-left: 1px solid #00000047;
+}
+
+#notification-number {
+	border-radius: 100%;
+	background: #007eff;
+	padding: 2px;
+	font-size: 0.6em;
+	color: white;
+	font-family: roboto, sans-serif;
+	width: fit-content;
+	min-width: 10px;
+	height: fit-content;
+	position: absolute;
+	left: 35px;
+	top: 1px;
+	margin: 0;
+	text-align: center;
 }

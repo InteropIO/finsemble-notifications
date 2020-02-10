@@ -1,10 +1,9 @@
 import * as React from "react";
-import Notification from "../shared/components/Notification";
 import useNotifications from "../shared/hooks/useNotifications";
-import INotification from "../../types/Notification-definitions/INotification";
-import Animate from "../shared/components/Animate";
-import NotificationIcon from "../notification-icon/NotificationIcon";
-import Center from "../shared/assets/center.svg";
+import DragHandleIcon from "../shared/components/icons/DragHandleIcon";
+import NotificationIcon from "../shared/components/icons/NotificationIcon";
+import CenterIcon from "../shared/components/icons/CenterIcon";
+import SettingsIcon from "../shared/components/icons/settings";
 
 function App(): React.ReactElement {
 	const { notifications, doAction } = useNotifications();
@@ -16,11 +15,27 @@ function App(): React.ReactElement {
 			console.log
 		);
 	};
+	const showCenter = () => {
+		console.log("CLICKEDDDDDDD");
+		FSBL.Clients.LauncherClient.showWindow(
+			{ windowName: "", componentType: "notification-center" },
+			{},
+			console.log
+		);
+	};
 	return (
 		<>
-			<div className="drag-area drag-box"></div>
-			<NotificationIcon className="toaster-icons" action={showDrawer} />
-			<Center />
+			<DragHandleIcon className="drag-area" />
+			{notifications.length > 0 && (
+				<div id="notification-number">{notifications.length}</div>
+			)}
+			<NotificationIcon
+				className="toaster-icons"
+				onClick={() => showDrawer()}
+			/>
+			<CenterIcon className="toaster-icons" onClick={() => showCenter()} />
+			<div id="toaster-divider"></div>
+			<SettingsIcon className="toaster-icons" />
 		</>
 	);
 }

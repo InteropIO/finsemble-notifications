@@ -70,7 +70,7 @@ export default class RouterWrapper {
 				if (channelPrefix == null) {
 					channelPrefix = ROUTER_ENDPOINTS.CHANNEL_PREFIX;
 				}
-				this.loggerClient.log(`Wrapper: sending message on ${channelPrefix + channel} channel`, data);
+				this.loggerClient && this.loggerClient.info(`Wrapper: sending message on ${channelPrefix + channel} channel`, data);
 
 				let response = await this.routerClient.query(
 					channelPrefix + channel,
@@ -79,10 +79,10 @@ export default class RouterWrapper {
 				);
 
 				if(response.err) {
-					this.loggerClient.log(`Error: `, response.err);
+					this.loggerClient && this.loggerClient.error(`Error: `, response.err);
 					reject(response.err);
 				} else {
-					this.loggerClient.log(`${channel} raw response: `, response);
+					this.loggerClient && this.loggerClient && this.loggerClient.log(`${channel} raw response: `, response);
 					if (callback) {
 						callback(null, response.response.data.data);
 					}
@@ -90,7 +90,7 @@ export default class RouterWrapper {
 				}
 
 			} catch (e) {
-				this.loggerClient.log(`Error: `, e);
+				this.loggerClient && this.loggerClient.error(`Error: `, e);
 				if (callback) {
 					callback(e);
 				}
@@ -109,22 +109,22 @@ export default class RouterWrapper {
 		if (channelPrefix == null) {
 			channelPrefix = ROUTER_ENDPOINTS.CHANNEL_PREFIX;
 		}
-		this.loggerClient.log(`Wrapper: Adding responder for endpoint: ${channelPrefix + channel}`);
+		this.loggerClient && this.loggerClient.info(`Wrapper: Adding responder for endpoint: ${channelPrefix + channel}`);
 
 		this.routerClient.addResponder(channelPrefix + channel, (err: any, message: any) => {
-			this.loggerClient.log(`Message received on ${channel}: `, message);
+			this.loggerClient && this.loggerClient.info(`Message received on ${channel}: `, message);
 			if (err) {
-				this.loggerClient.error(`Failed to setup ${channel} responder`, err);
+				this.loggerClient && this.loggerClient.error(`Failed to setup ${channel} responder`, err);
 				return;
 			}
 
 			try {
-				this.loggerClient.log(`Processing message on channel ${channel}: `, message);
+				this.loggerClient && this.loggerClient.info(`Processing message on channel ${channel}: `, message);
 				let returnVal = dataProcessor(message.data);
-				this.loggerClient.log(`Message response on ${channel}: `, returnVal);
+				this.loggerClient && this.loggerClient.info(`Message response on ${channel}: `, returnVal);
 				message.sendQueryResponse(null, {"status": "success", "data": returnVal});
 			} catch (err) {
-				this.loggerClient.error(`Failed to process query`, err);
+				this.loggerClient && this.loggerClient.error(`Failed to process query`, err);
 				message.sendQueryResponse(err);
 			}
 		});
@@ -136,7 +136,6 @@ export default class RouterWrapper {
 		}
 
 		this.routerClient.removeResponder(channelPrefix + channel);
-
 	}
 
 	/**
@@ -149,7 +148,7 @@ export default class RouterWrapper {
 		if (channelPrefix == null) {
 			channelPrefix = ROUTER_ENDPOINTS.CHANNEL_PREFIX;
 		}
-		this.loggerClient.log(`Transmitting on channel: ${channelPrefix + channel}`);
+		this.loggerClient && this.loggerClient.info(`Transmitting on channel: ${channelPrefix + channel}`);
 		this.routerClient.transmit(channelPrefix + channel, payload);
 	}
 
@@ -164,8 +163,8 @@ export default class RouterWrapper {
 			channelPrefix = ROUTER_ENDPOINTS.CHANNEL_PREFIX;
 		}
 
-		this.loggerClient.log(channelPrefix);
-		this.loggerClient.log(`Publishing on channel: ${channelPrefix + channel}`);
+		this.loggerClient && this.loggerClient.info(channelPrefix);
+		this.loggerClient && this.loggerClient.info(`Publishing on channel: ${channelPrefix + channel}`);
 		this.routerClient.publish(channelPrefix + channel, payload);
 	}
 }

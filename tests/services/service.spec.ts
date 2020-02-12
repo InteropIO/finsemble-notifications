@@ -255,7 +255,33 @@ describe("Filtering", () => {
 		expect(ServiceHelper.filterMatches({}, cheese)).to.equal(true, "Empty filter should always return true");
 
 		expect(ServiceHelper.filterMatches(null, cheese)).to.equal(true, "Empty filter should always return true");
+	});
 
+	it("Can match partial filters", () => {
+
+		let filter = {
+			"exclude": [{
+				"type": "chat"
+			}]
+		};
+
+		const notification = new Notification();
+
+		// @ts-ignore
+		expect(ServiceHelper.filterMatches(filter, notification)).to.equal(true);
+
+		notification.type = 'chat';
+		// @ts-ignore
+		expect(ServiceHelper.filterMatches(filter, notification)).to.equal(false);
+
+		let filter2 = {
+			"include": [{
+				"type": "chat"
+			}]
+		};
+
+		// @ts-ignore
+		expect(ServiceHelper.filterMatches(filter2, notification)).to.equal(true);
 	});
 
 

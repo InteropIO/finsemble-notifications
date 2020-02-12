@@ -28,6 +28,8 @@ export default class NotificationClient implements INotificationClient {
 	 */
 	private loggerClient: any;
 
+	private subscriptions: any[] = [];
+
 	/**
 	 * Constructor
 	 * Params are options but need to be set if intending to use in a services
@@ -45,6 +47,12 @@ export default class NotificationClient implements INotificationClient {
 
 		if (!this.loggerClient) {
 			this.loggerClient = typeof FSBL !== "undefined" ? FSBL.Clients.Logger : Logger;
+		}
+
+		if(window && window.addEventListener) {
+			window.addEventListener('unload', () => {
+				this.unsubscribeAll()
+			})
 		}
 	}
 
@@ -155,22 +163,23 @@ export default class NotificationClient implements INotificationClient {
 	 * TODO: onSubscriptionSuccess and onSubscriptionFault can do a better job of explaining what params will be passed in
 	 */
 	subscribe(subscription: ISubscription, onSubscriptionSuccess?: Function, onSubscriptionFault?: Function): Promise<string> {
-		this.loggerClient.log("Attempting to subscribe: ", subscription);
+		this.loggerClient.log("Creating subscription: ", subscription);
 		return new Promise<string>(async (resolve, reject) => {
 			try {
 				// Get a channel from the service to monitor
-				this.loggerClient.log("Attempting to subscribe: ", subscription);
 				let returnValue = await this.routerWrapper.query(
 					ROUTER_ENDPOINTS.SUBSCRIBE,
 					JSON.parse(JSON.stringify(subscription)) // ISubscription has a callback that can't be sent across the router
 				);
 
 				// Monitor the channel and execute subscription.onNotification() for each one that arrives.
-				this.loggerClient.log("Got a return value containing a channel", returnValue);
+				this.loggerClient.info("Got a return value containing a channel", returnValue);
 				await this.monitorChannel(returnValue.channel, subscription.onNotification);
 				if (onSubscriptionSuccess) {
 					onSubscriptionSuccess(returnValue);
 				}
+
+				this.subscriptions.push(returnValue);
 				resolve(returnValue.id);
 			} catch (e) {
 				if (onSubscriptionFault) {
@@ -191,11 +200,32 @@ export default class NotificationClient implements INotificationClient {
 		return new Promise<void>(async (resolve, reject) => {
 			try {
 				await this.routerWrapper.query(ROUTER_ENDPOINTS.UNSUBSCRIBE, subscriptionId);
+				this.cleanupSubscription(subscriptionId);
 				resolve();
 			} catch (e) {
 				reject(e);
 			}
 		});
+	}
+
+	public unsubscribeAll():void {
+		this.subscriptions.forEach((subscription) => {
+			this.routerWrapper.query(ROUTER_ENDPOINTS.UNSUBSCRIBE, subscription.id);
+			this.routerWrapper.removeResponder(subscription.id);
+		});
+
+		this.subscriptions = [];
+	}
+
+	private  cleanupSubscription(subscriptionId: string) {
+		const index = this.subscriptions.findIndex((element:any) => {
+			element.id = subscriptionId
+		});
+
+		if(index > -1) {
+			this.routerWrapper.removeResponder(this.subscriptions[index].channel);
+			this.subscriptions.splice(index, 1);
+		}
 	}
 
 
@@ -211,8 +241,7 @@ export default class NotificationClient implements INotificationClient {
 			this.routerWrapper.addResponder(
 				channel,
 				(queryMessage) => {
-					this.loggerClient.log("Incoming message on channel: ", queryMessage);
-					this.loggerClient.log(`Heard message on channel: ${channel}`, queryMessage);
+					this.loggerClient.log("Notification received: ", queryMessage.id);
 
 					// Catching user-code errors to allow for successful sending of receipt.
 					// TODO: 2nd pair of eyes: Is there situation where this will be confusing to anyone trying to debug an issue

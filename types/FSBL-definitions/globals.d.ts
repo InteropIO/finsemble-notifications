@@ -1,3 +1,4 @@
+import { FinsembleWindow } from "./common/window/FinsembleWindow";
 import { AuthenticationClient } from "./clients/authenticationClient";
 import { ConfigClient } from "./clients/ConfigClient";
 import { DialogManagerClient } from "./clients/dialogManagerClient";
@@ -16,6 +17,7 @@ import INotification from "../Notification-definitions/INotification";
 declare global {
 	interface Window {
 		FSBL: FSBL;
+		FinsembleWindow: FinsembleWindow;
 	}
 }
 export type FSBL = {

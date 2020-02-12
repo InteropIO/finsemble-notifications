@@ -12,13 +12,30 @@
 				"width": 450,
 				"position": "available",
 				"data": {
-					"displayDuration": 6000,
-					"animateIn": "slide-in-right",
-					"animateOut": "slide-out-right",
-					"bottom": 0,
-					"right": 0,
-					"monitor": 0,
-					"maxHeight": "100%"
+					"notifications": {
+						"filter": {
+							"include": [
+								{
+									"type": "email"
+								},
+								{
+									"type": "timed"
+								}
+							],
+							"exclude": []
+						},
+						"position": {
+							"bottom": 0,
+							"right": 0,
+							"monitor": 0,
+							"maxHeight": "100%"
+						},
+						"animation": {
+							"displayDuration": 6000,
+							"animateIn": "slide-in-right",
+							"animateOut": "slide-out-right"
+						}
+					}
 				},
 				"options": {
 					"transparent": true,

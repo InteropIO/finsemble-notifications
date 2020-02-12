@@ -7,7 +7,7 @@
 				"forceOntoMonitor": true,
 				"top": 0,
 				"right": 0,
-				"width": 500,
+				"width": 320,
 				"height": "100%",
 				"maxHeight": "100%",
 				"position": "available",
@@ -16,6 +16,11 @@
 					"transparent": true,
 					"alwaysOnTop": true,
 					"autoShow": false
+				},
+				"data": {
+					"notifications": {
+						"notificationsHistory": true
+					}
 				}
 			},
 			"component": {

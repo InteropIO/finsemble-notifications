@@ -71,8 +71,7 @@ function init() {
  */
 let doAction = (notification: INotification, action: IAction) => {
 	try {
-		nClient.performAction([notification], action).then(() =>
-		{
+		nClient.performAction([notification], action).then(() => {
 			// NOTE: The request to perform the action has be sent to the notifications service successfully
 			// The action itself has not necessarily been perform successfully
 			console.log("success");

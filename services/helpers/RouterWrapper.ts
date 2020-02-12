@@ -9,7 +9,7 @@ export const ROUTER_ENDPOINTS = {
 	NOTIFY: "notify",
 	SUBSCRIBE: "subscribe",
 	UNSUBSCRIBE: "unsubscribe",
-	HANDLE_ACTION: "handle_action",
+	PERFORM_ACTION: "perform_action",
 	LAST_ISSUED: "last_issued",
 	FETCH_HISTORY: "fetch_history",
 	CHANNEL_PREFIX: "notification.",
@@ -78,7 +78,7 @@ export default class RouterWrapper {
 					() => {} // Ignoring callback. Use the promise to get the result
 				);
 
-				if(response.err) {
+				if (response.err) {
 					this.loggerClient && this.loggerClient.error(`Error: `, response.err);
 					reject(response.err);
 				} else {

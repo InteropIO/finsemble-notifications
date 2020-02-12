@@ -105,13 +105,13 @@ export default class NotificationClient implements INotificationClient {
 	}
 
 	/**
-	 * Update the notification to mark actions performed.
+	 * Tells the service to perform the action on the notification(s)
 	 *
 	 * @param {INotification[]} notifications Notifications to apply action to.
 	 * @param {IAction} action which has been triggered by user.
 	 * @throws Error If no error is thrown the service has received the request to perform the action successfully. Note a successful resolution of the promise does not mean successful completion of the action.
 	 */
-	markActionHandled(notifications: INotification[], action: IAction): Promise<void> {
+	performAction(notifications: INotification[], action: IAction): Promise<void> {
 		// I think this is a clumsy interface. The default case will likely be a single notification.
 		// No need to punish the developer
 		if (!Array.isArray(notifications)) {
@@ -121,7 +121,7 @@ export default class NotificationClient implements INotificationClient {
 		return new Promise<void>(async (resolve, reject) => {
 			try {
 				let data = await this.routerWrapper.query(
-					ROUTER_ENDPOINTS.HANDLE_ACTION,
+					ROUTER_ENDPOINTS.PERFORM_ACTION,
 					{
 						"notifications": notifications,
 						"action": action
@@ -217,8 +217,8 @@ export default class NotificationClient implements INotificationClient {
 		this.subscriptions = [];
 	}
 
-	private  cleanupSubscription(subscriptionId: string) {
-		const index = this.subscriptions.findIndex((element:any) => {
+	private cleanupSubscription(subscriptionId: string): void {
+		const index = this.subscriptions.findIndex((element: any) => {
 			element.id = subscriptionId
 		});
 

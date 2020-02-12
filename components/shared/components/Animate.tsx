@@ -35,12 +35,12 @@ export default function Animate(props: Props) {
 		//if you pass a value to array, like this [data] than clearTimeout will run every time this value changes (useEffect re-run)
 	);
 
-	const hideNotification = () => {
+	const hideChildElement = () => {
 		css === animateOut && animateOutComplete();
 	};
 
 	return (
-		<div className={css} onAnimationEnd={hideNotification}>
+		<div className={css} onAnimationEnd={hideChildElement}>
 			{props.children}
 		</div>
 	);

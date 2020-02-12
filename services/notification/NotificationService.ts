@@ -382,6 +382,7 @@ export default class NotificationService extends Finsemble.baseService implement
 	}
 
 	public unsubscribe(subscriptionId: string) {
+		Finsemble.Clients.Logger.log(`Removing notification subscription: ${subscriptionId}`);
 		if (this.storageAbstraction.subscriptions.has(subscriptionId)) {
 			this.storageAbstraction.subscriptions.delete(subscriptionId);
 		}

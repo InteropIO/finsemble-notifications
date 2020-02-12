@@ -16,16 +16,23 @@ import { WorkspaceClient } from "./clients/WorkspaceClient";
 import INotification from "../Notification-definitions/INotification";
 declare global {
 	interface Window {
-		FSBL: FSBL;
+		FSBL: FSBLType;
 		FinsembleWindow: FinsembleWindow;
 	}
+
+	const FSBL: FSBLType;
 }
-export type FSBL = {
+
+
+type FSBLType = {
 	Clients: Clients;
 	ConfigUtils: any;
 	onShutdown: any;
 	shutdownComplete: any;
-};
+	addEventListener: Function;
+}
+
+
 interface Clients {
 	AuthenticationClient: AuthenticationClient;
 	ConfigClient: ConfigClient;

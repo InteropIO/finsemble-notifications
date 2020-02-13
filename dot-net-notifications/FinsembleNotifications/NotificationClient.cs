@@ -42,9 +42,9 @@ namespace ChartIQ.Finsemble.Notifications
 		/// <param name="onNotification">Callback used  when a notification has been received.</param>
 		public void subscribe(Subscription subscription, EventHandler<FinsembleEventArgs> onSubscription, EventHandler<Notification> onNotification)
 		{
-			bridge.RPC("Logger.log", new List<JToken> { "Attempting to subscribe: " + subscription.toJObject().ToString() });
+			bridge.RPC("Logger.log", new List<JToken> { "Attempting to subscribe: " + subscription.ToJObject().ToString() });
 			routerClient.Query(ROUTER_ENDPOINT_SUBSCRIBE, 
-			subscription.toJObject(),
+			subscription.ToJObject(),
 			(s, args) => {
 				if (args.response["data"] != null)
 				{
@@ -127,7 +127,7 @@ namespace ChartIQ.Finsemble.Notifications
 			}
 			if (filter != null)
 			{
-				args.Add("filter", filter.toJObject());
+				args.Add("filter", filter.ToJObject());
 			}
 			routerClient.Query(ROUTER_ENDPOINT_LAST_ISSUED, args, responseHandler);
 			//TODO convert to array of notifications before passing to callback
@@ -143,7 +143,7 @@ namespace ChartIQ.Finsemble.Notifications
 			JArray notificationObjects = new JArray();
 			for (int i = 0; i < notifications.Length; i++)
 			{
-				notificationObjects.Add(notifications[i].toJObject());
+				notificationObjects.Add(notifications[i].ToJObject());
 			}
 			routerClient.Query(ROUTER_ENDPOINT_NOTIFY, notificationObjects, responseHandler);
 		}
@@ -155,18 +155,18 @@ namespace ChartIQ.Finsemble.Notifications
 		/// <param name="notifications">An array of Notifications to apply action to.</param>
 		/// <param name="action">The action to be performed on the notification(s)</param>
 		/// <param name="responseHandler">Callback used when the action has been performed and will contain a success/fail message and any error messages</param>
-		public void markActionHandled(Notification[] notifications, Action action, EventHandler<FinsembleEventArgs> responseHandler)
+		public void performAction(Notification[] notifications, Action action, EventHandler<FinsembleEventArgs> responseHandler)
 		{
 			JArray notificationObjects = new JArray();
 			for (int i = 0; i < notifications.Length; i++)
 			{
-				notificationObjects.Add(notifications[i].toJObject());
+				notificationObjects.Add(notifications[i].ToJObject());
 			}
 			
 			routerClient.Query(ROUTER_ENDPOINT_HANDLE_ACTION, new JObject
 			{
 				["notifications"] = notificationObjects
-				["action"] = action.toJObject()
+				["action"] = action.ToJObject()
 			}, responseHandler);
 		}
 

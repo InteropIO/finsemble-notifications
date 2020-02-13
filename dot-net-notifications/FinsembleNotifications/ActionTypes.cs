@@ -14,6 +14,5 @@ namespace ChartIQ.Finsemble.Notifications
 		public static String QUERY = "QUERY";
 		public static String PUBLISH = "PUBLISH";
 		public static String TRANSMIT = "TRANSMIT";
-		
 	}
 }

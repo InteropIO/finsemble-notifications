@@ -37,17 +37,22 @@ namespace ChartIQ.Finsemble.Notifications
 			this.stateHistory = null;
 		}
 
-		public static Notification fromJObject(JObject obj)
+		public static Notification FromJObject(JObject obj)
 		{
 			//convert JOBject to Notification:
 			return obj.ToObject<Notification>();
 		}
 
-		public  JObject toJObject()
+		public JObject ToJObject()
 		{
 			//check this works with the objects embedded under the notification
 			return JObject.FromObject(this);
 		}
+
+		public String ToString()
+		{
+			return ToJObject().ToString();
+		} 
 
 			//JObject o = JObject.FromObject(new
 			//{

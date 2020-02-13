@@ -7,8 +7,6 @@ using System.Threading.Tasks;
 
 namespace ChartIQ.Finsemble.Notifications
 {
-	
-
 	public class Action
 	{
 		public String id { get; set; }
@@ -20,18 +18,15 @@ namespace ChartIQ.Finsemble.Notifications
 		public String channel { get; set; }
 		public JObject payload { get; set; }
 
-		public static Action fromJObject(JObject obj)
+		public static Action FromJObject(JObject obj)
 		{
 			//convert JOBject to Action:
 			return obj.ToObject<Action>();
 		}
 
-		public JObject toJObject()
+		public JObject ToJObject()
 		{
 			return JObject.FromObject(this);
 		}
-
-	}
-
-	
+	}	
 }

@@ -12,13 +12,13 @@ namespace ChartIQ.Finsemble.Notifications
 		public Dictionary<String, Object> include { get; set; }
 		public Dictionary<String, Object> exclude { get; set; }
 
-		public static Filter fromJObject(JObject obj)
+		public static Filter FromJObject(JObject obj)
 		{
 			//convert JOBject to Filter:
 			return obj.ToObject<Filter>();
 		}
 
-		public JObject toJObject()
+		public JObject ToJObject()
 		{
 			return JObject.FromObject(this);
 		}

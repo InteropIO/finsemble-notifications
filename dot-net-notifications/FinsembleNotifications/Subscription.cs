@@ -18,13 +18,13 @@ namespace ChartIQ.Finsemble.Notifications
 			this.filter = filter;
 		}
 
-		public static Subscription fromJObject(JObject obj)
+		public static Subscription FromJObject(JObject obj)
 		{
 			//convert JOBject to Subscription:
 			return obj.ToObject<Subscription>();
 		}
 
-		public JObject toJObject()
+		public JObject ToJObject()
 		{
 			//check this works with the objects embedded under the notification
 			return JObject.FromObject(this);

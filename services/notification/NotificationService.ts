@@ -86,7 +86,7 @@ export default class NotificationService extends Finsemble.baseService implement
 		this.broadcastNotification = this.broadcastNotification.bind(this);
 		this.getLastIssued = this.getLastIssued.bind(this);
 		this.readyHandler = this.readyHandler.bind(this);
-		this.handleAction = this.handleAction.bind(this);
+		this.performAction = this.performAction.bind(this);
 		this.fetchHistory = this.fetchHistory.bind(this);
 		this.unsubscribe = this.unsubscribe.bind(this);
 		this.applyConfigChange = this.applyConfigChange.bind(this);
@@ -184,8 +184,8 @@ export default class NotificationService extends Finsemble.baseService implement
 	 *
 	 * @param message
 	 */
-	handleAction(message: any): Object {
-		Finsemble.Clients.Logger.info("Request to handle Actions", message);
+	performAction(message: any): Object {
+		Finsemble.Clients.Logger.info("Request to perform Actions", message);
 		const {notifications, action} = message;
 		let response = {
 			message: "success",
@@ -335,12 +335,12 @@ export default class NotificationService extends Finsemble.baseService implement
 	}
 
 	dismiss(notification: INotification, action: IAction): INotification {
-		notification.isActionPerformed = true;
+		notification.isRead = true;
 		return notification;
 	}
 
 	spawn(notification: INotification, action: IAction): INotification {
-		notification.isActionPerformed = true;
+		notification.isRead = true;
 		Finsemble.Clients.LauncherClient.spawn(action.component, action.spawnParams);
 		return notification;
 	}
@@ -519,7 +519,7 @@ export default class NotificationService extends Finsemble.baseService implement
 	 * Setup callback on action channel
 	 */
 	private setupAction() {
-		this.routerWrapper.addResponder(ROUTER_ENDPOINTS.HANDLE_ACTION, this.handleAction);
+		this.routerWrapper.addResponder(ROUTER_ENDPOINTS.PERFORM_ACTION, this.performAction);
 	}
 
 	/**
@@ -563,7 +563,7 @@ export default class NotificationService extends Finsemble.baseService implement
 	private forwardAsQuery(notification: INotification, action: IAction): INotification {
 		this.validateForwardParams(action);
 		try {
-			notification.isActionPerformed = true;
+			notification.isRead = true;
 			this.routerWrapper.query(
 				action.channel,
 				{
@@ -574,7 +574,7 @@ export default class NotificationService extends Finsemble.baseService implement
 			);
 		} catch (error) {
 			Finsemble.Clients.Logger.error(`Error performing action on channel channel: '${action.channel}'`);
-			notification.isActionPerformed = false;
+			notification.isRead = false;
 		}
 
 		return notification;
@@ -591,7 +591,7 @@ export default class NotificationService extends Finsemble.baseService implement
 			''
 		);
 
-		notification.isActionPerformed = true;
+		notification.isRead = true;
 		return notification;
 	}
 
@@ -606,7 +606,7 @@ export default class NotificationService extends Finsemble.baseService implement
 			''
 		);
 
-		notification.isActionPerformed = true;
+		notification.isRead = true;
 		return notification;
 	}
 

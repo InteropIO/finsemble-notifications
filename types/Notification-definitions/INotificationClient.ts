@@ -47,10 +47,11 @@ export default interface INotificationClient {
 	notify(notifications: INotification[]): Promise<void>;
 
 	/**
-	 * Update the notification to mark actions performed.
+	 * Tells the service to perform the action on the notification(s)
+	 *
 	 * @param {INotification[]} notifications Notifications to apply action to.
 	 * @param {IAction} action which has been triggered by user.
 	 * @throws Error If no error is thrown the service has received the request to perform the action successfully. Note a successful resolution of the promise does not mean successful completion of the action.
 	 */
-	markActionHandled(notifications: INotification[], action: IAction): Promise<void>;
+	performAction(notifications: INotification[], action: IAction): Promise<void>;
 }

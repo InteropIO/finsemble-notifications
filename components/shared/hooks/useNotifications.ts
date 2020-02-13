@@ -152,7 +152,7 @@ export default function useNotifications() {
 	function doAction(notification: INotification, action) {
 		try {
 			NOTIFICATION_CLIENT = new NotificationClient();
-			NOTIFICATION_CLIENT.markActionHandled([notification], action).then(() => {
+			NOTIFICATION_CLIENT.performAction([notification], action).then(() => {
 				// NOTE: The request to perform the action has be sent to the notifications service successfully
 				// The action itself has not necessarily been perform successfully
 				console.log("ACTION success");

@@ -1,5 +1,3 @@
-/// <reference types="../../types/FSBL-definitions/globals" />
-
 import NotificationClient from "../../services/notification/notificationClient";
 import Subscription from "../../types/Notification-definitions/Subscription";
 import INotification from "../../types/Notification-definitions/INotification";
@@ -73,7 +71,7 @@ function init() {
  */
 let doAction = (notification: INotification, action: IAction) => {
 	try {
-		nClient.markActionHandled([notification], action).then(() => {
+		nClient.performAction([notification], action).then(() => {
 			// NOTE: The request to perform the action has be sent to the notifications service successfully
 			// The action itself has not necessarily been perform successfully
 			console.log("success");
@@ -106,7 +104,7 @@ let addToList = (notification: INotification) => {
 		divElement.className += ' snoozed';
 	}
 
-	if (notification.isActionPerformed) {
+	if (notification.isRead) {
 		divElement.className += ' dismissed';
 	}
 

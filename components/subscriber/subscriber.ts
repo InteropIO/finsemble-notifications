@@ -104,7 +104,7 @@ let addToList = (notification: INotification) => {
 		divElement.className += ' snoozed';
 	}
 
-	if (notification.isActionPerformed) {
+	if (notification.isRead) {
 		divElement.className += ' dismissed';
 	}
 

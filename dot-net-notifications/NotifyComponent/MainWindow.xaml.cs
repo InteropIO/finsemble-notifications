@@ -7,6 +7,7 @@ using ChartIQ.Finsemble;
 using log4net;
 using Newtonsoft.Json.Linq;
 using ChartIQ.Finsemble.Notifications;
+using NAction = ChartIQ.Finsemble.Notifications.Action;
 
 namespace NotifyComponent
 {
@@ -59,16 +60,16 @@ namespace NotifyComponent
 			not1.headerLogo = "http://localhost:3375/components/finsemble-notifications/components/shared/assets/email.svg";
 			not1.contentLogo = "http://localhost:3375/components/finsemble-notifications/components/shared/assets/graph.png";
 
-			ChartIQ.Finsemble.Notifications.Action dismiss = new ChartIQ.Finsemble.Notifications.Action();
+			NAction dismiss = new NAction();
 			dismiss.buttonText = "Dismiss";
 			dismiss.type = ActionTypes.DISMISS;
 
-			ChartIQ.Finsemble.Notifications.Action snooze = new ChartIQ.Finsemble.Notifications.Action();
+			NAction snooze = new NAction();
 			snooze.buttonText = "Snooze";
 			snooze.type = ActionTypes.SNOOZE;
 			snooze.milliseconds = 10000;
 
-			ChartIQ.Finsemble.Notifications.Action welcome = new ChartIQ.Finsemble.Notifications.Action();
+			NAction welcome = new NAction();
 			welcome.buttonText = "Welcome";
 			welcome.type = ActionTypes.SPAWN;
 			welcome.component = "Welcome Component";
@@ -78,7 +79,7 @@ namespace NotifyComponent
 			notifier.notify((new[] { not1 }), (s, r) => {
 
 				FSBL.RPC("Logger.log", new List<JToken> {
-					"Notification sent, response: " + r.ToString()
+					"Notification sent,\nnotification: " + not1.ToString() +"\nresponse: " + r.response.ToString() + "\nerror: " + r.error.ToString()
 				});
 
 				//check response for notification id 
@@ -98,31 +99,33 @@ namespace NotifyComponent
 			not2.headerLogo = "http://localhost:3375/components/finsemble-notifications/components/shared/assets/chat.svg";
 			not2.contentLogo = "http://localhost:3375/components/finsemble-notifications/components/shared/assets/sheild.png";
 
-			ChartIQ.Finsemble.Notifications.Action query = new ChartIQ.Finsemble.Notifications.Action();
+			NAction query = new NAction();
 			query.buttonText = "Send Query";
 			query.type = ActionTypes.QUERY;
 			query.channel = "query-channel";
 			query.payload = new JObject();
-			query.payload.Add("hello", "world");
+			query.payload.Add("hello", new JValue("world"));
 
-			ChartIQ.Finsemble.Notifications.Action transmit = new ChartIQ.Finsemble.Notifications.Action();
+			NAction transmit = new NAction();
 			transmit.buttonText = "Send Transmit";
 			transmit.type = ActionTypes.TRANSMIT;
 			transmit.channel = "transmit-channel";
-			transmit.payload.Add("foo", "bar");
+			transmit.payload = new JObject { };
+			transmit.payload.Add("foo", new JValue("bar"));
 
-			ChartIQ.Finsemble.Notifications.Action publish = new ChartIQ.Finsemble.Notifications.Action();
+			NAction publish = new NAction();
 			publish.buttonText = "Send Publish";
 			publish.type = ActionTypes.PUBLISH;
 			publish.channel = "publish-channel";
-			publish.payload.Add("xyzzy", "moo");
+			publish.payload = new JObject { };
+			publish.payload.Add("xyzzy", new JValue("moo"));
 
 			not2.actions = (new[] { query, transmit, publish });
 
 			notifier.notify((new[] { not2 }), (s, r) => {
 
 				FSBL.RPC("Logger.log", new List<JToken> {
-					"Notification sent, response: " + r.ToString()
+					"Notification sent,\nnotification: " + not2.ToString() +"\nresponse: " + r.response.ToString() + "\nerror: " + r.error.ToString()
 				});
 
 				//check response for notification id 

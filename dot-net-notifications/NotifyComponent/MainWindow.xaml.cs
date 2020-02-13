@@ -79,7 +79,9 @@ namespace NotifyComponent
 			notifier.notify((new[] { not1 }), (s, r) => {
 
 				FSBL.RPC("Logger.log", new List<JToken> {
-					"Notification sent,\nnotification: " + not1.ToString() +"\nresponse: " + r.response.ToString() + "\nerror: " + r.error.ToString()
+					"Notification sent,\nnotification: " + not1.ToString() 
+					+ "\nresponse: " + (r.response != null ? r.response.ToString() : "null") 
+					+ "\nerror: " + (r.error != null ? r.error.ToString() : "null")
 				});
 
 				//check response for notification id 
@@ -91,7 +93,7 @@ namespace NotifyComponent
 		{
 			Notification not2 = new Notification();
 			not2.issuedAt = DateTime.Now;
-			not2.id = "wpf_notification_123";
+			not2.id = "wpf_notification_456";
 			not2.source = "WPF NotifyComponent";
 			not2.headerText = "WPF Notification Same Id";
 			not2.details = "Should only be in UI once (WPF)";
@@ -125,7 +127,9 @@ namespace NotifyComponent
 			notifier.notify((new[] { not2 }), (s, r) => {
 
 				FSBL.RPC("Logger.log", new List<JToken> {
-					"Notification sent,\nnotification: " + not2.ToString() +"\nresponse: " + r.response.ToString() + "\nerror: " + r.error.ToString()
+					"Notification sent,\nnotification: " + not2.ToString()
+					+ "\nresponse: " + (r.response != null ? r.response.ToString() : "null")
+					+ "\nerror: " + (r.error != null ? r.error.ToString() : "null")
 				});
 
 				//check response for notification id 
@@ -135,7 +139,25 @@ namespace NotifyComponent
 
 		private void Notification_3_Click(object sender, RoutedEventArgs e)
 		{
-			
+			Notification not3 = new Notification();
+			not3.issuedAt = DateTime.Now;
+			not3.source = "WPF NotifyComponent";
+			not3.headerText = "WPF minmal notification, no actions";
+			not3.details = "Should create a new notification in UI every time it's sent (from WPF)";
+			not3.type = "email";
+			not3.headerLogo = "http://localhost:3375/components/finsemble-notifications/components/shared/assets/email.svg";
+			not3.contentLogo = "http://localhost:3375/components/finsemble-notifications/components/shared/assets/graph.png";
+
+			notifier.notify((new[] { not3 }), (s, r) => {
+
+				FSBL.RPC("Logger.log", new List<JToken> {
+					"Notification sent,\nnotification: " + not3.ToString()
+					+ "\nresponse: " + (r.response != null ? r.response.ToString() : "null")
+					+ "\nerror: " + (r.error != null ? r.error.ToString() : "null")
+				});
+
+				//check response for notification id 
+			});
 		}
 
 		private void Finsemble_Connected(object sender, EventArgs e)

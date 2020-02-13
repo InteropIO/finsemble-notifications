@@ -29,12 +29,13 @@ namespace ChartIQ.Finsemble.Notifications
 
 		public Notification()
 		{
-			this.actions = null;
+			this.actions = new Action[0];
 			this.isActionPerformed = false;
 			this.isSnoozed = false;
 			this.actionsHistory = null;
 			this.meta = new Dictionary<string, object>();
-			this.stateHistory = null;
+			this.actionsHistory = new PerformedAction[0];
+			this.stateHistory = new Notification[0];
 		}
 
 		public static Notification FromJObject(JObject obj)
@@ -49,30 +50,10 @@ namespace ChartIQ.Finsemble.Notifications
 			return JObject.FromObject(this);
 		}
 
-		public String ToString()
+		public override String ToString()
 		{
 			return ToJObject().ToString();
 		} 
-
-			//JObject o = JObject.FromObject(new
-			//{
-			//	channel = new
-			//	{
-			//		title = "James Newton-King",
-			//		link = "http://james.newtonking.com",
-			//		description = "James Newton-King's blog.",
-			//		item =
-			//	from p in posts
-			//	orderby p.Title
-			//	select new
-			//	{
-			//		title = p.Title,
-			//		description = p.Description,
-			//		link = p.Link,
-			//		category = p.Categories
-			//	}
-			//	}
-			//});
 	}
 
 }

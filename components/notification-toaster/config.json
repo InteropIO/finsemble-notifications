@@ -3,7 +3,7 @@
 		"notification-toaster": {
 			"window": {
 				"url": "$applicationRoot/components/finsemble-notifications/components/notification-toaster/notification-toaster.html",
-				"resizable": false,
+
 				"autoShow": true,
 				"forceOntoMonitor": true,
 				"bottom": 0,
@@ -12,6 +12,7 @@
 				"width": 120,
 				"position": "available",
 				"options": {
+					"resizable": false,
 					"transparent": true,
 					"alwaysOnTop": true
 				}

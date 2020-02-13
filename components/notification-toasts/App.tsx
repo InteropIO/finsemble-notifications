@@ -35,7 +35,7 @@ function App(): React.ReactElement {
 				notifications &&
 				notifications.map(
 					(notification: INotification) =>
-						!notification.isActionPerformed &&
+						!notification.isRead &&
 						!notification.isSnoozed && (
 							<Animate
 								key={notification.id}

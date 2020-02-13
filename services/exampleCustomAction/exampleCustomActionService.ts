@@ -37,9 +37,10 @@ class exampleCustomActionService extends Finsemble.baseService {
 	 * Fired when the service is ready for initialization
 	 * @param {function} callback
 	 */
-	readyHandler() {
+	readyHandler(callback: Function) {
 		this.nClient = new NotificationClient();
 		this.createRouterEndpoints();
+		callback();
 	}
 
 	/**

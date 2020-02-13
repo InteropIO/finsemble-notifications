@@ -3,7 +3,13 @@ import { WindowIdentifier } from "../../../types/FSBL-definitions/globals";
 import INotification from "../../../types/Notification-definitions/INotification";
 import Subscription from "../../../types/Notification-definitions/Subscription";
 import NotificationClient from "../../../services/notification/notificationClient";
+import Filter from "../../../types/Notification-definitions/Filter";
 import { SpawnParams } from "../../../types/FSBL-definitions/services/window/Launcher/launcher";
+import WindowData, {
+	NotificationsConfig
+} from "../../../types/Notification-definitions/NotificationConfig";
+import IFilter from "../../../types/Notification-definitions/IFilter";
+import WindowConfig from "../../../types/Notification-definitions/NotificationConfig";
 
 const FSBL = window.FSBL;
 
@@ -11,17 +17,32 @@ const { LauncherClient, WindowClient } = FSBL.Clients;
 
 const initialState = { notifications: [] };
 
+/*
+Action Types
+*/
+const CREATE_MULTIPLE = "CREATE_MULTIPLE";
+const UPDATE = "UPDATE";
+const REMOVE = "REMOVE";
+
+/*
+	Reducer
+	*/
 function reducer(
 	state: { notifications: INotification[] },
-	action: { type: string; payload: INotification }
+	action: { type: string; payload: any }
 ) {
 	switch (action.type) {
-		case "update":
+		case CREATE_MULTIPLE:
+			return {
+				notifications: [...state.notifications, ...action.payload]
+			};
+		case UPDATE:
 			// check to see if the notification exists if so update the values
 			const notificationExistsInArray = state.notifications.find(
 				(notification: INotification) => notification.id === action.payload.id
 			);
 
+			//if the notification exists then do nothing and return the current state else add the the new notification to the state
 			const notifications = notificationExistsInArray
 				? state.notifications.map((notification: INotification) =>
 						notification.id === action.payload.id
@@ -31,7 +52,7 @@ function reducer(
 				: [...state.notifications, action.payload];
 
 			return { notifications };
-		case "remove":
+		case REMOVE:
 			return {
 				notifications: state.notifications.filter(
 					notification => notification.id !== action.payload.id
@@ -45,37 +66,81 @@ function reducer(
 export default function useNotifications() {
 	const [state, dispatch] = react.useReducer(reducer, initialState);
 
-	let nClient: NotificationClient = null;
+	let NOTIFICATION_CLIENT: NotificationClient = null;
 
-	// when the button to hide is hit then animate disappearing,
-	// the opposite should happen when it is shown again.
-	function init() {
-		nClient = new NotificationClient();
-		const subscription = new Subscription();
+	/*
+		Action Creators
+	*/
+	const removeNotification = (notification: INotification) => {
+		dispatch({ type: REMOVE, payload: notification });
+	};
 
-		// const action = new Action();
-		// action.buttonText = "sdfd";
+	const addNotification = (notification: INotification) => {
+		dispatch({ type: UPDATE, payload: notification });
+	};
 
-		// const filter = new Filter();
-		// filter.size = { gte: 30 };
-		// subscription.filters.push(filter);
+	const addMultipleNotifications = (notifications: INotification[]) => {
+		dispatch({ type: CREATE_MULTIPLE, payload: notifications });
+	};
 
-		subscription.onNotification = function(notification: INotification) {
-			// This function will be called when a notification arrives
-			dispatch({ type: "update", payload: notification });
+	// start receiving Notifications and putting them in state
+	react.useEffect(() => {
+		const subscribe = init();
+		return () => {
+			// Unsubscribe using the subscription ID
+			(async () => {
+				NOTIFICATION_CLIENT = new NotificationClient();
+				NOTIFICATION_CLIENT.unsubscribe(await subscribe);
+			})();
 		};
+	}, []); // eslint-disable-line
 
-		const subscriptionId = nClient.subscribe(
-			subscription,
-			(data: any) => {
-				console.log(data);
-			},
-			(error: any) => {
-				console.log(error);
+	async function init() {
+		try {
+			NOTIFICATION_CLIENT = new NotificationClient();
+			const subscription = new Subscription();
+
+			const notificationConfig: NotificationsConfig|boolean = await getNotificationConfig(
+				await WindowClient.getWindowIdentifier().componentType
+			);
+
+			const filter: IFilter = new Filter();
+
+			// make filters from the config
+			if (notificationConfig) {
+				notificationConfig.filter &&
+					notificationConfig.filter.include &&
+					filter.include.push(...notificationConfig.filter.include);
+
+				notificationConfig.filter &&
+					notificationConfig.filter.exclude &&
+					filter.exclude.push(...notificationConfig.filter.exclude);
 			}
-		);
 
-		// TODO: Unsubscribe using the subscription ID
+			subscription.filter = filter;
+
+			if (notificationConfig && notificationConfig.notificationsHistory) {
+				// const { since, filter } = notificationConfig.notificationsHistory;
+				const pastNotifications = await getNotificationHistory();
+				addMultipleNotifications(pastNotifications);
+			}
+			subscription.onNotification = function(notification: INotification) {
+				// This function will be called when a notification arrives
+				addNotification(notification);
+			};
+
+			return NOTIFICATION_CLIENT.subscribe(
+				subscription,
+				(data: any) => {
+					console.log(data);
+				},
+				(error: any) => {
+					console.log(error);
+				}
+			);
+		} catch (error) {
+			console.error(error);
+		}
 	}
 
 	/**
@@ -86,15 +151,11 @@ export default function useNotifications() {
 	 */
 	function doAction(notification: INotification, action) {
 		try {
-			nClient = new NotificationClient();
-			nClient.markActionHandled([notification], action).then(() => {
+			NOTIFICATION_CLIENT = new NotificationClient();
+			NOTIFICATION_CLIENT.performAction([notification], action).then(() => {
 				// NOTE: The request to perform the action has be sent to the notifications service successfully
 				// The action itself has not necessarily been perform successfully
 				console.log("ACTION success");
-				// this should not be setting a value is a response of success or fail
-
-				// this should be a delete - delete the DOM node
-				// dispatch({ type: "update", payload: notification });
 
 				// 1) alert user notification has been sent (action may not have completed)
 			});
@@ -104,10 +165,10 @@ export default function useNotifications() {
 		}
 	}
 
-	react.useEffect(() => {
-		init();
-	}, []); // eslint-disable-line
-
+	/**
+	 * Group Notifications by Type
+	 * @param notifications
+	 */
 	const groupNotificationsByType = (
 		notifications: INotification[]
 	): { [type: string]: INotification[] } => {
@@ -135,9 +196,45 @@ export default function useNotifications() {
 		return groupBy(notifications, "type");
 	};
 
-	const removeNotification = (notification: INotification) => {
-		dispatch({ type: "remove", payload: notification });
+	/**
+	 * 	 * get the past notifications
+	 * WARNING - The default will get all notifications all the way back from 1969!!!
+	 * @param since
+	 * @param filter
+	 */
+	const getNotificationHistory = (
+		since: string = "1969-12-31T23:59:59.999Z",
+		filter: null | IFilter = null
+	): Promise<INotification[]> => {
+		NOTIFICATION_CLIENT = new NotificationClient();
+		return NOTIFICATION_CLIENT.fetchHistory(since, filter);
 	};
+
+	/**
+	 * Get Notification's config from
+	 * @param componentType Finsemble component type e.g "Welcome-Component"
+	 */
+	const getNotificationConfig = async (
+		componentType: string
+	): Promise<NotificationsConfig | boolean> => {
+		const { data }: any = await LauncherClient.getComponentDefaultConfig(
+			componentType
+		);
+
+		const config: WindowData = data;
+
+		const notificationsConfigExists: WindowConfig | undefined =
+			config &&
+			config.window &&
+			config.window.data &&
+			config.window.data.notifications;
+
+		return notificationsConfigExists && config.window.data.notifications;
+	};
+
+	/*
+	Finsemble Window manipulation
+*/
 
 	const setWindowPosition = async (
 		windowId: WindowIdentifier,
@@ -150,7 +247,7 @@ export default function useNotifications() {
 	};
 
 	/**
-	 * Set the position of the notification window
+	 * Set the position of the notification drawer based on params
 	 * @param param0
 	 */
 	const setNotificationDrawerPosition = async (
@@ -169,12 +266,14 @@ export default function useNotifications() {
 	};
 
 	return {
-		notifications: state.notifications,
 		doAction,
+		getWindowSpawnData,
+		getNotificationHistory,
 		groupNotificationsByType,
-		setNotificationDrawerPosition,
 		minimizeWindow,
+		notifications: state.notifications,
 		removeNotification,
-		getWindowSpawnData
+		setNotificationDrawerPosition,
+		getNotificationConfig
 	};
 }

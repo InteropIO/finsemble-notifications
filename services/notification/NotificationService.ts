@@ -12,6 +12,7 @@ import LastIssued from "../../types/Notification-definitions/LastIssued";
 import Action from "../../types/Notification-definitions/Action";
 import IPerformedAction from "../../types/Notification-definitions/IPerformedAction";
 import ServiceHelper from "../helpers/ServiceHelper";
+import IFilter from "../../types/Notification-definitions/IFilter";
 
 const ImmutableMap = require('immutable').Map;
 const uuidv4 = require('uuid/v4');
@@ -47,9 +48,13 @@ export default class NotificationService extends Finsemble.baseService implement
 		lastIssued: Map<string, ILastIssued>
 	};
 
+	private proxyToWebAPiFilter: IFilter|false;
 	private routerWrapper: RouterWrapper;
 
-	private config: object;
+	private config: object = {
+		"service": {},
+		"types": {}
+	};
 
 	/**
 	 * Initializes a new instance of the NotificationService class.
@@ -68,6 +73,7 @@ export default class NotificationService extends Finsemble.baseService implement
 			}
 		});
 
+		this.proxyToWebAPiFilter = false;
 		this.storageAbstraction = {
 			subscriptions: new Map<string, ISubscription>(),
 			snoozeTimers: new Map<string, ISnoozeTimer>(),
@@ -80,7 +86,7 @@ export default class NotificationService extends Finsemble.baseService implement
 		this.broadcastNotification = this.broadcastNotification.bind(this);
 		this.getLastIssued = this.getLastIssued.bind(this);
 		this.readyHandler = this.readyHandler.bind(this);
-		this.handleAction = this.handleAction.bind(this);
+		this.performAction = this.performAction.bind(this);
 		this.fetchHistory = this.fetchHistory.bind(this);
 		this.unsubscribe = this.unsubscribe.bind(this);
 		this.applyConfigChange = this.applyConfigChange.bind(this);
@@ -120,7 +126,7 @@ export default class NotificationService extends Finsemble.baseService implement
 	 * @private
 	 */
 	broadcastNotification(notification: INotification): void {
-		Finsemble.Clients.Logger.log('Trying to broadcast', notification);
+		Finsemble.Clients.Logger.log('Broadcasting Notification: ', notification.id);
 		this.storageAbstraction.subscriptions.forEach(((subscription, key) => {
 			// Check if this notification matches any filters
 			if (ServiceHelper.filterMatches(subscription.filter, notification)) {
@@ -136,6 +142,26 @@ export default class NotificationService extends Finsemble.baseService implement
 				);
 			}
 		}));
+		if (this.config['service']['proxyToWebAPiFilter'] && ServiceHelper.filterMatches(this.config['service']['proxyToWebAPiFilter'], notification)) {
+			this.webApiNotify(notification);
+		}
+	}
+
+	webApiNotify(notification: INotification): void {
+		let options = convertNotificationToWebApi(notification);
+		let title =  [];
+		notification.title ? title.push(notification.title):null;
+		notification.title ? title.push(notification.headerText):null;
+
+		// TODO: Implement Actions by using ServiceWorkerRegistration.showNotification()
+		new window.Notification(title.join(' - '), options);
+
+		function convertNotificationToWebApi(notification: INotification) {
+			return {
+				"body": notification.details,
+				"icon": notification.contentLogo? notification.contentLogo : notification.headerLogo,
+			}
+		}
 	}
 
 
@@ -158,8 +184,8 @@ export default class NotificationService extends Finsemble.baseService implement
 	 *
 	 * @param message
 	 */
-	handleAction(message: any): Object {
-		Finsemble.Clients.Logger.log("Got some actions", message);
+	performAction(message: any): Object {
+		Finsemble.Clients.Logger.info("Request to perform Actions", message);
 		const {notifications, action} = message;
 		let response = {
 			message: "success",
@@ -231,8 +257,7 @@ export default class NotificationService extends Finsemble.baseService implement
 		const channel = this.getChannel(subscription);
 		// TODO: Set the subscriptionId correctly in accordance with the spec
 		subscription.id = this.getUuid();
-		Finsemble.Clients.Logger.log("Successfully processed subscription: ", subscription);
-		Finsemble.Clients.Logger.log("Sending channel and subscription Id");
+		Finsemble.Clients.Logger.info("Successfully processed subscription: ", subscription);
 		subscription.channel = channel;
 
 		this.addToSubscription(subscription);
@@ -357,6 +382,7 @@ export default class NotificationService extends Finsemble.baseService implement
 	}
 
 	public unsubscribe(subscriptionId: string) {
+		Finsemble.Clients.Logger.log(`Removing notification subscription: ${subscriptionId}`);
 		if (this.storageAbstraction.subscriptions.has(subscriptionId)) {
 			this.storageAbstraction.subscriptions.delete(subscriptionId);
 		}
@@ -385,7 +411,7 @@ export default class NotificationService extends Finsemble.baseService implement
 		 */
 		this.removeFromSnoozeQueue(notification);
 
-		Finsemble.Clients.Logger.log(`Action type: ${action.type}`);
+		Finsemble.Clients.Logger.info(`Action type: ${action.type}`);
 		// Pick up any updated states from performing the action
 		switch (action.type.toUpperCase()) {
 			case ActionTypes.SNOOZE:
@@ -410,7 +436,7 @@ export default class NotificationService extends Finsemble.baseService implement
 				Finsemble.Clients.Logger.error(`Unable to perform action '${action.type}' on notification`);
 				return;
 		}
-		Finsemble.Clients.Logger.log('Updated notification state', notification);
+		Finsemble.Clients.Logger.info('Updated notification state', notification);
 
 		// Send out the new state to all required clients
 		this.notify([notification]);
@@ -421,9 +447,8 @@ export default class NotificationService extends Finsemble.baseService implement
 	 * @param notification
 	 */
 	private receiveNotification(notification: INotification): INotification {
-		Finsemble.Clients.Logger.log('Received', notification);
+		Finsemble.Clients.Logger.info('Received state', notification);
 		notification = ServiceHelper.applyDefaults(this.config, notification);
-		Finsemble.Clients.Logger.log('defaults applied', notification);
 
 		let map = ImmutableMap(notification);
 
@@ -442,7 +467,7 @@ export default class NotificationService extends Finsemble.baseService implement
 			map = this.addPerformedAction(map, action);
 			map = map.set('receivedAt', new Date().toISOString());
 		}
-		Finsemble.Clients.Logger.log('Fin', map);
+		Finsemble.Clients.Logger.info('Applied state', map);
 		return map.toObject();
 	}
 
@@ -494,7 +519,7 @@ export default class NotificationService extends Finsemble.baseService implement
 	 * Setup callback on action channel
 	 */
 	private setupAction() {
-		this.routerWrapper.addResponder(ROUTER_ENDPOINTS.HANDLE_ACTION, this.handleAction);
+		this.routerWrapper.addResponder(ROUTER_ENDPOINTS.PERFORM_ACTION, this.performAction);
 	}
 
 	/**
@@ -522,7 +547,7 @@ export default class NotificationService extends Finsemble.baseService implement
 	 * @Note I just put all the params in here... not sure what info will be needed
 	 */
 	private setReceivedReceipt(subscription: ISubscription, notification: INotification, error: string | null, response: any) {
-		Finsemble.Clients.Logger.log(`Got a receipt on: ${subscription.channel}`);
+		Finsemble.Clients.Logger.info(`Got a receipt on: ${subscription.channel}`);
 		// We've received a response from the client. Process it and set the correct value
 	}
 
@@ -592,7 +617,7 @@ export default class NotificationService extends Finsemble.baseService implement
 	 * @param source
 	 */
 	private getLastIssued(source?: string): string {
-		Finsemble.Clients.Logger.log(`Finding last issued for source: '${source}'`);
+		Finsemble.Clients.Logger.info(`Finding last issued for source: '${source}'`);
 		let returnValue = '';
 		if (source && this.storageAbstraction.lastIssued.has(source)) {
 			returnValue = this.storageAbstraction.lastIssued.get(source).issuedAt;
@@ -620,19 +645,19 @@ export default class NotificationService extends Finsemble.baseService implement
 	 * @param message
 	 */
 	private fetchHistory(message: any): INotification[] | Object {
-		Finsemble.Clients.Logger.log("Fetch history request with params", message);
+		Finsemble.Clients.Logger.info("Fetch history request with params", message);
 		let {since, filter} = message;
 		let notifications: INotification[] = [];
 
 		if (since) {
-			Finsemble.Clients.Logger.log("Since date", since);
+			Finsemble.Clients.Logger.info("Since date", since);
 			since = new Date(since);
 		}
 
 		this.storageAbstraction.notifications.forEach((notification) => {
 			if (since) {
 				// If there is a date and the notification was received before the date - skip it
-				Finsemble.Clients.Logger.log("Notification date", notification.receivedAt);
+				Finsemble.Clients.Logger.info("Notification date", notification.receivedAt);
 				const notificationDate = new Date(notification.receivedAt);
 				if (notificationDate < since) {
 					return;
@@ -651,13 +676,8 @@ export default class NotificationService extends Finsemble.baseService implement
 		return notifications;
 	}
 
-	private applyConfigChange(err, config) {
-		console.log(err, config);
-		this.config = ServiceHelper.normaliseConfig(
-			config && config.servicesConfig && config.servicesConfig.hasOwnProperty('notifications') ?
-				config.servicesConfig.notifications :
-				null
-		);
+	private applyConfigChange(err:any, config:any) {
+		this.config = ServiceHelper.normaliseConfig(config);
 	}
 
 	/**

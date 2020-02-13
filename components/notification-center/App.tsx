@@ -24,7 +24,12 @@ const App = (): React.ReactElement => {
 						notifications={notifications}
 						setActiveNotification={setActiveNotification}
 					/>
-					<NotificationDetailPanel notification={activeNotification} />
+					{activeNotification && (
+						<NotificationDetailPanel
+							notification={activeNotification}
+							clearActiveNotification={setActiveNotification}
+						/>
+					)}
 				</div>
 			</NotificationCenter>
 		</div>

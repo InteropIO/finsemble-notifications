@@ -5,21 +5,24 @@ import NotificationClient, {
 } from "../../services/notification/notificationClient";
 import Notification from "../../types/Notification-definitions/Notification";
 import Action from "../../types/Notification-definitions/Action";
+import {FSBL} from "../../types/FSBL-definitions/globals";
 
 /**
  * A manual Notifications source
  */
 let nClient: NotificationClient = null;
 const sendNotifications = () => {
-	const source = document.getElementById("feed-source").value;
+	const source = (<HTMLInputElement>document.getElementById("feed-source")).value;
 	const not1 = new Notification();
 	not1.issuedAt = new Date().toISOString();
 	not1.source = source;
 	not1.headerText = "Internal Actions (No Id)";
 	not1.details = "Should create a new notification in UI every time it's sent";
 	not1.type = "email";
-	not1.headerLogo = "http://localhost:3375/components/finsemble-notifications/components/shared/assets/email.svg";
-	not1.contentLogo = "http://localhost:3375/components/finsemble-notifications/components/shared/assets/graph.png";
+	not1.headerLogo =
+		"http://localhost:3375/components/finsemble-notifications/components/shared/assets/email.svg";
+	not1.contentLogo =
+		"http://localhost:3375/components/finsemble-notifications/components/shared/assets/graph.png";
 
 	const dismiss = new Action();
 	dismiss.buttonText = "Dismiss";
@@ -44,8 +47,11 @@ const sendNotifications = () => {
 	not2.headerText = "Notification Same Id";
 	not2.details = "Should only be in UI once";
 	not2.type = "chat";
-	not2.headerLogo = "http://localhost:3375/components/finsemble-notifications/components/shared/assets/chat.svg";
-	not2.contentLogo = "http://localhost:3375/components/finsemble-notifications/components/shared/assets/sheild.png";
+	not2.headerLogo =
+		"http://localhost:3375/components/finsemble-notifications/components/shared/assets/chat.svg";
+	not2.contentLogo =
+		"http://localhost:3375/components/finsemble-notifications/components/shared/assets/sheild.png";
+	not2.meta.cssClassName = "border-red";
 
 	const query = new Action();
 	query.buttonText = "Send Query";
@@ -73,11 +79,38 @@ const sendNotifications = () => {
 };
 
 const getLastIssuedAt = () => {
-	const source = document.getElementById("feed-source").value;
+	const source = (<HTMLInputElement>document.getElementById("feed-source")).value;
 
 	nClient.getLastIssuedAt(source).then(issuedDate => {
 		document.getElementById("service-last-issued").innerText = issuedDate;
 	});
+};
+
+const timedNotification = () => {
+	setInterval(() => {
+		const source = document.getElementById("feed-source").value;
+
+		//notifiation custom
+		const customNot = new Notification();
+		customNot.issuedAt = new Date().toISOString();
+		customNot.source = source;
+		customNot.headerText = "Custom";
+		customNot.details = "This notification is custom...";
+		customNot.type = "timed";
+		customNot.headerLogo =
+			"http://localhost:3375/components/finsemble-notifications/components/shared/assets/info.svg";
+		customNot.contentLogo =
+			"http://localhost:3375/components/finsemble-notifications/components/shared/assets/call-center-agent.svg";
+		customNot.meta.cssClassName = "inverted";
+
+		const dismiss = new Action();
+		dismiss.buttonText = "Dismiss";
+		dismiss.type = ActionTypes.DISMISS;
+
+		customNot.actions = [dismiss];
+
+		nClient.notify([customNot]);
+	}, 20000);
 };
 
 if (window.FSBL && FSBL.addEventListener) {
@@ -90,6 +123,9 @@ function init() {
 	document
 		.getElementById("send-notification")
 		.addEventListener("click", sendNotifications);
+	document
+		.getElementById("send-timed")
+		.addEventListener("click", timedNotification);
 	document
 		.getElementById("get-last-issued")
 		.addEventListener("click", getLastIssuedAt);

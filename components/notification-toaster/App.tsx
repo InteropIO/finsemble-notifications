@@ -23,11 +23,18 @@ function App(): React.ReactElement {
 			console.log
 		);
 	};
+
+	const activeNotifications = notifications =>
+		notifications.filter(
+			notification => !notification.isSnoozed && !notification.isActionPerformed
+		);
 	return (
 		<>
 			<DragHandleIcon className="drag-area" />
-			{notifications.length > 0 && (
-				<div id="notification-number">{notifications.length}</div>
+			{activeNotifications(notifications).length > 0 && (
+				<div id="notification-number">
+					{activeNotifications(notifications).length}
+				</div>
 			)}
 			<NotificationIcon
 				className="toaster-icons"

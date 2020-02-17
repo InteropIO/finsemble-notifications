@@ -24,6 +24,8 @@ namespace NotifyComponent
 		private Finsemble FSBL;
 		private ChartIQ.Finsemble.Notifications.NotificationClient notifier;
 
+		private Subscription subscription = null;
+
 		/// <summary>
 		/// The MainWindow is created by the App so that we can get command line arguments passed from Finsemble.
 		/// </summary>
@@ -158,6 +160,63 @@ namespace NotifyComponent
 
 				//check response for notification id 
 			});
+		}
+
+		private void Subscribe_Click(object sender, RoutedEventArgs e)
+		{
+			Subscription sub = new Subscription();
+			sub.filter = new Filter();
+			//sub.filter.include = new Dictionary<String, Object>();
+			//sub.filter.include.Add("type", "email");
+
+			EventHandler<FinsembleEventArgs> onSubHandler = (s, r) =>
+			{
+				FSBL.RPC("Logger.log", new List<JToken> {
+					"Subscription request sent,\nSubscription: " + sub.ToString()
+					+ "\nresponse: " + (r.response != null ? r.response.ToString() : "null")
+					+ "\nerror: " + (r.error != null ? r.error.ToString() : "null")
+				});
+				if (r.response != null)
+				{
+					subscription = Subscription.FromJObject((JObject)r.response);
+				}
+			};
+
+			EventHandler<Notification> onNotifyHandler = (s, r) =>
+			{
+				FSBL.RPC("Logger.log", new List<JToken> {
+					"Received Notification,\nnotification: " + r.ToString()
+				});
+
+				NotificationData.Text = r.ToString();
+			};
+
+			notifier.subscribe(sub, onSubHandler, onNotifyHandler);
+		}
+
+		private void Unsubscribe_Click(object sender, RoutedEventArgs e)
+		{
+			if (subscription != null)
+			{
+				EventHandler<FinsembleEventArgs> onUnsubHandler = (s, r) =>
+				{
+					FSBL.RPC("Logger.log", new List<JToken> {
+						"Unsubscribe request sent,\nSubscription id: " + subscription.id
+						+ "\nresponse: " + (r.response != null ? r.response.ToString() : "null")
+						+ "\nerror: " + (r.error != null ? r.error.ToString() : "null")
+					});
+					//TODO: check response doesn't include an error before clearing subscription ID
+					subscription = null;
+				};
+
+				notifier.unsubscribe(subscription.id, onUnsubHandler);
+			}
+			else
+			{
+				FSBL.RPC("Logger.log", new List<JToken> {
+					"No subscription Id to unsubscribe!"
+				});
+			}
 		}
 
 		private void Finsemble_Connected(object sender, EventArgs e)

@@ -38,7 +38,7 @@ namespace ChartIQ.Finsemble.Notifications
 		/// Subscribe to a notification stream given a set of name/value pair filters. Returns subscriptionId
 		/// </summary>
 		/// <param name="subscription">Subscription object defining with name value pair used to match on.</param>
-		/// <param name="onSubscription">Callback used when subscription is successfully created or an error is thrown.</param>
+		/// <param name="onSubscription">Callback used when subscription is successfully created or an error is thrown - passed the populated subscription object as a JObject.</param>
 		/// <param name="onNotification">Callback used  when a notification has been received.</param>
 		public void subscribe(Subscription subscription, EventHandler<FinsembleEventArgs> onSubscription, EventHandler<Notification> onNotification)
 		{
@@ -49,16 +49,30 @@ namespace ChartIQ.Finsemble.Notifications
 				if (args.response["data"] != null)
 				{
 					//retrieve the subscription id
-					JToken subIdToken = args.response["data"];
-					String subId = subIdToken.ToString();
-					bridge.RPC("Logger.log", new List<JToken> { "Got subscription id: " + subId });
-					setupSubscriptionResponder(subId, onNotification);
+					JObject responseObject = args.response?["data"] as JObject;
+					
+					if (responseObject != null && responseObject["data"] != null)
+					{
+						JObject subDetails = responseObject["data"] as JObject;
+						subscription.id = subDetails["id"].ToString();
+						subscription.channel = subDetails["channel"].ToString();
+						bridge.RPC("Logger.log", new List<JToken> { "Got subscription details: " + subscription.ToString() });
+						setupSubscriptionResponder(subscription.id, onNotification);
+						onSubscription(s, new FinsembleEventArgs(args.error, subscription.ToJObject()));
+					}
+					else
+					{
+						//subscription failed due to empty response
+						bridge.RPC("Logger.error", new List<JToken> { "Notification subscription failed for subscription " + subscription.ToString() + " as the response did not contain the expected data" });
+						JObject error = new JObject();
+						error.Add("reason", "Notification subscription failed for subscription " + subscription.ToString() + " as the response did not contain the expected data");
 
-					onSubscription(s, new FinsembleEventArgs(args.error, subIdToken));
+						onSubscription(s, new FinsembleEventArgs(error, null));
+					}
 				}
 				else
 				{
-					//subscription failed
+					//subscription failed with error from service
 					bridge.RPC("Logger.error", new List<JToken> { "Notification subscription failed for subscription " + subscription.ToString() + ", error: " + args.error.ToString() });
 					onSubscription(s, new FinsembleEventArgs(args.error, new JObject()));
 				}

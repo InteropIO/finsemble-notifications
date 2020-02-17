@@ -24,5 +24,10 @@ namespace ChartIQ.Finsemble.Notifications
 			return JObject.FromObject(this);
 		}
 
+		public override String ToString()
+		{
+			return ToJObject().ToString();
+		}
+
 	}
 }

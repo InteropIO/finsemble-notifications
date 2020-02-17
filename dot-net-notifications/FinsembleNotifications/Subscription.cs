@@ -13,6 +13,11 @@ namespace ChartIQ.Finsemble.Notifications
 		public Filter filter { get; set; }
 		public String channel { get; set; }
 
+		public Subscription()
+		{
+			this.filter = null;
+		}
+
 		public Subscription(Filter filter)
 		{
 			this.filter = filter;
@@ -28,6 +33,11 @@ namespace ChartIQ.Finsemble.Notifications
 		{
 			//check this works with the objects embedded under the notification
 			return JObject.FromObject(this);
+		}
+
+		public override String ToString()
+		{
+			return ToJObject().ToString();
 		}
 	}
 }

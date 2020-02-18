@@ -2,9 +2,11 @@ import INotification from "../../types/Notification-definitions/INotification";
 import Action from "../../types/Notification-definitions/Action";
 import { ActionTypes } from "../../types/Notification-definitions/ActionTypes";
 import IFilter from "../../types/Notification-definitions/IFilter";
+import IAction from "../../types/Notification-definitions/IAction";
+import PerformedAction from "../../types/Notification-definitions/PerformedAction";
 
 const searchJS = require("searchjs");
-const { Map: ImmutableMap, mergeDeepWith, mergeDeep } = require("immutable");
+const {Map: ImmutableMap, mergeDeepWith} = require("immutable");
 
 const DEFAULT_TYPE_NAME = "default";
 
@@ -19,7 +21,6 @@ export default class ServiceHelper {
 	 * Isolates the notification types from a specific part of the config tree
 	 * @param config
 	 */
-
 	public static normaliseConfig(config: Object): Object {
 		// TODO: Input validation
 		return {
@@ -28,14 +29,14 @@ export default class ServiceHelper {
 		};
 	}
 
-	public static getTypes(config: Object): Object {
+	public static getTypes(config: any): Object {
 		return Object.assign(
 			{},
 			config && config.hasOwnProperty("types") ? config["types"] : null
 		);
 	}
 
-	public static getServiceDefaults(config: Object): Object {
+	public static getServiceDefaults(config: any): Object {
 		const defaults = Object.assign({}, config);
 		if (defaults.hasOwnProperty("types")) {
 			delete defaults["types"];
@@ -54,10 +55,7 @@ export default class ServiceHelper {
 	 * @param config {Object}
 	 * @param notification {INotification}
 	 */
-	public static applyDefaults(
-		config: any,
-		notification: INotification
-	): INotification {
+	public static applyDefaults(config: any, notification: INotification): INotification {
 		let configToApply;
 
 		if (config && config["types"] && config["types"][notification.type]) {
@@ -68,6 +66,18 @@ export default class ServiceHelper {
 			config["types"][DEFAULT_TYPE_NAME]
 		) {
 			configToApply = config["types"][DEFAULT_TYPE_NAME];
+		}
+
+		if (!Array.isArray(notification.actions)) {
+			notification.actions = [];
+		}
+
+		if (!Array.isArray(notification.actionsHistory)) {
+			notification.actionsHistory = [];
+		}
+
+		if (!Array.isArray(notification.stateHistory)) {
+			notification.stateHistory = [];
 		}
 
 		// A config has not been supplied at all
@@ -116,6 +126,7 @@ export default class ServiceHelper {
 	/**
 	 * Adds a dismiss action to a notification if one does not already exist
 	 * @param notification
+	 * @param buttonText
 	 */
 	public static addDismissActionToNotification(
 		notification: INotification,
@@ -191,5 +202,86 @@ export default class ServiceHelper {
 		}
 
 		return isMatch;
+	}
+
+	/**
+	 * Converts an IAction into and IPerformedAction and places it the actionsHistory
+	 *
+	 * @param notification {INotification}
+	 * @param action {IAction}
+	 * @return INotification
+	 *
+	 * @note JavaScript is pass by reference for objects but prefer to be specific by returning a value
+	 * not sure if putting a return in is confusing and hinting at it being pass by reference.
+	 */
+	public static addPerformedAction(notification: INotification, action: IAction): INotification {
+		const isMap = ImmutableMap.isMap(notification);
+		let map;
+
+		if (isMap) {
+			map = notification;
+		} else {
+			map = ImmutableMap(notification);
+		}
+
+		const performedAction = new PerformedAction();
+		performedAction.id = action.id;
+		performedAction.type = action.type;
+		performedAction.datePerformed = new Date().toISOString();
+		let actionsHistory = map.get('actionsHistory');
+
+		if (!actionsHistory || !Array.isArray(actionsHistory)) {
+			actionsHistory = [];
+		} else {
+			// Create a copy of the history
+			actionsHistory = actionsHistory.slice(0)
+		}
+
+		actionsHistory.push(performedAction);
+		map = map.set('actionsHistory', actionsHistory);
+
+		return isMap ? map : map.toObject();
+	}
+
+
+	/**
+	 * Applies the history states to a notification which if finds in a lists
+	 *
+	 * @param notification
+	 * @param notificationList
+	 * @param defaultPrevious
+	 */
+	public static setNotificationHistory(notification: INotification, notificationList: Map<string, INotification>, defaultPrevious: INotification) {
+		const isMap = ImmutableMap.isMap(notification);
+		let map;
+
+		if (isMap) {
+			map = notification;
+		} else {
+			map = ImmutableMap(notification);
+		}
+
+		let currentlyStoredNotification: INotification = null;
+
+		let currentHistory: INotification[] = null;
+
+		if (notificationList.has(notification.id)) {
+			currentlyStoredNotification = notificationList.get(notification.id);
+			currentHistory = currentlyStoredNotification.stateHistory;
+			currentlyStoredNotification.stateHistory = [];
+		} else {
+			currentHistory = map.get('stateHistory');
+			currentlyStoredNotification = defaultPrevious;
+			currentlyStoredNotification.stateHistory = [];
+		}
+
+		if (!currentHistory || !Array.isArray(currentHistory)) {
+			currentHistory = [];
+		}
+
+		currentHistory.push(currentlyStoredNotification);
+		map.set('stateHistory', currentHistory);
+
+		return isMap ? map : map.toObject();
 	}
 }

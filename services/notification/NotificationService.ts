@@ -3,14 +3,12 @@ import INotification from "../../types/Notification-definitions/INotification";
 import IAction from "../../types/Notification-definitions/IAction";
 import ISubscription from "../../types/Notification-definitions/ISubscription";
 import RouterWrapper, {ROUTER_ENDPOINTS} from "../helpers/RouterWrapper";
-import PerformedAction from "../../types/Notification-definitions/PerformedAction";
 import {ActionTypes} from "../../types/Notification-definitions/ActionTypes";
 import ILastIssued from "../../types/Notification-definitions/ILastIssued";
 import ISnoozeTimer from "../../types/Notification-definitions/ISnoozeTimer";
 import SnoozeTimer from "../../types/Notification-definitions/SnoozeTimer";
 import LastIssued from "../../types/Notification-definitions/LastIssued";
 import Action from "../../types/Notification-definitions/Action";
-import IPerformedAction from "../../types/Notification-definitions/IPerformedAction";
 import ServiceHelper from "../helpers/ServiceHelper";
 import IFilter from "../../types/Notification-definitions/IFilter";
 
@@ -48,10 +46,10 @@ export default class NotificationService extends Finsemble.baseService implement
 		lastIssued: Map<string, ILastIssued>
 	};
 
-	private proxyToWebAPiFilter: IFilter|false;
+	private proxyToWebAPiFilter: IFilter | false;
 	private routerWrapper: RouterWrapper;
 
-	private config: object = {
+	private config: any = {
 		"service": {},
 		"types": {}
 	};
@@ -149,9 +147,9 @@ export default class NotificationService extends Finsemble.baseService implement
 
 	webApiNotify(notification: INotification): void {
 		let options = convertNotificationToWebApi(notification);
-		let title =  [];
-		notification.title ? title.push(notification.title):null;
-		notification.title ? title.push(notification.headerText):null;
+		let title = [];
+		notification.title ? title.push(notification.title) : null;
+		notification.title ? title.push(notification.headerText) : null;
 
 		// TODO: Implement Actions by using ServiceWorkerRegistration.showNotification()
 		new window.Notification(title.join(' - '), options);
@@ -159,7 +157,7 @@ export default class NotificationService extends Finsemble.baseService implement
 		function convertNotificationToWebApi(notification: INotification) {
 			return {
 				"body": notification.details,
-				"icon": notification.contentLogo? notification.contentLogo : notification.headerLogo,
+				"icon": notification.contentLogo ? notification.contentLogo : notification.headerLogo,
 			}
 		}
 	}
@@ -219,32 +217,10 @@ export default class NotificationService extends Finsemble.baseService implement
 		notifications.forEach((notification) => {
 			let processedNotification = this.receiveNotification(notification);
 			this.saveLastIssuedAt(processedNotification.source, processedNotification.issuedAt);
-			processedNotification = this.setNotificationHistory(processedNotification, this.storageAbstraction.notifications, notification);
+			processedNotification = ServiceHelper.setNotificationHistory(processedNotification, this.storageAbstraction.notifications, notification);
 			this.storeNotifications(processedNotification);
 			this.broadcastNotification(processedNotification);
 		});
-	}
-
-	setNotificationHistory(notification: INotification, notificationList: Map<string, INotification>, defaultPrevious: INotification) {
-		let map = ImmutableMap(notification);
-
-		let currentlyStoredNotification: INotification = null;
-
-		let currentHistory: INotification[] = null;
-
-		if (notificationList.has(notification.id)) {
-			currentlyStoredNotification = notificationList.get(notification.id);
-			currentHistory = currentlyStoredNotification.stateHistory;
-			currentlyStoredNotification.stateHistory = [];
-		} else {
-			currentHistory = map.get('stateHistory');
-			currentlyStoredNotification = defaultPrevious;
-			currentlyStoredNotification.stateHistory = [];
-		}
-
-		currentHistory.push(currentlyStoredNotification);
-
-		return map.set('stateHistory', currentHistory).toObject();
 	}
 
 	/**
@@ -325,7 +301,7 @@ export default class NotificationService extends Finsemble.baseService implement
 			const action = new Action();
 			action.id = this.getUuid();
 			action.type = 'FINSEMBLE:WAKE';
-			notification = this.addPerformedAction(notification, action);
+			notification = ServiceHelper.addPerformedAction(notification, action);
 			notification.isSnoozed = false;
 			this.notify([notification]);
 		}, timeout);
@@ -345,35 +321,6 @@ export default class NotificationService extends Finsemble.baseService implement
 		return notification;
 	}
 
-	/**
-	 * Converts an IAction into and IPerformedAction and places it performedActions list
-	 *
-	 * @param notification
-	 * @param action
-	 * @return INotification
-	 *
-	 * @note JavaScript is pass by reference for objects but prefer to be specific by returning a value
-	 * not sure if putting a return in is confusing and hinting at it being pass by reference.
-	 */
-	addPerformedAction(notification: INotification, action: IAction): INotification {
-		let map;
-		if (ImmutableMap.isMap(notification)) {
-			map = notification;
-		} else {
-			map = ImmutableMap(notification);
-		}
-
-		const performedAction = new PerformedAction();
-		performedAction.id = action.id;
-		performedAction.type = action.type;
-		performedAction.datePerformed = new Date().toISOString();
-
-		const actionsHistory: IPerformedAction[] = map.get('actionsHistory').slice(0);
-		actionsHistory.push(performedAction);
-		map = map.set('actionsHistory', actionsHistory);
-
-		return ImmutableMap.isMap(notification) ? map : map.toObject();
-	}
 
 	validateForwardParams(action: IAction) {
 		if (!action.channel) {
@@ -404,7 +351,7 @@ export default class NotificationService extends Finsemble.baseService implement
 		 * ie. (the request for action has been received)
 		 * Discussion here https://chartiq.slack.com/archives/CPYQ16K7H/p1574357206003200
 		 */
-		notification = this.addPerformedAction(notification, action);
+		notification = ServiceHelper.addPerformedAction(notification, action);
 
 		/**
 		 * If an action is performed on a notification, it should not be snoozed anymore.
@@ -464,7 +411,7 @@ export default class NotificationService extends Finsemble.baseService implement
 			const action = new Action();
 			action.id = this.getUuid();
 			action.type = 'FINSEMBLE:RECEIVED';
-			map = this.addPerformedAction(map, action);
+			map = ServiceHelper.addPerformedAction(map, action);
 			map = map.set('receivedAt', new Date().toISOString());
 		}
 		Finsemble.Clients.Logger.info('Applied state', map);
@@ -676,7 +623,7 @@ export default class NotificationService extends Finsemble.baseService implement
 		return notifications;
 	}
 
-	private applyConfigChange(err:any, config:any) {
+	private applyConfigChange(err: any, config: any) {
 		this.config = ServiceHelper.normaliseConfig(config);
 	}
 

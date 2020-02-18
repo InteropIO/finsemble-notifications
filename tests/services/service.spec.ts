@@ -8,7 +8,7 @@ import { ActionTypes } from "../../types/Notification-definitions/ActionTypes";
 const { Map: ImmutableMap } = require("immutable");
 
 describe("Configuration", () => {
-	let normalisedConfig;
+	let normalisedConfig:any;
 
 	let config = {
 		defaultDismissButtonText: "Service Default Dismiss",
@@ -143,7 +143,7 @@ describe("Configuration", () => {
 			ServiceHelper.getTypes({});
 		}).to.not.throw(Error);
 
-		let types = ServiceHelper.getTypes(config);
+		let types:any = ServiceHelper.getTypes(config);
 		expect(types).to.not.be.undefined;
 		expect(types).to.be.an("Object");
 		expect(types.hasOwnProperty("default")).to.equal(true);

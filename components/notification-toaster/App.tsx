@@ -4,29 +4,27 @@ import DragHandleIcon from "../shared/components/icons/DragHandleIcon";
 import NotificationIcon from "../shared/components/icons/NotificationIcon";
 import CenterIcon from "../shared/components/icons/CenterIcon";
 import SettingsIcon from "../shared/components/icons/settings";
+import INotification from "../../types/Notification-definitions/INotification";
 
 function App(): React.ReactElement {
-	const { notifications, doAction } = useNotifications();
+	const { notifications } = useNotifications();
 	const { FSBL } = window;
 	const showDrawer = () => {
 		FSBL.Clients.LauncherClient.showWindow(
 			{ windowName: "", componentType: "notification-drawer" },
-			{},
-			console.log
+			{}
 		);
 	};
 	const showCenter = () => {
-		console.log("CLICKEDDDDDDD");
 		FSBL.Clients.LauncherClient.showWindow(
 			{ windowName: "", componentType: "notification-center" },
-			{},
-			console.log
+			{}
 		);
 	};
 
-	const activeNotifications = notifications =>
+	const activeNotifications = (notifications: INotification[]) =>
 		notifications.filter(
-			notification => !notification.isSnoozed && !notification.isActionPerformed
+			notification => !notification.isSnoozed && !notification.isRead
 		);
 	return (
 		<>

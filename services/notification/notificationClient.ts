@@ -105,13 +105,13 @@ export default class NotificationClient implements INotificationClient {
 	}
 
 	/**
-	 * Update the notification to mark actions performed.
+	 * Tells the service to perform the action on the notification(s)
 	 *
 	 * @param {INotification[]} notifications Notifications to apply action to.
 	 * @param {IAction} action which has been triggered by user.
 	 * @throws Error If no error is thrown the service has received the request to perform the action successfully. Note a successful resolution of the promise does not mean successful completion of the action.
 	 */
-	markActionHandled(notifications: INotification[], action: IAction): Promise<void> {
+	performAction(notifications: INotification[], action: IAction): Promise<void> {
 		// I think this is a clumsy interface. The default case will likely be a single notification.
 		// No need to punish the developer
 		if (!Array.isArray(notifications)) {
@@ -121,7 +121,7 @@ export default class NotificationClient implements INotificationClient {
 		return new Promise<void>(async (resolve, reject) => {
 			try {
 				let data = await this.routerWrapper.query(
-					ROUTER_ENDPOINTS.HANDLE_ACTION,
+					ROUTER_ENDPOINTS.PERFORM_ACTION,
 					{
 						"notifications": notifications,
 						"action": action
@@ -163,18 +163,17 @@ export default class NotificationClient implements INotificationClient {
 	 * TODO: onSubscriptionSuccess and onSubscriptionFault can do a better job of explaining what params will be passed in
 	 */
 	subscribe(subscription: ISubscription, onSubscriptionSuccess?: Function, onSubscriptionFault?: Function): Promise<string> {
-		this.loggerClient.log("Attempting to subscribe: ", subscription);
+		this.loggerClient.log("Creating subscription: ", subscription);
 		return new Promise<string>(async (resolve, reject) => {
 			try {
 				// Get a channel from the service to monitor
-				this.loggerClient.log("Attempting to subscribe: ", subscription);
 				let returnValue = await this.routerWrapper.query(
 					ROUTER_ENDPOINTS.SUBSCRIBE,
 					JSON.parse(JSON.stringify(subscription)) // ISubscription has a callback that can't be sent across the router
 				);
 
 				// Monitor the channel and execute subscription.onNotification() for each one that arrives.
-				this.loggerClient.log("Got a return value containing a channel", returnValue);
+				this.loggerClient.info("Got a return value containing a channel", returnValue);
 				await this.monitorChannel(returnValue.channel, subscription.onNotification);
 				if (onSubscriptionSuccess) {
 					onSubscriptionSuccess(returnValue);
@@ -218,8 +217,8 @@ export default class NotificationClient implements INotificationClient {
 		this.subscriptions = [];
 	}
 
-	private  cleanupSubscription(subscriptionId: string) {
-		const index = this.subscriptions.findIndex((element:any) => {
+	private cleanupSubscription(subscriptionId: string): void {
+		const index = this.subscriptions.findIndex((element: any) => {
 			element.id = subscriptionId
 		});
 
@@ -242,8 +241,7 @@ export default class NotificationClient implements INotificationClient {
 			this.routerWrapper.addResponder(
 				channel,
 				(queryMessage) => {
-					this.loggerClient.log("Incoming message on channel: ", queryMessage);
-					this.loggerClient.log(`Heard message on channel: ${channel}`, queryMessage);
+					this.loggerClient.log("Notification received: ", queryMessage.id);
 
 					// Catching user-code errors to allow for successful sending of receipt.
 					// TODO: 2nd pair of eyes: Is there situation where this will be confusing to anyone trying to debug an issue

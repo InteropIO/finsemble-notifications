@@ -30,7 +30,7 @@ export default interface INotificationService {
 	 * Called in response to a user action VIA a NotificationClient router transmit.
 	 * @private
 	 */
-	handleAction(notifications: INotification[], action: IAction): void;
+	performAction(notifications: INotification[], action: IAction): void;
 
 	/**
 	 * When incoming notification arrive, lookup matching subscriptions and call necessary

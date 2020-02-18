@@ -100,7 +100,9 @@ export default function useNotifications() {
 			NOTIFICATION_CLIENT = new NotificationClient();
 			const subscription = new Subscription();
 
-			const notificationConfig: NotificationsConfig|boolean = await getNotificationConfig(
+			const notificationConfig:
+				| NotificationsConfig
+				| boolean = await getNotificationConfig(
 				await WindowClient.getWindowIdentifier().componentType
 			);
 
@@ -152,7 +154,7 @@ export default function useNotifications() {
 	function doAction(notification: INotification, action) {
 		try {
 			NOTIFICATION_CLIENT = new NotificationClient();
-			NOTIFICATION_CLIENT.markActionHandled([notification], action).then(() => {
+			NOTIFICATION_CLIENT.performAction([notification], action).then(() => {
 				// NOTE: The request to perform the action has be sent to the notifications service successfully
 				// The action itself has not necessarily been perform successfully
 				console.log("ACTION success");
@@ -203,7 +205,7 @@ export default function useNotifications() {
 	 * @param filter
 	 */
 	const getNotificationHistory = (
-		since: string = "1969-12-31T23:59:59.999Z",
+		since = "1969-12-31T23:59:59.999Z",
 		filter: null | IFilter = null
 	): Promise<INotification[]> => {
 		NOTIFICATION_CLIENT = new NotificationClient();

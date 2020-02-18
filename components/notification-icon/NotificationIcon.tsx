@@ -4,7 +4,7 @@ import INotification from "../../types/Notification-definitions/INotification";
 import "./notification-icon.css";
 const { useState, useEffect } = React;
 interface Props {
-	action: Function;
+	action?: Function;
 }
 
 function App(props: Props): React.ReactElement {
@@ -44,17 +44,20 @@ function App(props: Props): React.ReactElement {
 			</span>
 			<div id="notification-icon__wrapper">
 				{Object.entries(groupNotificationsByType(activeNotifications)).map(
-					([key, values]) => {
-						console.log(key, values);
-						const colors = {
+					// TODO: fix the type any of value it should be an array of INotification but it errors
+					([key, values]: [string, any]) => {
+						const colors: object = {
 							chat: "#8b00c596",
 							email: "#005bc5",
 							timed: "#818400"
 						};
+						// TODO: make this code customisable and remove the ts-ignore
+						// @ts-ignore
+						const backgroundColor = colors[key];
 						return (
 							<div
 								className="notification-number"
-								style={{ backgroundColor: colors[key] }}
+								style={{ backgroundColor }}
 								key={key}
 							>
 								{values.length}

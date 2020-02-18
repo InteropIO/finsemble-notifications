@@ -5,17 +5,17 @@ import Subscription from "../../../types/Notification-definitions/Subscription";
 import NotificationClient from "../../../services/notification/notificationClient";
 import Filter from "../../../types/Notification-definitions/Filter";
 import { SpawnParams } from "../../../types/FSBL-definitions/services/window/Launcher/launcher";
-import WindowData, {
+import WindowConfig, {
 	NotificationsConfig
 } from "../../../types/Notification-definitions/NotificationConfig";
 import IFilter from "../../../types/Notification-definitions/IFilter";
-import WindowConfig from "../../../types/Notification-definitions/NotificationConfig";
+import { NotificationGroupList } from "../../../types/Notification-definitions/NotificationHookTypes";
 
 const FSBL = window.FSBL;
 
 const { LauncherClient, WindowClient } = FSBL.Clients;
 
-const initialState = { notifications: [] };
+const initialState: any = { notifications: [] };
 
 /*
 Action Types
@@ -100,7 +100,8 @@ export default function useNotifications() {
 			NOTIFICATION_CLIENT = new NotificationClient();
 			const subscription = new Subscription();
 
-			const notificationConfig: NotificationsConfig|boolean = await getNotificationConfig(
+			// TODO: fix this any to meet either NotificationsConfig or WindowsConfig
+			const notificationConfig: any = await getNotificationConfig(
 				await WindowClient.getWindowIdentifier().componentType
 			);
 
@@ -149,7 +150,7 @@ export default function useNotifications() {
 	 * @param notification
 	 * @param action
 	 */
-	function doAction(notification: INotification, action) {
+	function doAction(notification: INotification, action: any) {
 		try {
 			NOTIFICATION_CLIENT = new NotificationClient();
 			NOTIFICATION_CLIENT.performAction([notification], action).then(() => {
@@ -171,11 +172,13 @@ export default function useNotifications() {
 	 */
 	const groupNotificationsByType = (
 		notifications: INotification[]
-	): { [type: string]: INotification[] } => {
-		const groupBy = (arr: INotification[], type: string) =>
+	): NotificationGroupList => {
+		const groupBy = (arr: INotification[], type: keyof INotification) =>
 			arr
 				.map(
 					(notification: INotification): INotification["type"] =>
+						//TODO: this does not work as expected without the ignore
+						//@ts-ignore
 						notification[type]
 				)
 				.reduce(
@@ -216,12 +219,12 @@ export default function useNotifications() {
 	 */
 	const getNotificationConfig = async (
 		componentType: string
-	): Promise<NotificationsConfig | boolean> => {
+	): Promise<WindowConfig | boolean> => {
 		const { data }: any = await LauncherClient.getComponentDefaultConfig(
 			componentType
 		);
 
-		const config: WindowData = data;
+		const config: WindowConfig = data;
 
 		const notificationsConfigExists: WindowConfig | undefined =
 			config &&

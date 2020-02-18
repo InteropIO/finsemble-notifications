@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-ignore */
 /// <reference types="../../types/FSBL-definitions/globals" />
 
 import NotificationClient, {
@@ -5,14 +6,15 @@ import NotificationClient, {
 } from "../../services/notification/notificationClient";
 import Notification from "../../types/Notification-definitions/Notification";
 import Action from "../../types/Notification-definitions/Action";
-import {FSBL} from "../../types/FSBL-definitions/globals";
+import { FSBL } from "../../types/FSBL-definitions/globals";
 
 /**
  * A manual Notifications source
  */
 let nClient: NotificationClient = null;
 const sendNotifications = () => {
-	const source = (<HTMLInputElement>document.getElementById("feed-source")).value;
+	const source = (<HTMLInputElement>document.getElementById("feed-source"))
+		.value;
 	const not1 = new Notification();
 	not1.issuedAt = new Date().toISOString();
 	not1.source = source;
@@ -79,7 +81,8 @@ const sendNotifications = () => {
 };
 
 const getLastIssuedAt = () => {
-	const source = (<HTMLInputElement>document.getElementById("feed-source")).value;
+	const source = (document.getElementById("feed-source") as HTMLInputElement)
+		.value;
 
 	nClient.getLastIssuedAt(source).then(issuedDate => {
 		document.getElementById("service-last-issued").innerText = issuedDate;
@@ -88,7 +91,8 @@ const getLastIssuedAt = () => {
 
 const timedNotification = () => {
 	setInterval(() => {
-		const source = document.getElementById("feed-source").value;
+		const source = (document.getElementById("feed-source") as HTMLInputElement)
+			.value;
 
 		//notifiation custom
 		const customNot = new Notification();
@@ -113,12 +117,6 @@ const timedNotification = () => {
 	}, 20000);
 };
 
-if (window.FSBL && FSBL.addEventListener) {
-	FSBL.addEventListener("onReady", init);
-} else {
-	window.addEventListener("FSBLReady", init);
-}
-
 function init() {
 	document
 		.getElementById("send-notification")
@@ -130,4 +128,11 @@ function init() {
 		.getElementById("get-last-issued")
 		.addEventListener("click", getLastIssuedAt);
 	nClient = new NotificationClient();
+}
+// @ts-ignore
+if (window.FSBL && FSBL.addEventListener) {
+	// @ts-ignore
+	FSBL.addEventListener("onReady", init);
+} else {
+	window.addEventListener("FSBLReady", init);
 }

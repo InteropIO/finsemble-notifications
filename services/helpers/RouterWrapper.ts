@@ -1,6 +1,7 @@
-import {IRouterClient} from "../../types/FSBL-definitions/clients/IRouterClient";
+import { IRouterClient } from "../../types/FSBL-definitions/clients/IRouterClient";
 
-const {RouterClient, Logger} = require("@chartiq/finsemble").Clients;
+const { RouterClient, Logger } = require("@chartiq/finsemble").Clients;
+const FSBL = window.FSBL;
 
 /**
  * Internal (private) router channels, should not need to be referenced by outside of the Client src
@@ -13,14 +14,15 @@ export const ROUTER_ENDPOINTS = {
 	LAST_ISSUED: "last_issued",
 	FETCH_HISTORY: "fetch_history",
 	CHANNEL_PREFIX: "notification.",
-	ACTION_PREFIX: "action.",
+	ACTION_PREFIX: "action."
 };
 
 /**
  * User for creating custom actions
  */
 export const ROUTER_NAMESPACE = {
-	ACTION_PREFIX: ROUTER_ENDPOINTS.CHANNEL_PREFIX + ROUTER_ENDPOINTS.ACTION_PREFIX,
+	ACTION_PREFIX:
+		ROUTER_ENDPOINTS.CHANNEL_PREFIX + ROUTER_ENDPOINTS.ACTION_PREFIX
 };
 
 /**
@@ -42,9 +44,9 @@ export default class RouterWrapper {
 	 * @param logger Needs to be set if using in a service. Defaults to FSBL.Client.Logger if none is provided
 	 */
 	constructor(router?: IRouterClient, logger?: any) {
-
 		if (!router) {
-			router = typeof FSBL !== "undefined" ? FSBL.Clients.RouterClient : RouterClient;
+			router =
+				typeof FSBL !== "undefined" ? FSBL.Clients.RouterClient : RouterClient;
 		}
 
 		if (!logger) {
@@ -64,13 +66,22 @@ export default class RouterWrapper {
 	 * @param {any} data
 	 * @param {Function} callback
 	 */
-	public query(channel: string, data: any, channelPrefix?: string, callback?: Function): Promise<any> {
+	public query(
+		channel: string,
+		data: any,
+		channelPrefix?: string,
+		callback?: Function
+	): Promise<any> {
 		return new Promise<any>(async (resolve, reject) => {
 			try {
 				if (channelPrefix == null) {
 					channelPrefix = ROUTER_ENDPOINTS.CHANNEL_PREFIX;
 				}
-				this.loggerClient && this.loggerClient.info(`Wrapper: sending message on ${channelPrefix + channel} channel`, data);
+				this.loggerClient &&
+					this.loggerClient.info(
+						`Wrapper: sending message on ${channelPrefix + channel} channel`,
+						data
+					);
 
 				let response = await this.routerClient.query(
 					channelPrefix + channel,
@@ -82,13 +93,14 @@ export default class RouterWrapper {
 					this.loggerClient && this.loggerClient.error(`Error: `, response.err);
 					reject(response.err);
 				} else {
-					this.loggerClient && this.loggerClient && this.loggerClient.log(`${channel} raw response: `, response);
+					this.loggerClient &&
+						this.loggerClient &&
+						this.loggerClient.log(`${channel} raw response: `, response);
 					if (callback) {
 						callback(null, response.response.data.data);
 					}
 					resolve(response.response.data.data);
 				}
-
 			} catch (e) {
 				this.loggerClient && this.loggerClient.error(`Error: `, e);
 				if (callback) {
@@ -105,29 +117,56 @@ export default class RouterWrapper {
 	 * @param {Function} dataProcessor
 	 * @param {string|null} channelPrefix
 	 */
-	public addResponder(channel: string, dataProcessor: (notification: any) => any, channelPrefix?: string) {
+	public addResponder(
+		channel: string,
+		dataProcessor: (notification: any) => any,
+		channelPrefix?: string
+	) {
 		if (channelPrefix == null) {
 			channelPrefix = ROUTER_ENDPOINTS.CHANNEL_PREFIX;
 		}
-		this.loggerClient && this.loggerClient.info(`Wrapper: Adding responder for endpoint: ${channelPrefix + channel}`);
+		this.loggerClient &&
+			this.loggerClient.info(
+				`Wrapper: Adding responder for endpoint: ${channelPrefix + channel}`
+			);
 
-		this.routerClient.addResponder(channelPrefix + channel, (err: any, message: any) => {
-			this.loggerClient && this.loggerClient.info(`Message received on ${channel}: `, message);
-			if (err) {
-				this.loggerClient && this.loggerClient.error(`Failed to setup ${channel} responder`, err);
-				return;
-			}
+		this.routerClient.addResponder(
+			channelPrefix + channel,
+			(err: any, message: any) => {
+				this.loggerClient &&
+					this.loggerClient.info(`Message received on ${channel}: `, message);
+				if (err) {
+					this.loggerClient &&
+						this.loggerClient.error(
+							`Failed to setup ${channel} responder`,
+							err
+						);
+					return;
+				}
 
-			try {
-				this.loggerClient && this.loggerClient.info(`Processing message on channel ${channel}: `, message);
-				let returnVal = dataProcessor(message.data);
-				this.loggerClient && this.loggerClient.info(`Message response on ${channel}: `, returnVal);
-				message.sendQueryResponse(null, {"status": "success", "data": returnVal});
-			} catch (err) {
-				this.loggerClient && this.loggerClient.error(`Failed to process query`, err);
-				message.sendQueryResponse(err);
+				try {
+					this.loggerClient &&
+						this.loggerClient.info(
+							`Processing message on channel ${channel}: `,
+							message
+						);
+					let returnVal = dataProcessor(message.data);
+					this.loggerClient &&
+						this.loggerClient.info(
+							`Message response on ${channel}: `,
+							returnVal
+						);
+					message.sendQueryResponse(null, {
+						status: "success",
+						data: returnVal
+					});
+				} catch (err) {
+					this.loggerClient &&
+						this.loggerClient.error(`Failed to process query`, err);
+					message.sendQueryResponse(err);
+				}
 			}
-		});
+		);
 	}
 
 	public removeResponder(channel: string, channelPrefix?: string) {
@@ -148,7 +187,10 @@ export default class RouterWrapper {
 		if (channelPrefix == null) {
 			channelPrefix = ROUTER_ENDPOINTS.CHANNEL_PREFIX;
 		}
-		this.loggerClient && this.loggerClient.info(`Transmitting on channel: ${channelPrefix + channel}`);
+		this.loggerClient &&
+			this.loggerClient.info(
+				`Transmitting on channel: ${channelPrefix + channel}`
+			);
 		this.routerClient.transmit(channelPrefix + channel, payload);
 	}
 
@@ -164,7 +206,10 @@ export default class RouterWrapper {
 		}
 
 		this.loggerClient && this.loggerClient.info(channelPrefix);
-		this.loggerClient && this.loggerClient.info(`Publishing on channel: ${channelPrefix + channel}`);
+		this.loggerClient &&
+			this.loggerClient.info(
+				`Publishing on channel: ${channelPrefix + channel}`
+			);
 		this.routerClient.publish(channelPrefix + channel, payload);
 	}
 }

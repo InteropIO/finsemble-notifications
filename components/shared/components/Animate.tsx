@@ -15,7 +15,7 @@ export default function Animate(props: Props) {
 
 	useEffect(
 		() => {
-			let timer1;
+			let timer1: NodeJS.Timeout | undefined;
 			if (props.displayDuration) {
 				timer1 = setTimeout(() => {
 					setCSS(animateOut);
@@ -29,7 +29,7 @@ export default function Animate(props: Props) {
 				setCSS(animateOut);
 			};
 		},
-		[]
+		[animateOut, displayDuration, props.displayDuration]
 		// eslint-disable-line
 		//useEffect will run only one time
 		//if you pass a value to array, like this [data] than clearTimeout will run every time this value changes (useEffect re-run)

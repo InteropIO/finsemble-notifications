@@ -20,7 +20,9 @@ export default class ServiceHelper {
 	 * @param config
 	 */
 
-	public static normaliseConfig(config: Object): Object {
+	public static normaliseConfig(
+		config: Record<string, any>
+	): Record<string, any> {
 		// TODO: Input validation
 		return {
 			service: ServiceHelper.getServiceDefaults(config),
@@ -28,14 +30,16 @@ export default class ServiceHelper {
 		};
 	}
 
-	public static getTypes(config: Object): Object {
+	public static getTypes(config: Record<string, any>): Record<string, any> {
 		return Object.assign(
 			{},
 			config && config.hasOwnProperty("types") ? config["types"] : null
 		);
 	}
 
-	public static getServiceDefaults(config: Object): Object {
+	public static getServiceDefaults(
+		config: Record<string, any>
+	): Record<string, any> {
 		const defaults = Object.assign({}, config);
 		if (defaults.hasOwnProperty("types")) {
 			delete defaults["types"];
@@ -164,27 +168,29 @@ export default class ServiceHelper {
 	): boolean {
 		// All notifications match if the filters are empty
 
-		const includeExists:boolean = filter && filter.include && filter.include.length > 0;
-		const excludeExists:boolean = filter && filter.exclude && filter.exclude.length > 0;
+		const includeExists: boolean =
+			filter && filter.include && filter.include.length > 0;
+		const excludeExists: boolean =
+			filter && filter.exclude && filter.exclude.length > 0;
 
-		if(!includeExists && !excludeExists) {
+		if (!includeExists && !excludeExists) {
 			// Empty filters will match everything
-			return true
+			return true;
 		}
 
 		let isMatch = !includeExists;
 
 		if (includeExists) {
-			filter.include.forEach((filterToMatch) => {
-				if(searchJS.matchObject(notification, filterToMatch)) {
+			filter.include.forEach(filterToMatch => {
+				if (searchJS.matchObject(notification, filterToMatch)) {
 					isMatch = true;
 				}
 			});
 		}
 
-		if(excludeExists) {
-			filter.exclude.forEach((filterToMatch) => {
-				if(searchJS.matchObject(notification, filterToMatch)) {
+		if (excludeExists) {
+			filter.exclude.forEach(filterToMatch => {
+				if (searchJS.matchObject(notification, filterToMatch)) {
 					isMatch = false;
 				}
 			});

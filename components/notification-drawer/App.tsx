@@ -15,7 +15,7 @@ function App(): React.ReactElement {
 					[...notifications].reverse().map(
 						(notification: INotification) =>
 							!notification.isSnoozed &&
-							!notification.isActionPerformed && (
+							!notification.isRead && (
 								<Animate
 									// TODO: this needs a better key to differentiate when notification is updated
 									key={notification.id}

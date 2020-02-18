@@ -16,7 +16,7 @@ function App(props: Props): React.ReactElement {
 	useEffect(() => {
 		const currentNotifications = notifications.filter(
 			(notification: INotification) =>
-				!notification.isSnoozed && !notification.isActionPerformed
+				!notification.isSnoozed && !notification.isRead
 		);
 		setActiveNotifications(currentNotifications);
 	}, [notifications]);

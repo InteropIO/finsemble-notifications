@@ -1,5 +1,6 @@
 {
-  "extension": ["ts"],
-  "spec": "tests/**/*.spec.ts",
-  "require": "ts-node/register"
+	"extension": ["ts"],
+	"spec": "./tests/**/*.spec.*",
+	"require": ["ts-node/register", "@babel/register", "jsdom-global/register"],
+	"exclude": ["node_modules", "./types", "./docs", "./preloads", "./services"]
 }

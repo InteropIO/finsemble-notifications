@@ -17,14 +17,6 @@
 			"@testing-library/react"
 		]
 	},
-	// "include": [
-	// 	"components/notification-center/*",
-	// 	"components/notification-drawer/*",
-	// 	"components/notification-icon/*",
-	// 	"components/notification-toaster/*",
-	// 	"components/notification-toasts/*",
-	// 	"components/notification-subscriber/*"
-	// ],
 	"include": ["**/*"],
 	"exclude": [
 		"./node_modules/**",

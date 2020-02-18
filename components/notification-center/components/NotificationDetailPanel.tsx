@@ -31,11 +31,7 @@ const NotificationsPanel = (props: Props) => {
 		<section id="notification-center__notification-detail">
 			<h3>
 				Notification Detail:{" "}
-				<img
-					src="../shared/assets/close.svg"
-					id="close-icon"
-					onClick={() => props.clearActiveNotification(null)}
-				/>
+				<img src="../shared/assets/close.svg" id="close-icon" onClick={() => props.clearActiveNotification(null)} />
 			</h3>
 
 			<p>ID: {id}</p>

@@ -35,7 +35,7 @@ const Notification = (props: Props) => {
 		})
 	);
 	useEffect(() => {
-		let id = setInterval(() => {
+		const id = setInterval(() => {
 			setTime(
 				formatDistanceToNow(new Date(issuedAt), {
 					includeSeconds: true
@@ -53,13 +53,7 @@ const Notification = (props: Props) => {
 				</div>
 				<div className="detail-area_type">{type}</div>
 				<div className="detail-area_time">{time} ago</div>
-				{closeButton && (
-					<img
-						src="../shared/assets/close.svg"
-						id="close-icon"
-						onClick={() => closeAction()}
-					/>
-				)}
+				{closeButton && <img src="../shared/assets/close.svg" id="close-icon" onClick={() => closeAction()} />}
 			</div>
 			<div className="content-area">
 				<div>
@@ -75,10 +69,7 @@ const Notification = (props: Props) => {
 			<hr />
 			<div className="action-area">
 				{actions.map((action: IAction) => (
-					<button
-						key={action.buttonText}
-						onClick={() => doAction(notification, action)}
-					>
+					<button key={action.buttonText} onClick={() => doAction(notification, action)}>
 						{action.buttonText}
 					</button>
 				))}

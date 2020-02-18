@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-ignore */
 import * as react from "react";
 import { WindowIdentifier } from "../../../types/FSBL-definitions/globals";
 import INotification from "../../../types/Notification-definitions/INotification";
@@ -8,6 +9,7 @@ import { SpawnParams } from "../../../types/FSBL-definitions/services/window/Lau
 import WindowConfig, { NotificationsConfig } from "../../../types/Notification-definitions/NotificationConfig";
 import IFilter from "../../../types/Notification-definitions/IFilter";
 import { NotificationGroupList } from "../../../types/Notification-definitions/NotificationHookTypes";
+import _get from "lodash.get";
 
 const FSBL = window.FSBL;
 
@@ -76,6 +78,7 @@ export default function useNotifications() {
 
 	// start receiving Notifications and putting them in state
 	react.useEffect(() => {
+		// eslint-disable-next-line @typescript-eslint/no-use-before-define
 		const subscribe = init();
 		return () => {
 			// Unsubscribe using the subscription ID
@@ -85,54 +88,6 @@ export default function useNotifications() {
 			})();
 		};
 	}, []); // eslint-disable-line
-
-	async function init() {
-		try {
-			NOTIFICATION_CLIENT = new NotificationClient();
-			const subscription = new Subscription();
-
-			const notificationConfig: NotificationsConfig | boolean = await getNotificationConfig(
-				await WindowClient.getWindowIdentifier().componentType
-			);
-
-			const filter: IFilter = new Filter();
-
-			// make filters from the config
-			if (notificationConfig) {
-				notificationConfig.filter &&
-					notificationConfig.filter.include &&
-					filter.include.push(...notificationConfig.filter.include);
-
-				notificationConfig.filter &&
-					notificationConfig.filter.exclude &&
-					filter.exclude.push(...notificationConfig.filter.exclude);
-			}
-
-			subscription.filter = filter;
-
-			if (notificationConfig && notificationConfig.notificationsHistory) {
-				// const { since, filter } = notificationConfig.notificationsHistory;
-				const pastNotifications = await getNotificationHistory();
-				addMultipleNotifications(pastNotifications);
-			}
-			subscription.onNotification = function(notification: INotification) {
-				// This function will be called when a notification arrives
-				addNotification(notification);
-			};
-
-			return NOTIFICATION_CLIENT.subscribe(
-				subscription,
-				(data: any) => {
-					console.log(data);
-				},
-				(error: any) => {
-					console.log(error);
-				}
-			);
-		} catch (error) {
-			console.error(error);
-		}
-	}
 
 	/**
 	 * Example for setting up button clicks
@@ -195,15 +150,12 @@ export default function useNotifications() {
 	 * Get Notification's config from
 	 * @param componentType Finsemble component type e.g "Welcome-Component"
 	 */
-	const getNotificationConfig = async (componentType: string): Promise<WindowConfig | boolean> => {
+	const getNotificationConfig = async (componentType: string): Promise<NotificationsConfig> => {
 		const { data }: any = await LauncherClient.getComponentDefaultConfig(componentType);
 
 		const config: WindowConfig = data;
 
-		const notificationsConfigExists: WindowConfig | undefined =
-			config && config.window && config.window.data && config.window.data.notifications;
-
-		return notificationsConfigExists && config.window.data.notifications;
+		return _get(config, "config.window.data.notifications", null);
 	};
 
 	/*
@@ -231,6 +183,57 @@ export default function useNotifications() {
 	const getWindowSpawnData = () => {
 		return WindowClient.getSpawnData();
 	};
+
+	/**
+	 * Main init function to start the subscription
+	 */
+	async function init() {
+		try {
+			NOTIFICATION_CLIENT = new NotificationClient();
+			const subscription = new Subscription();
+
+			const notificationConfig: NotificationsConfig = await getNotificationConfig(
+				await WindowClient.getWindowIdentifier().componentType
+			);
+
+			const filter: IFilter = new Filter();
+
+			// make filters from the config
+			if (notificationConfig) {
+				notificationConfig.filter &&
+					notificationConfig.filter.include &&
+					filter.include.push(...notificationConfig.filter.include);
+
+				notificationConfig.filter &&
+					notificationConfig.filter.exclude &&
+					filter.exclude.push(...notificationConfig.filter.exclude);
+			}
+
+			subscription.filter = filter;
+
+			if (notificationConfig && notificationConfig.notificationsHistory) {
+				// const { since, filter } = notificationConfig.notificationsHistory;
+				const pastNotifications = await getNotificationHistory();
+				addMultipleNotifications(pastNotifications);
+			}
+			subscription.onNotification = function(notification: INotification) {
+				// This function will be called when a notification arrives
+				addNotification(notification);
+			};
+
+			return NOTIFICATION_CLIENT.subscribe(
+				subscription,
+				(data: any) => {
+					console.log(data);
+				},
+				(error: any) => {
+					console.log(error);
+				}
+			);
+		} catch (error) {
+			console.error(error);
+		}
+	}
 
 	return {
 		doAction,

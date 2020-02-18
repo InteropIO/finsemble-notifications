@@ -26,11 +26,7 @@ function Drawer(props: Props): React.ReactElement {
 			FSBL.Clients.WindowClient.minimize(() => {});
 	};
 	return (
-		<div
-			id="drawer"
-			className={animationClass}
-			onAnimationEnd={animationComplete}
-		>
+		<div id="drawer" className={animationClass} onAnimationEnd={animationComplete}>
 			<div id="notifications-drawer__menu">
 				<img
 					src="../shared/assets/dashboard.svg"

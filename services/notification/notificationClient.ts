@@ -4,10 +4,7 @@ import INotification from "../../types/Notification-definitions/INotification";
 import IFilter from "../../types/Notification-definitions/IFilter";
 import IAction from "../../types/Notification-definitions/IAction";
 import ISubscription from "../../types/Notification-definitions/ISubscription";
-import RouterWrapper, {
-	ROUTER_ENDPOINTS,
-	ROUTER_NAMESPACE
-} from "../helpers/RouterWrapper";
+import RouterWrapper, { ROUTER_ENDPOINTS, ROUTER_NAMESPACE } from "../helpers/RouterWrapper";
 import { ActionTypes } from "../../types/Notification-definitions/ActionTypes";
 import { IRouterClient } from "../../types/FSBL-definitions/clients/IRouterClient";
 import { ILogger } from "../../types/FSBL-definitions/clients/logger.interface";
@@ -48,8 +45,7 @@ export default class NotificationClient implements INotificationClient {
 		}
 
 		if (!this.loggerClient) {
-			this.loggerClient =
-				typeof FSBL !== "undefined" ? FSBL.Clients.Logger : Logger;
+			this.loggerClient = typeof FSBL !== "undefined" ? FSBL.Clients.Logger : Logger;
 		}
 
 		if (window && window.addEventListener) {
@@ -71,13 +67,10 @@ export default class NotificationClient implements INotificationClient {
 	fetchHistory(since: string, filter?: IFilter): Promise<INotification[]> {
 		return new Promise<INotification[]>(async (resolve, reject) => {
 			try {
-				const data = await this.routerWrapper.query(
-					ROUTER_ENDPOINTS.FETCH_HISTORY,
-					{
-						since: since,
-						filter: filter
-					}
-				);
+				const data = await this.routerWrapper.query(ROUTER_ENDPOINTS.FETCH_HISTORY, {
+					since: since,
+					filter: filter
+				});
 				resolve(data);
 			} catch (e) {
 				reject(e);
@@ -96,10 +89,7 @@ export default class NotificationClient implements INotificationClient {
 	getLastIssuedAt(source?: string): Promise<string> {
 		return new Promise<string>(async (resolve, reject) => {
 			try {
-				const data = await this.routerWrapper.query(
-					ROUTER_ENDPOINTS.LAST_ISSUED,
-					source
-				);
+				const data = await this.routerWrapper.query(ROUTER_ENDPOINTS.LAST_ISSUED, source);
 				resolve(data);
 			} catch (e) {
 				reject(e);
@@ -114,10 +104,7 @@ export default class NotificationClient implements INotificationClient {
 	 * @param {IAction} action which has been triggered by user.
 	 * @throws Error If no error is thrown the service has received the request to perform the action successfully. Note a successful resolution of the promise does not mean successful completion of the action.
 	 */
-	performAction(
-		notifications: INotification[],
-		action: IAction
-	): Promise<void> {
+	performAction(notifications: INotification[], action: IAction): Promise<void> {
 		// I think this is a clumsy interface. The default case will likely be a single notification.
 		// No need to punish the developer
 		if (!Array.isArray(notifications)) {
@@ -126,13 +113,10 @@ export default class NotificationClient implements INotificationClient {
 
 		return new Promise<void>(async (resolve, reject) => {
 			try {
-				const data = await this.routerWrapper.query(
-					ROUTER_ENDPOINTS.PERFORM_ACTION,
-					{
-						notifications: notifications,
-						action: action
-					}
-				);
+				const data = await this.routerWrapper.query(ROUTER_ENDPOINTS.PERFORM_ACTION, {
+					notifications: notifications,
+					action: action
+				});
 				resolve(data);
 			} catch (e) {
 				reject(e);
@@ -149,11 +133,9 @@ export default class NotificationClient implements INotificationClient {
 	notify(notifications: any[]): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
 			try {
-				this.routerWrapper
-					.query(ROUTER_ENDPOINTS.NOTIFY, notifications)
-					.then(() => {
-						resolve();
-					});
+				this.routerWrapper.query(ROUTER_ENDPOINTS.NOTIFY, notifications).then(() => {
+					resolve();
+				});
 			} catch (e) {
 				reject(e);
 			}
@@ -185,14 +167,8 @@ export default class NotificationClient implements INotificationClient {
 				);
 
 				// Monitor the channel and execute subscription.onNotification() for each one that arrives.
-				this.loggerClient.info(
-					"Got a return value containing a channel",
-					returnValue
-				);
-				await this.monitorChannel(
-					returnValue.channel,
-					subscription.onNotification
-				);
+				this.loggerClient.info("Got a return value containing a channel", returnValue);
+				await this.monitorChannel(returnValue.channel, subscription.onNotification);
 				if (onSubscriptionSuccess) {
 					onSubscriptionSuccess(returnValue);
 				}
@@ -217,10 +193,7 @@ export default class NotificationClient implements INotificationClient {
 	unsubscribe(subscriptionId: string): Promise<void> {
 		return new Promise<void>(async (resolve, reject) => {
 			try {
-				await this.routerWrapper.query(
-					ROUTER_ENDPOINTS.UNSUBSCRIBE,
-					subscriptionId
-				);
+				await this.routerWrapper.query(ROUTER_ENDPOINTS.UNSUBSCRIBE, subscriptionId);
 				this.cleanupSubscription(subscriptionId);
 				resolve();
 			} catch (e) {
@@ -255,10 +228,7 @@ export default class NotificationClient implements INotificationClient {
 	 * @param channel the channel to listen to.
 	 * @param onNotification the action to take when a notification comes though
 	 */
-	private monitorChannel(
-		channel: string,
-		onNotification: Function
-	): Promise<void> {
+	private monitorChannel(channel: string, onNotification: Function): Promise<void> {
 		return new Promise(resolve => {
 			this.loggerClient.log("Listening for messages on channel", channel);
 			this.routerWrapper.addResponder(channel, queryMessage => {
@@ -270,10 +240,7 @@ export default class NotificationClient implements INotificationClient {
 					onNotification(queryMessage);
 				} catch (e) {
 					// Error thrown in the onNotification
-					this.loggerClient.error(
-						`Error thrown in the subscription.onNotification()`,
-						e
-					);
+					this.loggerClient.error(`Error thrown in the subscription.onNotification()`, e);
 				}
 
 				// Return value used in addResponder as notification received response.

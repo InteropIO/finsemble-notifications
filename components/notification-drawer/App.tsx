@@ -24,11 +24,7 @@ function App(): React.ReactElement {
 									// eslint-disable-next-line @typescript-eslint/no-empty-function
 									animateOutComplete={() => {}}
 								>
-									<Notification
-										key={notification.id}
-										notification={notification}
-										doAction={doAction}
-									></Notification>
+									<Notification key={notification.id} notification={notification} doAction={doAction}></Notification>
 								</Animate>
 							)
 					)}

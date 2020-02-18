@@ -1,12 +1,11 @@
 import NotificationClient from "../notification/notificationClient";
 
-const Finsemble = require("@chartiq/finsemble");
+import Finsemble from "@chartiq/finsemble";
 
 Finsemble.Clients.Logger.start();
 Finsemble.Clients.Logger.log("exampleCustomActionService Service starting up");
 
-
-class exampleCustomActionService extends Finsemble.baseService {
+class ExampleCustomActionService extends Finsemble.baseService {
 	nClient: NotificationClient;
 
 	/**
@@ -48,35 +47,23 @@ class exampleCustomActionService extends Finsemble.baseService {
 	 * Add query responders, listeners or pub/sub topic as appropriate.
 	 */
 	createRouterEndpoints() {
-		Finsemble.Clients.RouterClient.addResponder(
-			'query-channel',
-			this.queryHandler
-		);
+		Finsemble.Clients.RouterClient.addResponder("query-channel", this.queryHandler);
 
-		Finsemble.Clients.RouterClient.addPubSubResponder(
-			'publish-channel',
-			{"State": "start"}
-		);
-		Finsemble.Clients.RouterClient.subscribe(
-			'publish-channel',
-			this.publishHandler
-		);
+		Finsemble.Clients.RouterClient.addPubSubResponder("publish-channel", { State: "start" });
+		Finsemble.Clients.RouterClient.subscribe("publish-channel", this.publishHandler);
 
-		Finsemble.Clients.RouterClient.addListener(
-			'transmit-channel',
-			this.transmitHandler
-		);
+		Finsemble.Clients.RouterClient.addListener("transmit-channel", this.transmitHandler);
 	}
 
 	private queryHandler(error: any, queryMessage: any): any {
 		Finsemble.Clients.Logger.log("Query handler got message", error, queryMessage);
 		if (!error) {
-			let notification = queryMessage.data.notification;
-			let payload = queryMessage.data.actionPayload;
+			const notification = queryMessage.data.notification;
+			const payload = queryMessage.data.actionPayload;
 			notification.headerText = "Header Changed";
 
 			// Tell the notification service the message has been received. Any response is successful
-			queryMessage.sendQueryResponse(null, {"response": "Query handler got message"});
+			queryMessage.sendQueryResponse(null, { response: "Query handler got message" });
 		}
 	}
 
@@ -92,12 +79,11 @@ class exampleCustomActionService extends Finsemble.baseService {
 	private publishHandler(error: any, response: any): any {
 		Finsemble.Clients.Logger.log("Publish handler got message", error, response);
 		if (!error) {
-
 		}
 	}
 }
 
-const serviceInstance = new exampleCustomActionService();
+const serviceInstance = new ExampleCustomActionService();
 
 serviceInstance.start();
 module.exports = serviceInstance;

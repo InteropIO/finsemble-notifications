@@ -13,53 +13,6 @@ let nClient: NotificationClient = null;
 
 let subscriptionId: string = null;
 
-function init() {
-	nClient = new NotificationClient();
-	const subscription = new Subscription();
-
-	// Set the filter to match INotification fields
-	subscription.filter = new Filter();
-	// subscription.filter.include.push({"type": "chat"});
-
-	subscription.onNotification = function(notification: INotification) {
-		// This function will be called when a notification arrives
-		addToList(notification);
-	};
-
-	nClient.subscribe(subscription).then(subId => {
-		subscriptionId = subId;
-		console.log(subId);
-	});
-
-	(<HTMLInputElement>(
-		document.getElementById("fetch-from-date")
-	)).value = new Date().toISOString();
-
-	document.getElementById("clear-list").addEventListener("click", () => {
-		document.getElementById("notification-list").innerText = "";
-	});
-
-	document.getElementById("fetch-history").addEventListener("click", () => {
-		nClient
-			.fetchHistory(
-				(<HTMLInputElement>document.getElementById("fetch-from-date")).value
-			)
-			.then(notifications => {
-				notifications.forEach(notification => {
-					addToList(notification);
-				});
-			});
-	});
-
-	document.getElementById("unsubscribe").addEventListener("click", () => {
-		try {
-			nClient.unsubscribe(subscriptionId).then(() => {
-				// Unsubscribed
-			});
-		} catch (e) {}
-	});
-}
-
 /**
  * Example for setting up button clicks
  *
@@ -105,9 +58,7 @@ const addToList = (notification: INotification) => {
 		divElement.className += " dismissed";
 	}
 
-	const actionContainer = divElement.getElementsByClassName(
-		"actions-container"
-	);
+	const actionContainer = divElement.getElementsByClassName("actions-container");
 	actions.forEach(action => {
 		actionContainer.item(0).appendChild(action);
 	});
@@ -119,6 +70,47 @@ const addToList = (notification: INotification) => {
 		document.getElementById("notification-list").appendChild(divElement);
 	}
 };
+
+function init() {
+	nClient = new NotificationClient();
+	const subscription = new Subscription();
+
+	// Set the filter to match INotification fields
+	subscription.filter = new Filter();
+	// subscription.filter.include.push({"type": "chat"});
+
+	subscription.onNotification = function(notification: INotification) {
+		// This function will be called when a notification arrives
+		addToList(notification);
+	};
+
+	nClient.subscribe(subscription).then(subId => {
+		subscriptionId = subId;
+		console.log(subId);
+	});
+
+	(document.getElementById("fetch-from-date") as HTMLInputElement).value = new Date().toISOString();
+
+	document.getElementById("clear-list").addEventListener("click", () => {
+		document.getElementById("notification-list").innerText = "";
+	});
+
+	document.getElementById("fetch-history").addEventListener("click", () => {
+		nClient.fetchHistory((document.getElementById("fetch-from-date") as HTMLInputElement).value).then(notifications => {
+			notifications.forEach(notification => {
+				addToList(notification);
+			});
+		});
+	});
+
+	document.getElementById("unsubscribe").addEventListener("click", () => {
+		try {
+			nClient.unsubscribe(subscriptionId).then(() => {
+				// Unsubscribed
+			});
+		} catch (e) {}
+	});
+}
 
 // @ts-ignore
 if (window.FSBL && FSBL.addEventListener) {

@@ -8,18 +8,12 @@ import Animate from "../shared/components/Animate";
 const { useEffect, useState } = React;
 
 function App(): React.ReactElement {
-	const {
-		notifications,
-		doAction,
-		removeNotification,
-		getNotificationConfig
-	} = useNotifications();
+	const { notifications, doAction, removeNotification, getNotificationConfig } = useNotifications();
 
 	const [config, setConfig] = useState(null);
 
 	useEffect(() => {
-		(async () =>
-			setConfig(await getNotificationConfig("notification-toasts")))();
+		(async () => setConfig(await getNotificationConfig("notification-toasts")))();
 	}, [getNotificationConfig]);
 
 	return (
@@ -39,9 +33,7 @@ function App(): React.ReactElement {
 						!notification.isSnoozed && (
 							<Animate
 								key={notification.id}
-								displayDuration={
-									notification.timeout || config.animation.displayDuration
-								}
+								displayDuration={notification.timeout || config.animation.displayDuration}
 								animateIn={config.animation.animateIn}
 								animateOut={config.animation.animateOut}
 								animateOutComplete={() => removeNotification(notification)}

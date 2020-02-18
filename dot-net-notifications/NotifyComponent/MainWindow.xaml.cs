@@ -24,6 +24,7 @@ namespace NotifyComponent
 		private Finsemble FSBL;
 		private ChartIQ.Finsemble.Notifications.NotificationClient notifier;
 
+		//Internal state for a single subscription - note that the client supports multiple subscriptions, we're just using a single one in this component.
 		private Subscription subscription = null;
 
 		/// <summary>
@@ -43,16 +44,6 @@ namespace NotifyComponent
 
 		private void Notification_1_Click(object sender, RoutedEventArgs e)
 		{
-			//object selected = ComponentSelect.SelectedValue;
-			//if (selected != null)
-			//{
-			//	string componentName = selected.ToString();
-			//	FSBL.RPC("LauncherClient.spawn", new List<JToken> {
-			//		componentName,
-			//		new JObject { ["addToWorkspace"] = true }
-			//	}, (s, a) => { });
-			//}
-
 			Notification not1 = new Notification();
 			not1.issuedAt = DateTime.Now;
 			not1.source = "WPF NotifyComponent";
@@ -179,6 +170,11 @@ namespace NotifyComponent
 				if (r.response != null)
 				{
 					subscription = Subscription.FromJObject((JObject)r.response);
+					Application.Current.Dispatcher.Invoke(delegate //main thread
+					{
+						Unsubscribe.IsEnabled = true;
+						Subscribe.IsEnabled = false;
+					});
 				}
 			};
 
@@ -188,7 +184,10 @@ namespace NotifyComponent
 					"Received Notification,\nnotification: " + r.ToString()
 				});
 
-				NotificationData.Text = r.ToString();
+				Application.Current.Dispatcher.Invoke(delegate //main thread
+				{
+					NotificationData.Text = r.ToString();
+				});
 			};
 
 			notifier.subscribe(sub, onSubHandler, onNotifyHandler);
@@ -207,6 +206,11 @@ namespace NotifyComponent
 					});
 					//TODO: check response doesn't include an error before clearing subscription ID
 					subscription = null;
+					Application.Current.Dispatcher.Invoke(delegate //main thread
+					{
+						Unsubscribe.IsEnabled = false;
+						Subscribe.IsEnabled = true;
+					});
 				};
 
 				notifier.unsubscribe(subscription.id, onUnsubHandler);

@@ -12,17 +12,20 @@ namespace ChartIQ.Finsemble.Notifications
 	public class NotificationClient
 	{
 		/// Internal (private) router channels, should not need to be referenced by outside of the Client src
-		internal String ROUTER_ENDPOINT_NOTIFY = "notification.notify";
-		internal String ROUTER_ENDPOINT_SUBSCRIBE = "notification.subscribe";
-		internal String ROUTER_ENDPOINT_UNSUBSCRIBE = "notification.unsubscribe";
-		internal String ROUTER_ENDPOINT_HANDLE_ACTION = "notification.handle_action";
-		internal String ROUTER_ENDPOINT_LAST_ISSUED = "notification.last_issued";
-		internal String ROUTER_ENDPOINT_FETCH_HISTORY = "notification.fetch_history";
-		internal String ROUTER_ENDPOINT_CHANNEL_PREFIX = "notification.notification";
-		internal String ROUTER_ENDPOINT_ACTION_PREFIX = "notification.action.";
+		internal static String ROUTER_NAMESPACE = "notification.";
+		internal static String ROUTER_ENDPOINT_NOTIFY = ROUTER_NAMESPACE + "notify";
+		internal static String ROUTER_ENDPOINT_SUBSCRIBE = ROUTER_NAMESPACE + "subscribe";
+		internal static String ROUTER_ENDPOINT_UNSUBSCRIBE = ROUTER_NAMESPACE + "unsubscribe";
+		internal static String ROUTER_ENDPOINT_HANDLE_ACTION = ROUTER_NAMESPACE + "handle_action";
+		internal static String ROUTER_ENDPOINT_LAST_ISSUED = ROUTER_NAMESPACE + "last_issued";
+		internal static String ROUTER_ENDPOINT_FETCH_HISTORY = ROUTER_NAMESPACE + "fetch_history";
+		internal static String ROUTER_ENDPOINT_CHANNEL_PREFIX = ROUTER_NAMESPACE + "notification";
+		internal static String ROUTER_ENDPOINT_ACTION_PREFIX = ROUTER_NAMESPACE + "action.";
 
 		private Finsemble bridge;
 		private RouterClient routerClient;
+
+		private List<Subscription> subscriptions;
 
 		/// <summary>
 		/// Constructor
@@ -32,6 +35,7 @@ namespace ChartIQ.Finsemble.Notifications
 		{
 			this.bridge = bridge;
 			routerClient = bridge.RouterClient;
+			subscriptions = new List<Subscription>();
 		}
 
 		/// <summary>
@@ -57,7 +61,8 @@ namespace ChartIQ.Finsemble.Notifications
 						subscription.id = subDetails["id"].ToString();
 						subscription.channel = subDetails["channel"].ToString();
 						bridge.RPC("Logger.log", new List<JToken> { "Got subscription details: " + subscription.ToString() });
-						setupSubscriptionResponder(subscription.id, onNotification);
+						subscriptions.Add(subscription);
+						setupSubscriptionResponder(subscription.channel, onNotification);
 						onSubscription(s, new FinsembleEventArgs(args.error, subscription.ToJObject()));
 					}
 					else
@@ -66,7 +71,6 @@ namespace ChartIQ.Finsemble.Notifications
 						bridge.RPC("Logger.error", new List<JToken> { "Notification subscription failed for subscription " + subscription.ToString() + " as the response did not contain the expected data" });
 						JObject error = new JObject();
 						error.Add("reason", "Notification subscription failed for subscription " + subscription.ToString() + " as the response did not contain the expected data");
-
 						onSubscription(s, new FinsembleEventArgs(error, null));
 					}
 				}
@@ -82,15 +86,16 @@ namespace ChartIQ.Finsemble.Notifications
 		/// <summary>
 		/// setup a query responder for a specified the subscription id
 		/// </summary>
-		/// <param name="subId">The subscription ID to respond to.</param>
+		/// <param name="subChannel">The subscription channel to respond to.</param>
 		/// <param name="onNotification">Callback function to be used to receive a notification.</param>
-		private void setupSubscriptionResponder(string subId, EventHandler<Notification> onNotification)
+		private void setupSubscriptionResponder(string subChannel, EventHandler<Notification> onNotification)
 		{
-		
-			routerClient.AddResponder(subId,
+			String channel = ROUTER_NAMESPACE + subChannel;
+			bridge.RPC("Logger.log", new List<JToken> { "Adding responder for subscription channel: " + channel });
+			routerClient.AddResponder(channel,
 				(s2, args2) =>
 				{
-					bridge.RPC("Logger.log", new List<JToken> { "Received notification message for subscription d: " + subId + ", notification JSON: " + args2.ToString() });
+					bridge.RPC("Logger.log", new List<JToken> { "Received notification message on subscription channel: " + channel + ", notification JSON: " + args2.ToString() });
 					if (args2.response["data"] != null)
 					{
 						Notification aNotif = args2.response["data"].ToObject<Notification>();
@@ -98,7 +103,7 @@ namespace ChartIQ.Finsemble.Notifications
 					}
 					else
 					{
-						bridge.RPC("Logger.error", new List<JToken> { "Didn't find notification for subId " + subId + " in message: " + args2.ToString() });
+						bridge.RPC("Logger.error", new List<JToken> { "Didn't find notification for subscription channel " + channel + " in message: " + args2.ToString() });
 					}
 				});
 		}
@@ -106,12 +111,31 @@ namespace ChartIQ.Finsemble.Notifications
 		/// <summary>
 		/// Used to unsubscribe to a notification stream.
 		/// </summary>
-		/// <param name="subscriptionId">The subscription id of the stream to unsubscribe fromd.</param>
+		/// <param name="subscriptionId">The subscription id of the stream to unsubscribe from.</param>
 		/// <param name="responseHandler">Callback used when complete.</param>
 		public void unsubscribe(String subscriptionId, EventHandler<FinsembleEventArgs> responseHandler)
 		{
-			routerClient.Query(ROUTER_ENDPOINT_UNSUBSCRIBE, new JValue(subscriptionId), responseHandler);
-			routerClient.RemoveResponder(subscriptionId, true);
+			//find the subscription
+			Subscription sub = null;
+			for (int i = 0; i < subscriptions.Count; i++)
+			{
+				if (subscriptions[i].id == subscriptionId)
+				{
+					sub = subscriptions[i];
+					break;
+				}
+			}
+			if (sub != null)
+			{
+				routerClient.Query(ROUTER_ENDPOINT_UNSUBSCRIBE, new JValue(sub.id), responseHandler);
+				routerClient.RemoveResponder(ROUTER_NAMESPACE + sub.channel, true);
+				subscriptions.Remove(sub);
+			}
+			else
+			{
+				bridge.RPC("Logger.error", new List<JToken> { "Can't unsubscribe from subscription id " + subscriptionId + " as it was not found!"});
+			}
+			
 		}
 
 		/// <summary>

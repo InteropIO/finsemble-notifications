@@ -21,18 +21,22 @@
 	<Border x:Name="WindowBorder">
 		<Grid Background="White">
 			<Finsemble:WPFWindowTitleBar x:Name="FinsembleHeader" Height="25" VerticalAlignment="Top" Margin="0"/>
-			<Label x:Name="SendNotificationsLabel" Margin="10,30,344,0" AllowDrop="True" Visibility="Visible" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" FontWeight="Bold" VerticalAlignment="Top">Send Test Notifications</Label>
-			<Label x:Name="SubscribeToNotifications" Margin="211,30,50,290" AllowDrop="True" Visibility="Visible" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Content="Subscribe to Notifications" FontWeight="Bold" VerticalAlignment="Top"/>
-			<Label x:Name="Scrim" Margin="0,32,0,0" AllowDrop="True" Visibility="Hidden"  Panel.ZIndex="1000" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-			<Label x:Name="DroppedData" Margin="0" HorizontalContentAlignment="Center" FontSize="50" VerticalAlignment="Center"/>
-			<Label x:Name="DroppedDataSource" Margin="0,219,0,119" HorizontalContentAlignment="Center" FontSize="12" VerticalAlignment="Center" Content="via Default value"/>
-			<Button x:Name="Notification_1" Content="Notification 1" HorizontalAlignment="Left" Margin="10,67,0,0" VerticalAlignment="Top" Width="170" Height="39" Click="Notification_1_Click"/>
-			<Button x:Name="Notification_2" Content="Notification 2" HorizontalAlignment="Left" Margin="10,111,0,0" VerticalAlignment="Top" Width="170" Height="39" Click="Notification_2_Click"/>
-			<Button x:Name="Notification_3" Content="Notification 3" HorizontalAlignment="Left" Margin="10,155,0,0" VerticalAlignment="Top" Width="170" Height="39" Click="Notification_3_Click"/>
-			<Button x:Name="Subscribe" Content="Subscribe" HorizontalAlignment="Left" Margin="211,67,0,0" VerticalAlignment="Top" Width="170" Height="39" Click="Subscribe_Click"/>
-			<Button x:Name="Unsubscribe" Content="Unsubscribe" HorizontalAlignment="Left" Margin="211,111,0,0" VerticalAlignment="Top" Width="170" Height="39" Click="Unsubscribe_Click"/>
-			<TextBox x:Name="NotificationData" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Visible" IsReadOnly="True" Margin="211,186,10,10" FontSize="10" FontFamily="Courier New" Background="#FFEEEEEE" VerticalContentAlignment="Stretch"/>
-			<Label x:Name="SubscribeToNotifications_Copy" Margin="211,160,50,0" AllowDrop="True" Visibility="Visible" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Content="Last notification received:" VerticalAlignment="Top" FontSize="11"/>
+			<Grid Margin="10,30,0,0" HorizontalAlignment="Left" Width="171" Height="164" VerticalAlignment="Top">
+				<Label x:Name="SendNotificationsLabel" AllowDrop="True" Visibility="Visible" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" FontWeight="Bold" VerticalAlignment="Top" Content="Send Test Notifications" HorizontalAlignment="Left" Width="171"/>
+				<Button x:Name="Notification_1" Content="Notification 1" HorizontalAlignment="Left" Margin="0,37,0,0" VerticalAlignment="Top" Width="170" Height="39" Click="Notification_1_Click"/>
+				<Button x:Name="Notification_2" Content="Notification 2" HorizontalAlignment="Left" Margin="0,81,0,0" VerticalAlignment="Top" Width="170" Height="39" Click="Notification_2_Click"/>
+				<Button x:Name="Notification_3" Content="Notification 3" HorizontalAlignment="Left" Margin="0,125,0,0" VerticalAlignment="Top" Width="170" Height="39" Click="Notification_3_Click"/>
+			</Grid>
+			<Grid Margin="210,30,10,10">
+				<Label x:Name="SubscribeToNotifications" Margin="1,0,0,0" AllowDrop="True" Visibility="Visible" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Content="Subscribe to Notifications" FontWeight="Bold" VerticalAlignment="Top" HorizontalAlignment="Left" Width="304"/>
+				<Grid Margin="0,37,0,234">
+					<Button x:Name="Subscribe" Content="Subscribe" VerticalAlignment="Top" Height="39" Click="Subscribe_Click" Width="150" HorizontalAlignment="Left"/>
+					<Button x:Name="Unsubscribe" Content="Unsubscribe" VerticalAlignment="Top" Width="150" Height="39" Click="Unsubscribe_Click" IsEnabled="False" HorizontalAlignment="Right"/>
+				</Grid>
+				<TextBox x:Name="NotificationData" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Visible" IsReadOnly="True" Margin="0,106,0,0" FontSize="10" FontFamily="Courier New" Background="#FFEEEEEE" VerticalContentAlignment="Stretch"/>
+				<Label x:Name="SubscribeToNotifications_Copy" Margin="0,81,0,0" AllowDrop="True" Visibility="Visible" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Content="Last notification received:" VerticalAlignment="Top" FontSize="11"/>
+
+			</Grid>
 
 		</Grid>
 	</Border>

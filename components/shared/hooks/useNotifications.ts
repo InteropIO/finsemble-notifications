@@ -5,9 +5,7 @@ import Subscription from "../../../types/Notification-definitions/Subscription";
 import NotificationClient from "../../../services/notification/notificationClient";
 import Filter from "../../../types/Notification-definitions/Filter";
 import { SpawnParams } from "../../../types/FSBL-definitions/services/window/Launcher/launcher";
-import WindowConfig, {
-	NotificationsConfig
-} from "../../../types/Notification-definitions/NotificationConfig";
+import WindowConfig, { NotificationsConfig } from "../../../types/Notification-definitions/NotificationConfig";
 import IFilter from "../../../types/Notification-definitions/IFilter";
 import { NotificationGroupList } from "../../../types/Notification-definitions/NotificationHookTypes";
 
@@ -27,10 +25,7 @@ const REMOVE = "REMOVE";
 /*
 	Reducer
 	*/
-function reducer(
-	state: { notifications: INotification[] },
-	action: { type: string; payload: any }
-) {
+function reducer(state: { notifications: INotification[] }, action: { type: string; payload: any }) {
 	switch (action.type) {
 		case CREATE_MULTIPLE:
 			return {
@@ -45,18 +40,14 @@ function reducer(
 			//if the notification exists then do nothing and return the current state else add the the new notification to the state
 			const notifications = notificationExistsInArray
 				? state.notifications.map((notification: INotification) =>
-						notification.id === action.payload.id
-							? action.payload
-							: notification
+						notification.id === action.payload.id ? action.payload : notification
 				  )
 				: [...state.notifications, action.payload];
 
 			return { notifications };
 		case REMOVE:
 			return {
-				notifications: state.notifications.filter(
-					notification => notification.id !== action.payload.id
-				)
+				notifications: state.notifications.filter(notification => notification.id !== action.payload.id)
 			};
 		default:
 			throw new Error();
@@ -100,8 +91,7 @@ export default function useNotifications() {
 			NOTIFICATION_CLIENT = new NotificationClient();
 			const subscription = new Subscription();
 
-			// TODO: fix this any to meet either NotificationsConfig or WindowsConfig
-			const notificationConfig: any = await getNotificationConfig(
+			const notificationConfig: NotificationsConfig | boolean = await getNotificationConfig(
 				await WindowClient.getWindowIdentifier().componentType
 			);
 
@@ -170,9 +160,7 @@ export default function useNotifications() {
 	 * Group Notifications by Type
 	 * @param notifications
 	 */
-	const groupNotificationsByType = (
-		notifications: INotification[]
-	): NotificationGroupList => {
+	const groupNotificationsByType = (notifications: INotification[]): NotificationGroupList => {
 		const groupBy = (arr: INotification[], type: keyof INotification) =>
 			arr
 				.map(
@@ -181,20 +169,10 @@ export default function useNotifications() {
 						//@ts-ignore
 						notification[type]
 				)
-				.reduce(
-					(
-						acc: { [x: string]: any },
-						notificationType: INotification["type"],
-						index: number
-					) => {
-						acc[notificationType] = [
-							...(acc[notificationType] || []),
-							arr[index]
-						];
-						return acc;
-					},
-					{}
-				);
+				.reduce((acc: { [x: string]: any }, notificationType: INotification["type"], index: number) => {
+					acc[notificationType] = [...(acc[notificationType] || []), arr[index]];
+					return acc;
+				}, {});
 
 		return groupBy(notifications, "type");
 	};
@@ -206,7 +184,7 @@ export default function useNotifications() {
 	 * @param filter
 	 */
 	const getNotificationHistory = (
-		since: string = "1969-12-31T23:59:59.999Z",
+		since = "1969-12-31T23:59:59.999Z",
 		filter: null | IFilter = null
 	): Promise<INotification[]> => {
 		NOTIFICATION_CLIENT = new NotificationClient();
@@ -217,20 +195,13 @@ export default function useNotifications() {
 	 * Get Notification's config from
 	 * @param componentType Finsemble component type e.g "Welcome-Component"
 	 */
-	const getNotificationConfig = async (
-		componentType: string
-	): Promise<WindowConfig | boolean> => {
-		const { data }: any = await LauncherClient.getComponentDefaultConfig(
-			componentType
-		);
+	const getNotificationConfig = async (componentType: string): Promise<WindowConfig | boolean> => {
+		const { data }: any = await LauncherClient.getComponentDefaultConfig(componentType);
 
 		const config: WindowConfig = data;
 
 		const notificationsConfigExists: WindowConfig | undefined =
-			config &&
-			config.window &&
-			config.window.data &&
-			config.window.data.notifications;
+			config && config.window && config.window.data && config.window.data.notifications;
 
 		return notificationsConfigExists && config.window.data.notifications;
 	};
@@ -239,13 +210,8 @@ export default function useNotifications() {
 	Finsemble Window manipulation
 */
 
-	const setWindowPosition = async (
-		windowId: WindowIdentifier,
-		windowShowParams: SpawnParams
-	): Promise<any> => {
-		const { windowDescriptor: windowPosition } = (
-			await LauncherClient.showWindow(windowId, windowShowParams)
-		).data;
+	const setWindowPosition = async (windowId: WindowIdentifier, windowShowParams: SpawnParams): Promise<any> => {
+		const { windowDescriptor: windowPosition } = (await LauncherClient.showWindow(windowId, windowShowParams)).data;
 		return windowPosition;
 	};
 
@@ -253,9 +219,7 @@ export default function useNotifications() {
 	 * Set the position of the notification drawer based on params
 	 * @param param0
 	 */
-	const setNotificationDrawerPosition = async (
-		windowShowParams: SpawnParams
-	) => {
+	const setNotificationDrawerPosition = async (windowShowParams: SpawnParams) => {
 		const windowId: WindowIdentifier = await LauncherClient.getMyWindowIdentifier();
 		await setWindowPosition(windowId, windowShowParams);
 	};

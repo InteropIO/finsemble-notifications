@@ -1,24 +1,46 @@
 import * as React from "react";
-import Notification from "../shared/components/Notification";
 import useNotifications from "../shared/hooks/useNotifications";
+import DragHandleIcon from "../shared/components/icons/DragHandleIcon";
+import NotificationIcon from "../shared/components/icons/NotificationIcon";
+import CenterIcon from "../shared/components/icons/CenterIcon";
+import SettingsIcon from "../shared/components/icons/settings";
 import INotification from "../../types/Notification-definitions/INotification";
-import Animate from "../shared/components/Animate";
-import NotificationIcon from "../notification-icon/NotificationIcon";
 
 function App(): React.ReactElement {
-	const { notifications, doAction } = useNotifications();
+	const { notifications } = useNotifications();
 	const { FSBL } = window;
 	const showDrawer = () => {
 		FSBL.Clients.LauncherClient.showWindow(
 			{ windowName: "", componentType: "notification-drawer" },
-			{},
-			console.log
+			{}
 		);
 	};
+	const showCenter = () => {
+		FSBL.Clients.LauncherClient.showWindow(
+			{ windowName: "", componentType: "notification-center" },
+			{}
+		);
+	};
+
+	const activeNotifications = (notifications: INotification[]) =>
+		notifications.filter(
+			notification => !notification.isSnoozed && !notification.isRead
+		);
 	return (
 		<>
-			<div className="drag-area drag-box"></div>
-			<NotificationIcon action={showDrawer} />
+			<DragHandleIcon className="drag-area" />
+			{activeNotifications(notifications).length > 0 && (
+				<div id="notification-number">
+					{activeNotifications(notifications).length}
+				</div>
+			)}
+			<NotificationIcon
+				className="toaster-icons"
+				onClick={() => showDrawer()}
+			/>
+			<CenterIcon className="toaster-icons" onClick={() => showCenter()} />
+			<div id="toaster-divider"></div>
+			<SettingsIcon className="toaster-icons" />
 		</>
 	);
 }

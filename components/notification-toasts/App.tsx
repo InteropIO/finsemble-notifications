@@ -20,7 +20,7 @@ function App(): React.ReactElement {
 	useEffect(() => {
 		(async () =>
 			setConfig(await getNotificationConfig("notification-toasts")))();
-	}, []);
+	}, [getNotificationConfig]);
 
 	return (
 		<Drawer

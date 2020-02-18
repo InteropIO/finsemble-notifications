@@ -100,7 +100,9 @@ export default function useNotifications() {
 			NOTIFICATION_CLIENT = new NotificationClient();
 			const subscription = new Subscription();
 
-			const notificationConfig: NotificationsConfig|boolean = await getNotificationConfig(
+			const notificationConfig:
+				| NotificationsConfig
+				| boolean = await getNotificationConfig(
 				await WindowClient.getWindowIdentifier().componentType
 			);
 
@@ -203,7 +205,7 @@ export default function useNotifications() {
 	 * @param filter
 	 */
 	const getNotificationHistory = (
-		since: string = "1969-12-31T23:59:59.999Z",
+		since = "1969-12-31T23:59:59.999Z",
 		filter: null | IFilter = null
 	): Promise<INotification[]> => {
 		NOTIFICATION_CLIENT = new NotificationClient();

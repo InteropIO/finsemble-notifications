@@ -1,4 +1,6 @@
 import { IRouterClient } from "../../types/FSBL-definitions/clients/IRouterClient";
+import { ILogger } from "../../types/FSBL-definitions/clients/ILogger";
+import { StandardCallback } from "../../types/FSBL-definitions/globals";
 
 const { RouterClient, Logger } = require("@chartiq/finsemble").Clients;
 const FSBL = window.FSBL;
@@ -34,7 +36,7 @@ export const ROUTER_NAMESPACE = {
  */
 export default class RouterWrapper {
 	routerClient: IRouterClient;
-	loggerClient: any;
+	loggerClient: ILogger;
 
 	/**
 	 * Constructor
@@ -42,7 +44,7 @@ export default class RouterWrapper {
 	 * @param router Needs to be set if using in a service. Defaults to FSBL.Client.RouterClient if none is provided
 	 * @param logger Needs to be set if using in a service. Defaults to FSBL.Client.Logger if none is provided
 	 */
-	constructor(router?: IRouterClient, logger?: any) {
+	constructor(router?: IRouterClient, logger?: ILogger) {
 		if (!router) {
 			router = typeof FSBL !== "undefined" ? FSBL.Clients.RouterClient : RouterClient;
 		}
@@ -64,8 +66,8 @@ export default class RouterWrapper {
 	 * @param {any} data
 	 * @param {Function} callback
 	 */
-	public query(channel: string, data: any, channelPrefix?: string, callback?: Function): Promise<any> {
-		return new Promise<any>(async (resolve, reject) => {
+	public query(channel: string, data: {}, channelPrefix?: string, callback?: StandardCallback): Promise<any> {
+		return new Promise<{}>(async (resolve, reject) => {
 			try {
 				if (channelPrefix == null) {
 					channelPrefix = ROUTER_ENDPOINTS.CHANNEL_PREFIX;
@@ -112,7 +114,7 @@ export default class RouterWrapper {
 		}
 		this.loggerClient && this.loggerClient.info(`Wrapper: Adding responder for endpoint: ${channelPrefix + channel}`);
 
-		this.routerClient.addResponder(channelPrefix + channel, (err: any, message: any) => {
+		this.routerClient.addResponder(channelPrefix + channel, (err, message) => {
 			this.loggerClient && this.loggerClient.info(`Message received on ${channel}: `, message);
 			if (err) {
 				this.loggerClient && this.loggerClient.error(`Failed to setup ${channel} responder`, err);

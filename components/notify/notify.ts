@@ -1,10 +1,6 @@
-/* eslint-disable @typescript-eslint/ban-ts-ignore */
-import "../../types/FSBL-definitions/globals";
-
 import NotificationClient, { ActionTypes } from "../../services/notification/notificationClient";
 import Notification from "../../types/Notification-definitions/Notification";
 import Action from "../../types/Notification-definitions/Action";
-import { FSBL } from "../../types/FSBL-definitions/globals";
 
 /**
  * A manual Notifications source
@@ -113,9 +109,8 @@ function init() {
 	document.getElementById("get-last-issued").addEventListener("click", getLastIssuedAt);
 	nClient = new NotificationClient();
 }
-// @ts-ignore
+
 if (window.FSBL && FSBL.addEventListener) {
-	// @ts-ignore
 	FSBL.addEventListener("onReady", init);
 } else {
 	window.addEventListener("FSBLReady", init);

@@ -25,9 +25,12 @@ export default class NotificationClient implements INotificationClient {
 	/**
 	 * @var FSBL.Clients.Logger
 	 */
-	private loggerClient: any;
+	readonly loggerClient: ILogger;
 
-	private subscriptions: any[] = [];
+	private subscriptions: {
+		id: string;
+		channel: string;
+	}[] = [];
 
 	/**
 	 * Constructor
@@ -130,7 +133,7 @@ export default class NotificationClient implements INotificationClient {
 	 * @param {INotification[]} notifications Array of INotification
 	 * @throws Error If no error is thrown the service has received the notifications successfully
 	 */
-	notify(notifications: any[]): Promise<void> {
+	notify(notifications: INotification[]): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
 			try {
 				this.routerWrapper.query(ROUTER_ENDPOINTS.NOTIFY, notifications).then(() => {
@@ -212,8 +215,8 @@ export default class NotificationClient implements INotificationClient {
 	}
 
 	private cleanupSubscription(subscriptionId: string): void {
-		const index = this.subscriptions.findIndex((element: any) => {
-			element.id = subscriptionId;
+		const index = this.subscriptions.findIndex((element: { id: string }) => {
+			return element.id === subscriptionId;
 		});
 
 		if (index > -1) {

@@ -3,9 +3,9 @@ import Action from "../../types/Notification-definitions/Action";
 import { ActionTypes } from "../../types/Notification-definitions/ActionTypes";
 import IFilter from "../../types/Notification-definitions/IFilter";
 
-import searchJS from "searchjs";
-import { Map, mergeDeepWith } from "immutable";
-const ImmutableMap = Map;
+// eslint-disable-next-line
+const searchJS = require("searchjs");
+import { Map as ImmutableMap, mergeDeepWith } from "immutable";
 
 const DEFAULT_TYPE_NAME = "default";
 
@@ -21,7 +21,7 @@ export default class ServiceHelper {
 	 * @param config
 	 */
 
-	public static normaliseConfig(config: Record<string, any>): Record<string, any> {
+	public static normaliseConfig(config: Record<string, object>): Record<string, object> {
 		// TODO: Input validation
 		return {
 			service: ServiceHelper.getServiceDefaults(config),
@@ -29,11 +29,11 @@ export default class ServiceHelper {
 		};
 	}
 
-	public static getTypes(config: Record<string, any>): Record<string, any> {
+	public static getTypes(config: Record<string, object>): Record<string, object> {
 		return Object.assign({}, config && config.hasOwnProperty("types") ? config["types"] : null);
 	}
 
-	public static getServiceDefaults(config: Record<string, any>): Record<string, any> {
+	public static getServiceDefaults(config: Record<string, object>): Record<string, object> {
 		const defaults = Object.assign({}, config);
 		if (defaults.hasOwnProperty("types")) {
 			delete defaults["types"];
@@ -66,6 +66,7 @@ export default class ServiceHelper {
 			let returnValue = notification;
 
 			if (configToApply.hasOwnProperty(KEY_NAME_DEFAULT_FIELDS)) {
+				// @ts-ignore
 				let map = ImmutableMap(notification);
 				map = mergeDeepWith(ServiceHelper.merge, map, configToApply[KEY_NAME_DEFAULT_FIELDS]);
 				returnValue = map.toObject();
@@ -95,6 +96,7 @@ export default class ServiceHelper {
 	/**
 	 * Adds a dismiss action to a notification if one does not already exist
 	 * @param notification
+	 * @param buttonText
 	 */
 	public static addDismissActionToNotification(notification: INotification, buttonText: string): INotification {
 		if (!ServiceHelper.hasDismissAction(notification)) {
@@ -118,7 +120,7 @@ export default class ServiceHelper {
 		return returnValue;
 	}
 
-	public static merge(oldVal: any, newVal: any) {
+	public static merge(oldVal: {}, newVal: {}): {} {
 		if (oldVal) {
 			if (typeof oldVal === "object") {
 				return mergeDeepWith(ServiceHelper.merge, ImmutableMap(oldVal), newVal).toObject();

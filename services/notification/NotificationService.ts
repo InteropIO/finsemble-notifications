@@ -1,4 +1,3 @@
-/* eslint-disable */
 import INotificationService from "../../types/Notification-definitions/INotificationService";
 import INotification from "../../types/Notification-definitions/INotification";
 import IAction from "../../types/Notification-definitions/IAction";
@@ -15,10 +14,11 @@ import IPerformedAction from "../../types/Notification-definitions/IPerformedAct
 import ServiceHelper from "../helpers/ServiceHelper";
 import IFilter from "../../types/Notification-definitions/IFilter";
 
-import uuidv4 from "uuid/v4";
-import Finsemble from "@chartiq/finsemble";
-import { Map } from "immutable";
-const ImmutableMap = Map;
+import uuidV4 = require("uuid/v4");
+// eslint-disable-next-line
+const Finsemble = require("@chartiq/finsemble");
+import { Map as ImmutableMap } from "immutable";
+import { CallbackError, StandardCallback } from "../../types/FSBL-definitions/globals";
 
 Finsemble.Clients.Logger.start();
 Finsemble.Clients.Logger.log("notification Service starting up");
@@ -29,9 +29,6 @@ Finsemble.Clients.Logger.log("notification Service starting up");
  * TODO: use immutable js or lowdash.clonedeep to make sure all state changes happen on separate objects.
  */
 export default class NotificationService extends Finsemble.baseService implements INotificationService {
-	onBaseServiceReady(readyHandler: (callback: Function) => void) {
-		throw new Error("Method not implemented.");
-	}
 	/**
 	 * Abstracting all internal state into a single point as a way to keep track of what
 	 * needs to change when implementing a solution for storage
@@ -54,7 +51,7 @@ export default class NotificationService extends Finsemble.baseService implement
 	private proxyToWebAPiFilter: IFilter | false;
 	private routerWrapper: RouterWrapper;
 
-	private config: object = {
+	private config: any = {
 		service: {},
 		types: {}
 	};
@@ -78,10 +75,10 @@ export default class NotificationService extends Finsemble.baseService implement
 
 		this.proxyToWebAPiFilter = false;
 		this.storageAbstraction = {
-			subscriptions: Map<string, ISubscription>(),
-			snoozeTimers: Map<string, ISnoozeTimer>(),
-			notifications: Map<string, INotification>(),
-			lastIssued: Map<string, ILastIssued>()
+			subscriptions: new Map<string, ISubscription>(),
+			snoozeTimers: new Map<string, ISnoozeTimer>(),
+			notifications: new Map<string, INotification>(),
+			lastIssued: new Map<string, ILastIssued>()
 		};
 
 		this.subscribe = this.subscribe.bind(this);
@@ -111,7 +108,7 @@ export default class NotificationService extends Finsemble.baseService implement
 		Finsemble.Clients.ConfigClient.getValue(
 			{ field: "finsemble.servicesConfig.notifications" },
 			this.applyConfigChange
-		);
+		).then();
 		callback();
 	}
 
@@ -136,14 +133,16 @@ export default class NotificationService extends Finsemble.baseService implement
 	 */
 	broadcastNotification(notification: INotification): void {
 		Finsemble.Clients.Logger.log("Broadcasting Notification: ", notification.id);
-		this.storageAbstraction.subscriptions.forEach((subscription, key) => {
+		this.storageAbstraction.subscriptions.forEach(subscription => {
 			// Check if this notification matches any filters
 			if (ServiceHelper.filterMatches(subscription.filter, notification)) {
 				// For each notification that matches, expect a response and send it out.
 				this.expectReceipt(subscription, notification);
-				this.routerWrapper.query(subscription.channel, notification, null, (error: any, response: any) => {
-					this.setReceivedReceipt(subscription, notification, error, response);
-				});
+				this.routerWrapper
+					.query(subscription.channel, notification, null, (error, response) => {
+						this.setReceivedReceipt(subscription, notification, error, response);
+					})
+					.then();
 			}
 		});
 		if (
@@ -166,8 +165,8 @@ export default class NotificationService extends Finsemble.baseService implement
 			};
 		}
 		const options = convertNotificationToWebApi(notification);
-		// TODO: Implement Actions by using ServiceWorkerRegistration.showNotification()
-		new window.Notification(title.join(" - "), options);
+		// TODO: WebAPI Actions are only possible by implementing ServiceWorkerRegistration.showNotification()
+		new Notification(title.join(" - "), options);
 	}
 
 	/**
@@ -194,7 +193,7 @@ export default class NotificationService extends Finsemble.baseService implement
 		const { notifications, action } = message;
 		const response = {
 			message: "success",
-			errors: <any>[]
+			errors: new Array<{}>()
 		};
 
 		notifications.forEach((notification: INotification) => {
@@ -239,11 +238,12 @@ export default class NotificationService extends Finsemble.baseService implement
 		notificationList: Map<string, INotification>,
 		defaultPrevious: INotification
 	) {
+		// @ts-ignore
 		const map = ImmutableMap(notification);
 
-		let currentlyStoredNotification: INotification = null;
+		let currentlyStoredNotification: INotification;
 
-		let currentHistory: INotification[] = null;
+		let currentHistory: INotification[];
 
 		if (notificationList.has(notification.id)) {
 			currentlyStoredNotification = notificationList.get(notification.id);
@@ -266,8 +266,8 @@ export default class NotificationService extends Finsemble.baseService implement
 	 * @param {ISubscription} subscription
 	 * @return {string} a router channel on which notifications for this subscription will be sent.
 	 */
-	subscribe(subscription: ISubscription): Record<string, any> {
-		const channel = this.getChannel(subscription);
+	subscribe(subscription: ISubscription): {} {
+		const channel = this.getChannel();
 		// TODO: Set the subscriptionId correctly in accordance with the spec
 		subscription.id = this.getUuid();
 		Finsemble.Clients.Logger.info("Successfully processed subscription: ", subscription);
@@ -306,10 +306,9 @@ export default class NotificationService extends Finsemble.baseService implement
 	/**
 	 * Get a channel/endpoint the client will need to listen to
 	 *
-	 * @param subscription
 	 * @return string
 	 */
-	getChannel(subscription: ISubscription): string {
+	getChannel(): string {
 		return ROUTER_ENDPOINTS.SUBSCRIBE + `.${this.getUuid()}`;
 	}
 
@@ -341,14 +340,14 @@ export default class NotificationService extends Finsemble.baseService implement
 		return notification;
 	}
 
-	dismiss(notification: INotification, action: IAction): INotification {
+	dismiss(notification: INotification): INotification {
 		notification.isRead = true;
 		return notification;
 	}
 
 	spawn(notification: INotification, action: IAction): INotification {
 		notification.isRead = true;
-		Finsemble.Clients.LauncherClient.spawn(action.component, action.spawnParams);
+		Finsemble.Clients.LauncherClient.spawn(action.component, action.spawnParams).then();
 		return notification;
 	}
 
@@ -367,6 +366,7 @@ export default class NotificationService extends Finsemble.baseService implement
 		if (ImmutableMap.isMap(notification)) {
 			map = notification;
 		} else {
+			// @ts-ignore
 			map = ImmutableMap(notification);
 		}
 
@@ -437,7 +437,7 @@ export default class NotificationService extends Finsemble.baseService implement
 				notification = this.forwardAsPublish(notification, action);
 				break;
 			case ActionTypes.DISMISS:
-				notification = this.dismiss(notification, action);
+				notification = this.dismiss(notification);
 				break;
 			default:
 				Finsemble.Clients.Logger.error(`Unable to perform action '${action.type}' on notification`);
@@ -457,10 +457,11 @@ export default class NotificationService extends Finsemble.baseService implement
 		Finsemble.Clients.Logger.info("Received state", notification);
 		notification = ServiceHelper.applyDefaults(this.config, notification);
 
+		// @ts-ignore
 		let map = ImmutableMap(notification);
 
 		if (!map.get("id")) {
-			map = map.set("id", this.getUuid(notification));
+			map = map.set("id", this.getUuid());
 		}
 
 		if (!map.get("issuedAt")) {
@@ -529,6 +530,7 @@ export default class NotificationService extends Finsemble.baseService implement
 		this.routerWrapper.addResponder(ROUTER_ENDPOINTS.PERFORM_ACTION, this.performAction);
 	}
 
+	/* eslint-disable */
 	/**
 	 * Sets up that we are expecting a receipt for the subscription and notification.
 	 *
@@ -541,6 +543,7 @@ export default class NotificationService extends Finsemble.baseService implement
 	private expectReceipt(subscription: ISubscription, notification: INotification) {
 		// We're expecting a received receipt on the channel from the client
 	}
+
 
 	/**
 	 * Set the receipt status
@@ -556,12 +559,13 @@ export default class NotificationService extends Finsemble.baseService implement
 	private setReceivedReceipt(
 		subscription: ISubscription,
 		notification: INotification,
-		error: string | null,
+		error: CallbackError | Error | string | null,
 		response: any
 	) {
 		Finsemble.Clients.Logger.info(`Got a receipt on: ${subscription.channel}`);
 		// We've received a response from the client. Process it and set the correct value
 	}
+	/* eslint-enable */
 
 	/**
 	 * Store the subscription so it can be referenced and also unsubscribed from later.
@@ -576,14 +580,16 @@ export default class NotificationService extends Finsemble.baseService implement
 		this.validateForwardParams(action);
 		try {
 			notification.isRead = true;
-			this.routerWrapper.query(
-				action.channel,
-				{
-					notification: notification,
-					actionPayload: action.payload
-				},
-				""
-			);
+			this.routerWrapper
+				.query(
+					action.channel,
+					{
+						notification: notification,
+						actionPayload: action.payload
+					},
+					""
+				)
+				.then();
 		} catch (error) {
 			Finsemble.Clients.Logger.error(`Error performing action on channel channel: '${action.channel}'`);
 			notification.isRead = false;
@@ -656,7 +662,7 @@ export default class NotificationService extends Finsemble.baseService implement
 	 *
 	 * @param message
 	 */
-	private fetchHistory(message: any): INotification[] | Record<string, any> {
+	private fetchHistory(message: any): INotification[] {
 		Finsemble.Clients.Logger.info("Fetch history request with params", message);
 		let { since } = message;
 		const { filter } = message;
@@ -690,17 +696,20 @@ export default class NotificationService extends Finsemble.baseService implement
 		return notifications;
 	}
 
-	private applyConfigChange(err: any, config: any) {
+	applyConfigChange: StandardCallback = (err, config) => {
+		if (err) {
+			Finsemble.Clients.Logger.error(`Unable to get config err: ${err}`);
+		}
 		this.config = ServiceHelper.normaliseConfig(config);
-	}
+	};
 
 	/**
 	 * Generates a UUID
 	 *
 	 * TODO: Ensure correct usage of UUID library - uniqueness. Are there other concerns?
 	 */
-	private getUuid(notification?: INotification): string {
-		return uuidv4();
+	private getUuid(): string {
+		return uuidV4();
 	}
 
 	private removeFromSnoozeQueue(notification: INotification) {

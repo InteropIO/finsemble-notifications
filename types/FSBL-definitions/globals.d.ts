@@ -19,12 +19,14 @@ declare global {
 		FSBL: FSBL;
 		FinsembleWindow: FinsembleWindow;
 	}
+	const FSBL: FSBL;
 }
 export type FSBL = {
 	Clients: Clients;
 	ConfigUtils: any;
 	onShutdown: any;
 	shutdownComplete: any;
+	addEventListener: Function
 };
 interface Clients {
 	AuthenticationClient: AuthenticationClient;

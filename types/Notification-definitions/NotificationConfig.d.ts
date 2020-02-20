@@ -1,6 +1,6 @@
-import { SpawnParams } from "../../FSBL-definitions/services/window/Launcher/launcher";
+import { SpawnParams } from "../FSBL-definitions/services/window/Launcher/launcher";
 
-type SpawnParamsWithoutData = Omit<SpawnParams, "data">;
+// type SpawnParamsWithoutData = Omit<SpawnParams, "data">;
 
 export interface NotificationsConfig {
 	filter?: {
@@ -16,12 +16,12 @@ export interface NotificationsConfig {
 	notificationsHistory?: boolean;
 }
 
-export interface WindowParams extends SpawnParamsWithoutData {
-	data?: {
-		notifications: NotificationsConfig;
-	};
-}
+// export interface WindowParams extends SpawnParamsWithoutData {
+// 	data?: {
+// 		notifications: NotificationsConfig;
+// 	};
+// }
 
 export default interface WindowConfig {
-	window: WindowParams;
+	window: SpawnParams & NotificationsConfig;
 }

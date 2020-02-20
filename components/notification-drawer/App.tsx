@@ -21,12 +21,10 @@ function App(): React.ReactElement {
 									key={notification.id}
 									animateIn="slide-in-fwd-bottom"
 									animateOut="slide-out-right"
+									// eslint-disable-next-line @typescript-eslint/no-empty-function
+									animateOutComplete={() => {}}
 								>
-									<Notification
-										key={notification.id}
-										notification={notification}
-										doAction={doAction}
-									></Notification>
+									<Notification key={notification.id} notification={notification} doAction={doAction}></Notification>
 								</Animate>
 							)
 					)}

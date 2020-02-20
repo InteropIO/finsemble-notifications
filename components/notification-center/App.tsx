@@ -11,19 +11,14 @@ const App = (): React.ReactElement => {
 	const { notifications } = useNotifications();
 	const [activeNotification, setActiveNotification] = useState();
 
-	const types: string[] = Array.from(
-		new Set(notifications.map((item: INotification) => item.type))
-	);
+	const types: string[] = Array.from(new Set(notifications.map((item: INotification) => item.type)));
 
 	return (
 		<div id="app">
 			<NotificationCenter title="Notification Center">
 				{/* <FilterPanel types={types} /> */}
 				<div id="main-content">
-					<NotificationsPanel
-						notifications={notifications}
-						setActiveNotification={setActiveNotification}
-					/>
+					<NotificationsPanel notifications={notifications} setActiveNotification={setActiveNotification} />
 					{activeNotification && (
 						<NotificationDetailPanel
 							notification={activeNotification}

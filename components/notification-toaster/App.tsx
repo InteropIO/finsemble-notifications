@@ -10,34 +10,21 @@ function App(): React.ReactElement {
 	const { notifications } = useNotifications();
 	const { FSBL } = window;
 	const showDrawer = () => {
-		FSBL.Clients.LauncherClient.showWindow(
-			{ windowName: "", componentType: "notification-drawer" },
-			{}
-		);
+		FSBL.Clients.LauncherClient.showWindow({ windowName: "", componentType: "notification-drawer" }, {});
 	};
 	const showCenter = () => {
-		FSBL.Clients.LauncherClient.showWindow(
-			{ windowName: "", componentType: "notification-center" },
-			{}
-		);
+		FSBL.Clients.LauncherClient.showWindow({ windowName: "", componentType: "notification-center" }, {});
 	};
 
 	const activeNotifications = (notifications: INotification[]) =>
-		notifications.filter(
-			notification => !notification.isSnoozed && !notification.isRead
-		);
+		notifications.filter(notification => !notification.isSnoozed && !notification.isRead);
 	return (
 		<>
 			<DragHandleIcon className="drag-area" />
 			{activeNotifications(notifications).length > 0 && (
-				<div id="notification-number">
-					{activeNotifications(notifications).length}
-				</div>
+				<div id="notification-number">{activeNotifications(notifications).length}</div>
 			)}
-			<NotificationIcon
-				className="toaster-icons"
-				onClick={() => showDrawer()}
-			/>
+			<NotificationIcon className="toaster-icons" onClick={() => showDrawer()} />
 			<CenterIcon className="toaster-icons" onClick={() => showCenter()} />
 			<div id="toaster-divider"></div>
 			<SettingsIcon className="toaster-icons" />

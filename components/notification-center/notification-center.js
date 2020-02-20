@@ -5,10 +5,7 @@ import App from "./App";
 const FSBLReady = () => {
 	try {
 		// Do things with FSBL in here.
-		ReactDom.render(
-			<App />,
-			document.getElementById("notification-center-component")
-		);
+		ReactDom.render(<App />, document.getElementById("notification-center-component"));
 	} catch (e) {
 		FSBL.Clients.Logger.error(e);
 	}

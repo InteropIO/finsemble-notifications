@@ -1,12 +1,13 @@
 import NotificationClient from "../notification/notificationClient";
+import { StandardCallback } from "../../types/FSBL-definitions/globals";
 
+// eslint-disable-next-line
 const Finsemble = require("@chartiq/finsemble");
 
 Finsemble.Clients.Logger.start();
 Finsemble.Clients.Logger.log("exampleCustomActionService Service starting up");
 
-
-class exampleCustomActionService extends Finsemble.baseService {
+class ExampleCustomActionService extends Finsemble.baseService {
 	nClient: NotificationClient;
 
 	/**
@@ -48,56 +49,44 @@ class exampleCustomActionService extends Finsemble.baseService {
 	 * Add query responders, listeners or pub/sub topic as appropriate.
 	 */
 	createRouterEndpoints() {
-		Finsemble.Clients.RouterClient.addResponder(
-			'query-channel',
-			this.queryHandler
-		);
+		Finsemble.Clients.RouterClient.addResponder("query-channel", this.queryHandler);
 
-		Finsemble.Clients.RouterClient.addPubSubResponder(
-			'publish-channel',
-			{"State": "start"}
-		);
-		Finsemble.Clients.RouterClient.subscribe(
-			'publish-channel',
-			this.publishHandler
-		);
+		Finsemble.Clients.RouterClient.addPubSubResponder("publish-channel", { State: "start" });
+		Finsemble.Clients.RouterClient.subscribe("publish-channel", this.publishHandler);
 
-		Finsemble.Clients.RouterClient.addListener(
-			'transmit-channel',
-			this.transmitHandler
-		);
+		Finsemble.Clients.RouterClient.addListener("transmit-channel", this.transmitHandler);
 	}
 
-	private queryHandler(error: any, queryMessage: any): any {
+	queryHandler: StandardCallback = (error, queryMessage) => {
 		Finsemble.Clients.Logger.log("Query handler got message", error, queryMessage);
 		if (!error) {
-			let notification = queryMessage.data.notification;
-			let payload = queryMessage.data.actionPayload;
+			const notification = queryMessage.data.notification;
+			const payload = queryMessage.data.actionPayload;
 			notification.headerText = "Header Changed";
+			console.log(payload);
 
 			// Tell the notification service the message has been received. Any response is successful
-			queryMessage.sendQueryResponse(null, {"response": "Query handler got message"});
+			queryMessage.sendQueryResponse(null, { response: "Query handler got message" });
 		}
-	}
+	};
 
-	private transmitHandler(error: any, response: any): any {
+	transmitHandler: StandardCallback = (error, response) => {
 		Finsemble.Clients.Logger.log("Transmit handler got message", error, response);
 		if (!error) {
 			// let notification = queryMessage.data;
 			// notification.headerText = "Header Changed";
 			// this.nClient.notify([notification]);
 		}
-	}
+	};
 
-	private publishHandler(error: any, response: any): any {
+	publishHandler: StandardCallback = (error, response) => {
 		Finsemble.Clients.Logger.log("Publish handler got message", error, response);
 		if (!error) {
-
 		}
-	}
+	};
 }
 
-const serviceInstance = new exampleCustomActionService();
+const serviceInstance = new ExampleCustomActionService();
 
 serviceInstance.start();
 module.exports = serviceInstance;

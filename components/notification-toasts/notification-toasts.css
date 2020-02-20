@@ -60,8 +60,7 @@ img#close-icon {
 	cursor: pointer;
 }
 img#close-icon:hover {
-	filter: invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg)
-		brightness(104%) contrast(97%);
+	filter: invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%);
 }
 .detail-area_time {
 	font-size: 12px;

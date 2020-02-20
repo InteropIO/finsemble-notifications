@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-ignore */
 import * as react from "react";
 import { WindowIdentifier } from "../../../types/FSBL-definitions/globals";
 import INotification from "../../../types/Notification-definitions/INotification";
@@ -5,17 +6,16 @@ import Subscription from "../../../types/Notification-definitions/Subscription";
 import NotificationClient from "../../../services/notification/notificationClient";
 import Filter from "../../../types/Notification-definitions/Filter";
 import { SpawnParams } from "../../../types/FSBL-definitions/services/window/Launcher/launcher";
-import WindowData, {
-	NotificationsConfig
-} from "../../../types/Notification-definitions/NotificationConfig";
+import WindowConfig, { NotificationsConfig } from "../../../types/Notification-definitions/NotificationConfig";
 import IFilter from "../../../types/Notification-definitions/IFilter";
-import WindowConfig from "../../../types/Notification-definitions/NotificationConfig";
+import { NotificationGroupList } from "../../../types/Notification-definitions/NotificationHookTypes";
+import _get from "lodash.get";
 
 const FSBL = window.FSBL;
 
 const { LauncherClient, WindowClient } = FSBL.Clients;
 
-const initialState = { notifications: [] };
+const initialState: any = { notifications: [] };
 
 /*
 Action Types
@@ -27,10 +27,7 @@ const REMOVE = "REMOVE";
 /*
 	Reducer
 	*/
-function reducer(
-	state: { notifications: INotification[] },
-	action: { type: string; payload: any }
-) {
+function reducer(state: { notifications: INotification[] }, action: { type: string; payload: any }) {
 	switch (action.type) {
 		case CREATE_MULTIPLE:
 			return {
@@ -45,18 +42,14 @@ function reducer(
 			//if the notification exists then do nothing and return the current state else add the the new notification to the state
 			const notifications = notificationExistsInArray
 				? state.notifications.map((notification: INotification) =>
-						notification.id === action.payload.id
-							? action.payload
-							: notification
+						notification.id === action.payload.id ? action.payload : notification
 				  )
 				: [...state.notifications, action.payload];
 
 			return { notifications };
 		case REMOVE:
 			return {
-				notifications: state.notifications.filter(
-					notification => notification.id !== action.payload.id
-				)
+				notifications: state.notifications.filter(notification => notification.id !== action.payload.id)
 			};
 		default:
 			throw new Error();
@@ -85,6 +78,7 @@ export default function useNotifications() {
 
 	// start receiving Notifications and putting them in state
 	react.useEffect(() => {
+		// eslint-disable-next-line @typescript-eslint/no-use-before-define
 		const subscribe = init();
 		return () => {
 			// Unsubscribe using the subscription ID
@@ -95,14 +89,110 @@ export default function useNotifications() {
 		};
 	}, []); // eslint-disable-line
 
+	/**
+	 * Example for setting up button clicks
+	 *
+	 * @param notification
+	 * @param action
+	 */
+	function doAction(notification: INotification, action: any) {
+		try {
+			NOTIFICATION_CLIENT = new NotificationClient();
+			NOTIFICATION_CLIENT.performAction([notification], action).then(() => {
+				// NOTE: The request to perform the action has be sent to the notifications service successfully
+				// The action itself has not necessarily been perform successfully
+				console.log("ACTION success");
+
+				// 1) alert user notification has been sent (action may not have completed)
+			});
+		} catch (e) {
+			// NOTE: The request to perform the action has failed
+			console.log("fail", e);
+		}
+	}
+
+	/**
+	 * Group Notifications by Type
+	 * @param notifications
+	 */
+	const groupNotificationsByType = (notifications: INotification[]): NotificationGroupList => {
+		const groupBy = (arr: INotification[], type: keyof INotification) =>
+			arr
+				.map(
+					(notification: INotification): INotification["type"] =>
+						//TODO: this does not work as expected without the ignore
+						//@ts-ignore
+						notification[type]
+				)
+				.reduce((acc: { [x: string]: any }, notificationType: INotification["type"], index: number) => {
+					acc[notificationType] = [...(acc[notificationType] || []), arr[index]];
+					return acc;
+				}, {});
+
+		return groupBy(notifications, "type");
+	};
+
+	/**
+	 * 	 * get the past notifications
+	 * WARNING - The default will get all notifications all the way back from 1969!!!
+	 * @param since
+	 * @param filter
+	 */
+	const getNotificationHistory = (
+		since = "1969-12-31T23:59:59.999Z",
+		filter: null | IFilter = null
+	): Promise<INotification[]> => {
+		NOTIFICATION_CLIENT = new NotificationClient();
+		return NOTIFICATION_CLIENT.fetchHistory(since, filter);
+	};
+
+	/**
+	 * Get Notification's config from
+	 * @param componentType Finsemble component type e.g "Welcome-Component"
+	 */
+	const getNotificationConfig = async (componentType: string): Promise<NotificationsConfig> => {
+		const { data }: any = await LauncherClient.getComponentDefaultConfig(componentType);
+
+		const config: WindowConfig = data;
+
+		return _get(config, "config.window.data.notifications", null);
+	};
+
+	/*
+	Finsemble Window manipulation
+*/
+
+	const setWindowPosition = async (windowId: WindowIdentifier, windowShowParams: SpawnParams): Promise<any> => {
+		const { windowDescriptor: windowPosition } = (await LauncherClient.showWindow(windowId, windowShowParams)).data;
+		return windowPosition;
+	};
+
+	/**
+	 * Set the position of the notification drawer based on params
+	 * @param param0
+	 */
+	const setNotificationDrawerPosition = async (windowShowParams: SpawnParams) => {
+		const windowId: WindowIdentifier = await LauncherClient.getMyWindowIdentifier();
+		await setWindowPosition(windowId, windowShowParams);
+	};
+
+	const minimizeWindow = () => {
+		WindowClient.minimize(console.log);
+	};
+
+	const getWindowSpawnData = () => {
+		return WindowClient.getSpawnData();
+	};
+
+	/**
+	 * Main init function to start the subscription
+	 */
 	async function init() {
 		try {
 			NOTIFICATION_CLIENT = new NotificationClient();
 			const subscription = new Subscription();
 
-			const notificationConfig:
-				| NotificationsConfig
-				| boolean = await getNotificationConfig(
+			const notificationConfig: NotificationsConfig = await getNotificationConfig(
 				await WindowClient.getWindowIdentifier().componentType
 			);
 
@@ -144,128 +234,6 @@ export default function useNotifications() {
 			console.error(error);
 		}
 	}
-
-	/**
-	 * Example for setting up button clicks
-	 *
-	 * @param notification
-	 * @param action
-	 */
-	function doAction(notification: INotification, action) {
-		try {
-			NOTIFICATION_CLIENT = new NotificationClient();
-			NOTIFICATION_CLIENT.performAction([notification], action).then(() => {
-				// NOTE: The request to perform the action has be sent to the notifications service successfully
-				// The action itself has not necessarily been perform successfully
-				console.log("ACTION success");
-
-				// 1) alert user notification has been sent (action may not have completed)
-			});
-		} catch (e) {
-			// NOTE: The request to perform the action has failed
-			console.log("fail", e);
-		}
-	}
-
-	/**
-	 * Group Notifications by Type
-	 * @param notifications
-	 */
-	const groupNotificationsByType = (
-		notifications: INotification[]
-	): { [type: string]: INotification[] } => {
-		const groupBy = (arr: INotification[], type: string) =>
-			arr
-				.map(
-					(notification: INotification): INotification["type"] =>
-						notification[type]
-				)
-				.reduce(
-					(
-						acc: { [x: string]: any },
-						notificationType: INotification["type"],
-						index: number
-					) => {
-						acc[notificationType] = [
-							...(acc[notificationType] || []),
-							arr[index]
-						];
-						return acc;
-					},
-					{}
-				);
-
-		return groupBy(notifications, "type");
-	};
-
-	/**
-	 * 	 * get the past notifications
-	 * WARNING - The default will get all notifications all the way back from 1969!!!
-	 * @param since
-	 * @param filter
-	 */
-	const getNotificationHistory = (
-		since = "1969-12-31T23:59:59.999Z",
-		filter: null | IFilter = null
-	): Promise<INotification[]> => {
-		NOTIFICATION_CLIENT = new NotificationClient();
-		return NOTIFICATION_CLIENT.fetchHistory(since, filter);
-	};
-
-	/**
-	 * Get Notification's config from
-	 * @param componentType Finsemble component type e.g "Welcome-Component"
-	 */
-	const getNotificationConfig = async (
-		componentType: string
-	): Promise<NotificationsConfig | boolean> => {
-		const { data }: any = await LauncherClient.getComponentDefaultConfig(
-			componentType
-		);
-
-		const config: WindowData = data;
-
-		const notificationsConfigExists: WindowConfig | undefined =
-			config &&
-			config.window &&
-			config.window.data &&
-			config.window.data.notifications;
-
-		return notificationsConfigExists && config.window.data.notifications;
-	};
-
-	/*
-	Finsemble Window manipulation
-*/
-
-	const setWindowPosition = async (
-		windowId: WindowIdentifier,
-		windowShowParams: SpawnParams
-	): Promise<any> => {
-		const { windowDescriptor: windowPosition } = (
-			await LauncherClient.showWindow(windowId, windowShowParams)
-		).data;
-		return windowPosition;
-	};
-
-	/**
-	 * Set the position of the notification drawer based on params
-	 * @param param0
-	 */
-	const setNotificationDrawerPosition = async (
-		windowShowParams: SpawnParams
-	) => {
-		const windowId: WindowIdentifier = await LauncherClient.getMyWindowIdentifier();
-		await setWindowPosition(windowId, windowShowParams);
-	};
-
-	const minimizeWindow = () => {
-		WindowClient.minimize(console.log);
-	};
-
-	const getWindowSpawnData = () => {
-		return WindowClient.getSpawnData();
-	};
 
 	return {
 		doAction,

@@ -1,11 +1,9 @@
 {
-	"wpfExampleBase" : "C:/Users/admin/Documents/code/finsemble-seed/src",
 	"importConfig": [
 		"$applicationRoot/components/finsemble-notifications/components/notification-center/config.json",
 		"$applicationRoot/components/finsemble-notifications/components/notification-drawer/config.json",
 		"$applicationRoot/components/finsemble-notifications/components/notification-toasts/config.json",
 		"$applicationRoot/components/finsemble-notifications/components/notification-toaster/config.json",
-		"$applicationRoot/components/finsemble-notifications/services/notification/config.json",
-		"$applicationRoot/components/finsemble-notifications/dot-net-examples/NotifyComponent/config.json"
+		"$applicationRoot/components/finsemble-notifications/services/notification/config.json"
 	]
 }

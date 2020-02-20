@@ -1,9 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ChartIQ.Finsemble.Notifications
 {
@@ -19,23 +16,23 @@ namespace ChartIQ.Finsemble.Notifications
 		public String headerText;
 		public String headerLogo;
 		public String contentLogo;
-		public Action[] actions;
+		public List<Action> actions;
 		public int timeout;
 		public Dictionary<String, Object> meta;
 		public Boolean isActionPerformed;
 		public Boolean isSnoozed;
-		public PerformedAction[] actionsHistory;
-		public Notification[] stateHistory;
+		public List<PerformedAction> actionsHistory;
+		public List<Notification> stateHistory;
 
 		public Notification()
 		{
-			this.actions = new Action[0];
+			this.actions = new List<Action>();
 			this.isActionPerformed = false;
 			this.isSnoozed = false;
 			this.actionsHistory = null;
 			this.meta = new Dictionary<string, object>();
-			this.actionsHistory = new PerformedAction[0];
-			this.stateHistory = new Notification[0];
+			this.actionsHistory = new List<PerformedAction>();
+			this.stateHistory = new List<Notification>();
 		}
 
 		public static Notification FromJObject(JObject obj)

@@ -158,9 +158,6 @@ notifications using the [selective configuration method](#selective-finsemble-co
 * [notification-drawer config](components/notification-drawer/config.json)  
 * [notification-toaster config](components/notification-toaster/config.json)  
 * [notification-toasts config](components/notification-toasts/config.json)  
-* [.Net example config](dot-net-notifications/NotifyComponent/config.json)  
-
-
 
 ## Using the Notifications API
 
@@ -269,4 +266,7 @@ EventHandler<Notification> onNotifyHandler = (s, r) =>
 notifier.subscribe(sub, onSubHandler, onNotifyHandler);
 ```
 
-An example WPF component is also provided that uses this DLL to send notifications and to subscribe to the notifications stream. See the [.Net example component](dot-net-notifications/NotifyComponent) for details. Both projects can be built using the included [Visual Studio solution](dot-net-notifications)
+#### Example .Net notification component ####
+An [example WPF component](dot-net-notifications/NotifyComponent) is  provided that uses the FinsembleNotifications.dll and Finsemble.dll to send notifications and to subscribe to the notifications stream. Please build both the [NotifyComponent](dot-net-notifications/NotifyComponent) and [FinsembleNotifications.dll](dot-net-notifications/FinsembleNotifications)   using the included [Visual Studio solution](dot-net-notifications).
+
+Note: The example [configuration file](dot-net-notifications/NotifyComponent/config.json) makes use of a variable `$wpfExampleBase` set in the [sample config file](sample.config.json) to construct the path to the example executable.   Set `$wpfExampleBase` such that the path in the [NotifyComponent config](dot-net-notifications/NotifyComponent/config.json) points to the built .exe file(s).

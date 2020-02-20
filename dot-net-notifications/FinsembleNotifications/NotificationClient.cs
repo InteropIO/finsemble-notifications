@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
-using System.Windows;
 using System.Collections.Generic;
 
 namespace ChartIQ.Finsemble.Notifications

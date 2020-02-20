@@ -67,7 +67,9 @@ namespace NotifyComponent
 			welcome.type = ActionTypes.SPAWN;
 			welcome.component = "Welcome Component";
 
-			not1.actions = (new[] {snooze, welcome, dismiss});
+			not1.actions.Add(snooze);
+			not1.actions.Add(welcome);
+			not1.actions.Add(dismiss);
 
 			notifier.notify((new[] { not1 }), (s, r) => {
 
@@ -101,6 +103,7 @@ namespace NotifyComponent
 			query.payload = new JObject();
 			query.payload.Add("hello", new JValue("world"));
 
+		
 			NAction transmit = new NAction();
 			transmit.buttonText = "Send Transmit";
 			transmit.type = ActionTypes.TRANSMIT;
@@ -115,7 +118,9 @@ namespace NotifyComponent
 			publish.payload = new JObject { };
 			publish.payload.Add("xyzzy", new JValue("moo"));
 
-			not2.actions = (new[] { query, transmit, publish });
+			not2.actions.Add(query);
+			not2.actions.Add(transmit);
+			not2.actions.Add(publish);
 
 			notifier.notify((new[] { not2 }), (s, r) => {
 
@@ -149,7 +154,6 @@ namespace NotifyComponent
 					+ "\nerror: " + (r.error != null ? r.error.ToString() : "null")
 				});
 
-				//check response for notification id 
 			});
 		}
 

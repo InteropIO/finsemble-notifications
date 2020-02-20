@@ -20,13 +20,11 @@ const FSBL = window.FSBL;
  * TODO: Decide and set what log levels all this should be at.
  */
 export default class NotificationClient implements INotificationClient {
-	private routerWrapper: RouterWrapper;
-
 	/**
 	 * @var FSBL.Clients.Logger
 	 */
 	readonly loggerClient: ILogger;
-
+	private routerWrapper: RouterWrapper;
 	private subscriptions: {
 		id: string;
 		channel: string;

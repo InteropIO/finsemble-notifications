@@ -6,13 +6,11 @@ import ServiceHelper from "../../services/helpers/ServiceHelper";
 import Notification from "../../types/Notification-definitions/Notification";
 import Action from "../../types/Notification-definitions/Action";
 import { ActionTypes } from "../../types/Notification-definitions/ActionTypes";
-import { Map } from "immutable";
-const ImmutableMap = Map;
 
 describe("Configuration", () => {
-	let normalisedConfig;
+	let normalisedConfig: any;
 
-	const config = {
+	const config: any = {
 		defaultDismissButtonText: "Service Default Dismiss",
 		maxNotificationsToRetain: 1000,
 		maxNotificationRetentionPeriodHours: 24,
@@ -100,7 +98,7 @@ describe("Configuration", () => {
 	};
 
 	beforeEach(() => {
-		normalisedConfig = ServiceHelper.normaliseConfig(config);
+		normalisedConfig = ServiceHelper.normaliseConfig(config) as object;
 	});
 
 	it("Can extract information from the config", () => {
@@ -143,7 +141,7 @@ describe("Configuration", () => {
 			ServiceHelper.getTypes({});
 		}).to.not.throw(Error);
 
-		const types = ServiceHelper.getTypes(config);
+		const types = ServiceHelper.getTypes(config) as any;
 		expect(types).to.not.be.undefined;
 		expect(types).to.be.an("Object");
 		expect(types.hasOwnProperty("default")).to.equal(true);

@@ -2,10 +2,13 @@ import INotification from "../../types/Notification-definitions/INotification";
 import Action from "../../types/Notification-definitions/Action";
 import { ActionTypes } from "../../types/Notification-definitions/ActionTypes";
 import IFilter from "../../types/Notification-definitions/IFilter";
+import { Map as ImmutableMap, mergeDeepWith } from "immutable";
+import IAction from "../../types/Notification-definitions/IAction";
+import PerformedAction from "../../types/Notification-definitions/PerformedAction";
+import IPerformedAction from "../../types/Notification-definitions/IPerformedAction";
 
 // eslint-disable-next-line
 const searchJS = require("searchjs");
-import { Map as ImmutableMap, mergeDeepWith } from "immutable";
 
 const DEFAULT_TYPE_NAME = "default";
 
@@ -59,6 +62,18 @@ export default class ServiceHelper {
 			configToApply = config["types"][notification.type];
 		} else if (config && config["types"] && config["types"][DEFAULT_TYPE_NAME]) {
 			configToApply = config["types"][DEFAULT_TYPE_NAME];
+		}
+
+		if (!Array.isArray(notification.actions)) {
+			notification.actions = [];
+		}
+
+		if (!Array.isArray(notification.actionsHistory)) {
+			notification.actionsHistory = [];
+		}
+
+		if (!Array.isArray(notification.stateHistory)) {
+			notification.stateHistory = [];
 		}
 
 		// A config has not been supplied at all
@@ -162,5 +177,70 @@ export default class ServiceHelper {
 		}
 
 		return isMatch;
+	}
+
+	/**
+	 * Converts an IAction into and IPerformedAction and places it the actionsHistory
+	 *
+	 * @param notification {INotification}
+	 * @param action {IAction}
+	 * @return INotification
+	 *
+	 * @note JavaScript is pass by reference for objects but prefer to be specific by returning a value
+	 * not sure if putting a return in is confusing and hinting at it being pass by reference.
+	 */
+	public static addPerformedAction(notification: INotification, action: IAction): INotification {
+		let map;
+		if (ImmutableMap.isMap(notification)) {
+			map = notification;
+		} else {
+			// @ts-ignore
+			map = ImmutableMap(notification);
+		}
+
+		const performedAction = new PerformedAction();
+		performedAction.id = action.id;
+		performedAction.type = action.type;
+		performedAction.datePerformed = new Date().toISOString();
+
+		const actionsHistory: IPerformedAction[] = map.get("actionsHistory").slice(0);
+		actionsHistory.push(performedAction);
+		map = map.set("actionsHistory", actionsHistory);
+
+		return ImmutableMap.isMap(notification) ? map : map.toObject();
+	}
+
+	/**
+	 * Applies the history states to a notification which if finds in a lists
+	 *
+	 * @param notification
+	 * @param notificationList
+	 * @param defaultPrevious
+	 */
+	public static setNotificationHistory(
+		notification: INotification,
+		notificationList: Map<string, INotification>,
+		defaultPrevious: INotification
+	) {
+		// @ts-ignore
+		const map = ImmutableMap(notification);
+
+		let currentlyStoredNotification: INotification;
+
+		let currentHistory: INotification[];
+
+		if (notificationList.has(notification.id)) {
+			currentlyStoredNotification = notificationList.get(notification.id);
+			currentHistory = currentlyStoredNotification.stateHistory;
+			currentlyStoredNotification.stateHistory = [];
+		} else {
+			currentHistory = map.get("stateHistory");
+			currentlyStoredNotification = defaultPrevious;
+			currentlyStoredNotification.stateHistory = [];
+		}
+
+		currentHistory.push(currentlyStoredNotification);
+
+		return map.set("stateHistory", currentHistory).toObject();
 	}
 }

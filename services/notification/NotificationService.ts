@@ -14,7 +14,8 @@ import IPerformedAction from "../../types/Notification-definitions/IPerformedAct
 import ServiceHelper from "../helpers/ServiceHelper";
 import IFilter from "../../types/Notification-definitions/IFilter";
 
-import uuidV4 = require("uuid/v4");
+// @ts-ignore
+import { v4 as uuidV4 } from "uuid";
 // eslint-disable-next-line
 const Finsemble = require("@chartiq/finsemble");
 import { Map as ImmutableMap } from "immutable";
@@ -543,7 +544,6 @@ export default class NotificationService extends Finsemble.baseService implement
 	private expectReceipt(subscription: ISubscription, notification: INotification) {
 		// We're expecting a received receipt on the channel from the client
 	}
-
 
 	/**
 	 * Set the receipt status

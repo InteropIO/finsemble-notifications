@@ -1,6 +1,9 @@
-import {IRouterClient} from "../../types/FSBL-definitions/clients/IRouterClient";
+import { IRouterClient } from "../../types/FSBL-definitions/clients/IRouterClient";
+import { ILogger } from "../../types/FSBL-definitions/clients/ILogger";
+import { StandardCallback } from "../../types/FSBL-definitions/globals";
 
-const {RouterClient, Logger} = require("@chartiq/finsemble").Clients;
+const { RouterClient, Logger } = require("@chartiq/finsemble").Clients;
+const FSBL = window.FSBL;
 
 /**
  * Internal (private) router channels, should not need to be referenced by outside of the Client src
@@ -13,14 +16,14 @@ export const ROUTER_ENDPOINTS = {
 	LAST_ISSUED: "last_issued",
 	FETCH_HISTORY: "fetch_history",
 	CHANNEL_PREFIX: "notification.",
-	ACTION_PREFIX: "action.",
+	ACTION_PREFIX: "action."
 };
 
 /**
  * User for creating custom actions
  */
 export const ROUTER_NAMESPACE = {
-	ACTION_PREFIX: ROUTER_ENDPOINTS.CHANNEL_PREFIX + ROUTER_ENDPOINTS.ACTION_PREFIX,
+	ACTION_PREFIX: ROUTER_ENDPOINTS.CHANNEL_PREFIX + ROUTER_ENDPOINTS.ACTION_PREFIX
 };
 
 /**
@@ -33,7 +36,7 @@ export const ROUTER_NAMESPACE = {
  */
 export default class RouterWrapper {
 	routerClient: IRouterClient;
-	loggerClient: any;
+	loggerClient: ILogger;
 
 	/**
 	 * Constructor
@@ -41,8 +44,7 @@ export default class RouterWrapper {
 	 * @param router Needs to be set if using in a service. Defaults to FSBL.Client.RouterClient if none is provided
 	 * @param logger Needs to be set if using in a service. Defaults to FSBL.Client.Logger if none is provided
 	 */
-	constructor(router?: IRouterClient, logger?: any) {
-
+	constructor(router?: IRouterClient, logger?: ILogger) {
 		if (!router) {
 			router = typeof FSBL !== "undefined" ? FSBL.Clients.RouterClient : RouterClient;
 		}
@@ -64,17 +66,19 @@ export default class RouterWrapper {
 	 * @param {any} data
 	 * @param {Function} callback
 	 */
-	public query(channel: string, data: any, channelPrefix?: string, callback?: Function): Promise<any> {
-		return new Promise<any>(async (resolve, reject) => {
+	public query(channel: string, data: {}, channelPrefix?: string, callback?: StandardCallback): Promise<any> {
+		return new Promise<{}>(async (resolve, reject) => {
 			try {
 				if (channelPrefix == null) {
 					channelPrefix = ROUTER_ENDPOINTS.CHANNEL_PREFIX;
 				}
-				this.loggerClient && this.loggerClient.info(`Wrapper: sending message on ${channelPrefix + channel} channel`, data);
+				this.loggerClient &&
+					this.loggerClient.info(`Wrapper: sending message on ${channelPrefix + channel} channel`, data);
 
-				let response = await this.routerClient.query(
+				const response = await this.routerClient.query(
 					channelPrefix + channel,
 					data,
+					// eslint-disable-next-line @typescript-eslint/no-empty-function
 					() => {} // Ignoring callback. Use the promise to get the result
 				);
 
@@ -88,7 +92,6 @@ export default class RouterWrapper {
 					}
 					resolve(response.response.data.data);
 				}
-
 			} catch (e) {
 				this.loggerClient && this.loggerClient.error(`Error: `, e);
 				if (callback) {
@@ -111,7 +114,7 @@ export default class RouterWrapper {
 		}
 		this.loggerClient && this.loggerClient.info(`Wrapper: Adding responder for endpoint: ${channelPrefix + channel}`);
 
-		this.routerClient.addResponder(channelPrefix + channel, (err: any, message: any) => {
+		this.routerClient.addResponder(channelPrefix + channel, (err, message) => {
 			this.loggerClient && this.loggerClient.info(`Message received on ${channel}: `, message);
 			if (err) {
 				this.loggerClient && this.loggerClient.error(`Failed to setup ${channel} responder`, err);
@@ -120,9 +123,12 @@ export default class RouterWrapper {
 
 			try {
 				this.loggerClient && this.loggerClient.info(`Processing message on channel ${channel}: `, message);
-				let returnVal = dataProcessor(message.data);
+				const returnVal = dataProcessor(message.data);
 				this.loggerClient && this.loggerClient.info(`Message response on ${channel}: `, returnVal);
-				message.sendQueryResponse(null, {"status": "success", "data": returnVal});
+				message.sendQueryResponse(null, {
+					status: "success",
+					data: returnVal
+				});
 			} catch (err) {
 				this.loggerClient && this.loggerClient.error(`Failed to process query`, err);
 				message.sendQueryResponse(err);

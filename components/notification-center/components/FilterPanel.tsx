@@ -11,8 +11,7 @@ const NotificationsPanel = (props: Props) => (
 				type =>
 					type && (
 						<>
-							<input key={type} type="checkbox" name={type} value={type} />{" "}
-							{type}
+							<input key={type} type="checkbox" name={type} value={type} /> {type}
 							<br />
 						</>
 					)

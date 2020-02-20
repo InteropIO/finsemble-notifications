@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-ignore */
 import * as React from "react";
 import { expect } from "chai";
 import { render } from "@testing-library/react";

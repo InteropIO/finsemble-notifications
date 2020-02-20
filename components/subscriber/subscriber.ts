@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-ignore */
 import NotificationClient from "../../services/notification/notificationClient";
 import Subscription from "../../types/Notification-definitions/Subscription";
 import INotification from "../../types/Notification-definitions/INotification";
@@ -10,58 +11,7 @@ import IAction from "../../types/Notification-definitions/IAction";
 
 let nClient: NotificationClient = null;
 
-if (window.FSBL && FSBL.addEventListener) {
-	FSBL.addEventListener("onReady", init);
-} else {
-	window.addEventListener("FSBLReady", init);
-}
-
 let subscriptionId: string = null;
-
-function init() {
-	nClient = new NotificationClient();
-	let subscription = new Subscription();
-
-	// Set the filter to match INotification fields
-	subscription.filter = new Filter();
-	// subscription.filter.include.push({"type": "chat"});
-
-	subscription.onNotification = function (notification: INotification) {
-		// This function will be called when a notification arrives
-		addToList(notification);
-	};
-
-	nClient.subscribe(
-		subscription
-	).then((subId) => {
-		subscriptionId = subId;
-		console.log(subId);
-	});
-
-	(<HTMLInputElement>document.getElementById('fetch-from-date')).value = new Date().toISOString();
-
-	document.getElementById('clear-list').addEventListener('click', () => {
-		document.getElementById('notification-list').innerText = '';
-	});
-
-	document.getElementById('fetch-history').addEventListener('click', () => {
-		nClient.fetchHistory((<HTMLInputElement>document.getElementById('fetch-from-date')).value).then((notifications) => {
-			notifications.forEach((notification) => {
-				addToList(notification);
-			})
-		});
-	});
-
-	document.getElementById('unsubscribe').addEventListener('click', () => {
-		try {
-			nClient.unsubscribe(subscriptionId).then(() => {
-				// Unsubscribed
-			});
-		} catch (e) {
-
-		}
-	});
-}
 
 /**
  * Example for setting up button clicks
@@ -69,7 +19,7 @@ function init() {
  * @param notification
  * @param action
  */
-let doAction = (notification: INotification, action: IAction) => {
+const doAction = (notification: INotification, action: IAction) => {
 	try {
 		nClient.performAction([notification], action).then(() => {
 			// NOTE: The request to perform the action has be sent to the notifications service successfully
@@ -82,11 +32,11 @@ let doAction = (notification: INotification, action: IAction) => {
 	}
 };
 
-let addToList = (notification: INotification) => {
-	let actions: HTMLButtonElement[] = [];
+const addToList = (notification: INotification) => {
+	const actions: HTMLButtonElement[] = [];
 
 	notification.actions.forEach(action => {
-		let button = document.createElement("button");
+		const button = document.createElement("button");
 		button.innerText = action.buttonText;
 		button.onclick = () => {
 			doAction(notification, action);
@@ -94,23 +44,21 @@ let addToList = (notification: INotification) => {
 		actions.push(button);
 	});
 
-	let divElement = document.createElement("div");
-	divElement.setAttribute('id', notification.id);
+	const divElement = document.createElement("div");
+	divElement.setAttribute("id", notification.id);
 	divElement.className = "notification";
 	divElement.innerHTML = `<h5>${notification.headerText}</h5>
                             <div class="actions-container"></div>`;
 
 	if (notification.isSnoozed) {
-		divElement.className += ' snoozed';
+		divElement.className += " snoozed";
 	}
 
 	if (notification.isRead) {
-		divElement.className += ' dismissed';
+		divElement.className += " dismissed";
 	}
 
-	const actionContainer = divElement.getElementsByClassName(
-		"actions-container"
-	);
+	const actionContainer = divElement.getElementsByClassName("actions-container");
 	actions.forEach(action => {
 		actionContainer.item(0).appendChild(action);
 	});
@@ -121,5 +69,53 @@ let addToList = (notification: INotification) => {
 	} else {
 		document.getElementById("notification-list").appendChild(divElement);
 	}
-
 };
+
+function init() {
+	nClient = new NotificationClient();
+	const subscription = new Subscription();
+
+	// Set the filter to match INotification fields
+	subscription.filter = new Filter();
+	// subscription.filter.include.push({"type": "chat"});
+
+	subscription.onNotification = function(notification: INotification) {
+		// This function will be called when a notification arrives
+		addToList(notification);
+	};
+
+	nClient.subscribe(subscription).then(subId => {
+		subscriptionId = subId;
+		console.log(subId);
+	});
+
+	(document.getElementById("fetch-from-date") as HTMLInputElement).value = new Date().toISOString();
+
+	document.getElementById("clear-list").addEventListener("click", () => {
+		document.getElementById("notification-list").innerText = "";
+	});
+
+	document.getElementById("fetch-history").addEventListener("click", () => {
+		nClient.fetchHistory((document.getElementById("fetch-from-date") as HTMLInputElement).value).then(notifications => {
+			notifications.forEach(notification => {
+				addToList(notification);
+			});
+		});
+	});
+
+	document.getElementById("unsubscribe").addEventListener("click", () => {
+		try {
+			nClient.unsubscribe(subscriptionId).then(() => {
+				// Unsubscribed
+			});
+		} catch (e) {}
+	});
+}
+
+// @ts-ignore
+if (window.FSBL && FSBL.addEventListener) {
+	// @ts-ignore
+	FSBL.addEventListener("onReady", init);
+} else {
+	window.addEventListener("FSBLReady", init);
+}

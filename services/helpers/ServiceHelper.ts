@@ -3,8 +3,9 @@ import Action from "../../types/Notification-definitions/Action";
 import { ActionTypes } from "../../types/Notification-definitions/ActionTypes";
 import IFilter from "../../types/Notification-definitions/IFilter";
 
+// eslint-disable-next-line
 const searchJS = require("searchjs");
-const { Map: ImmutableMap, mergeDeepWith, mergeDeep } = require("immutable");
+import { Map as ImmutableMap, mergeDeepWith } from "immutable";
 
 const DEFAULT_TYPE_NAME = "default";
 
@@ -20,7 +21,7 @@ export default class ServiceHelper {
 	 * @param config
 	 */
 
-	public static normaliseConfig(config: Object): Object {
+	public static normaliseConfig(config: Record<string, object>): Record<string, object> {
 		// TODO: Input validation
 		return {
 			service: ServiceHelper.getServiceDefaults(config),
@@ -28,14 +29,11 @@ export default class ServiceHelper {
 		};
 	}
 
-	public static getTypes(config: Object): Object {
-		return Object.assign(
-			{},
-			config && config.hasOwnProperty("types") ? config["types"] : null
-		);
+	public static getTypes(config: Record<string, object>): Record<string, object> {
+		return Object.assign({}, config && config.hasOwnProperty("types") ? config["types"] : null);
 	}
 
-	public static getServiceDefaults(config: Object): Object {
+	public static getServiceDefaults(config: Record<string, object>): Record<string, object> {
 		const defaults = Object.assign({}, config);
 		if (defaults.hasOwnProperty("types")) {
 			delete defaults["types"];
@@ -54,19 +52,12 @@ export default class ServiceHelper {
 	 * @param config {Object}
 	 * @param notification {INotification}
 	 */
-	public static applyDefaults(
-		config: any,
-		notification: INotification
-	): INotification {
+	public static applyDefaults(config: any, notification: INotification): INotification {
 		let configToApply;
 
 		if (config && config["types"] && config["types"][notification.type]) {
 			configToApply = config["types"][notification.type];
-		} else if (
-			config &&
-			config["types"] &&
-			config["types"][DEFAULT_TYPE_NAME]
-		) {
+		} else if (config && config["types"] && config["types"][DEFAULT_TYPE_NAME]) {
 			configToApply = config["types"][DEFAULT_TYPE_NAME];
 		}
 
@@ -75,18 +66,13 @@ export default class ServiceHelper {
 			let returnValue = notification;
 
 			if (configToApply.hasOwnProperty(KEY_NAME_DEFAULT_FIELDS)) {
+				// @ts-ignore
 				let map = ImmutableMap(notification);
-				map = mergeDeepWith(
-					ServiceHelper.merge,
-					map,
-					configToApply[KEY_NAME_DEFAULT_FIELDS]
-				);
+				map = mergeDeepWith(ServiceHelper.merge, map, configToApply[KEY_NAME_DEFAULT_FIELDS]);
 				returnValue = map.toObject();
 			}
 
-			const showDismissAction = configToApply.hasOwnProperty(
-				KEY_NAME_SHOW_DISMISS_ACTION
-			)
+			const showDismissAction = configToApply.hasOwnProperty(KEY_NAME_SHOW_DISMISS_ACTION)
 				? configToApply[KEY_NAME_SHOW_DISMISS_ACTION]
 				: false;
 
@@ -95,16 +81,10 @@ export default class ServiceHelper {
 
 				if (configToApply.hasOwnProperty(KEY_NAME_DISMISS_BUTTON_TEXT)) {
 					dismissText = configToApply[KEY_NAME_DISMISS_BUTTON_TEXT];
-				} else if (
-					config.hasOwnProperty("service") &&
-					config.service.hasOwnProperty(KEY_NAME_DISMISS_BUTTON_TEXT)
-				) {
+				} else if (config.hasOwnProperty("service") && config.service.hasOwnProperty(KEY_NAME_DISMISS_BUTTON_TEXT)) {
 					dismissText = config.service[KEY_NAME_DISMISS_BUTTON_TEXT];
 				}
-				returnValue = ServiceHelper.addDismissActionToNotification(
-					returnValue,
-					dismissText
-				);
+				returnValue = ServiceHelper.addDismissActionToNotification(returnValue, dismissText);
 			}
 
 			return returnValue;
@@ -116,11 +96,9 @@ export default class ServiceHelper {
 	/**
 	 * Adds a dismiss action to a notification if one does not already exist
 	 * @param notification
+	 * @param buttonText
 	 */
-	public static addDismissActionToNotification(
-		notification: INotification,
-		buttonText: string
-	): INotification {
+	public static addDismissActionToNotification(notification: INotification, buttonText: string): INotification {
 		if (!ServiceHelper.hasDismissAction(notification)) {
 			const action = new Action();
 			action.type = ActionTypes.DISMISS;
@@ -142,14 +120,10 @@ export default class ServiceHelper {
 		return returnValue;
 	}
 
-	public static merge(oldVal: any, newVal: any) {
+	public static merge(oldVal: {}, newVal: {}): {} {
 		if (oldVal) {
 			if (typeof oldVal === "object") {
-				return mergeDeepWith(
-					ServiceHelper.merge,
-					ImmutableMap(oldVal),
-					newVal
-				).toObject();
+				return mergeDeepWith(ServiceHelper.merge, ImmutableMap(oldVal), newVal).toObject();
 			} else {
 				return oldVal;
 			}
@@ -158,33 +132,30 @@ export default class ServiceHelper {
 		}
 	}
 
-	public static filterMatches(
-		filter: IFilter,
-		notification: INotification
-	): boolean {
+	public static filterMatches(filter: IFilter, notification: INotification): boolean {
 		// All notifications match if the filters are empty
 
-		const includeExists:boolean = filter && filter.include && filter.include.length > 0;
-		const excludeExists:boolean = filter && filter.exclude && filter.exclude.length > 0;
+		const includeExists: boolean = filter && filter.include && filter.include.length > 0;
+		const excludeExists: boolean = filter && filter.exclude && filter.exclude.length > 0;
 
-		if(!includeExists && !excludeExists) {
+		if (!includeExists && !excludeExists) {
 			// Empty filters will match everything
-			return true
+			return true;
 		}
 
 		let isMatch = !includeExists;
 
 		if (includeExists) {
-			filter.include.forEach((filterToMatch) => {
-				if(searchJS.matchObject(notification, filterToMatch)) {
+			filter.include.forEach(filterToMatch => {
+				if (searchJS.matchObject(notification, filterToMatch)) {
 					isMatch = true;
 				}
 			});
 		}
 
-		if(excludeExists) {
-			filter.exclude.forEach((filterToMatch) => {
-				if(searchJS.matchObject(notification, filterToMatch)) {
+		if (excludeExists) {
+			filter.exclude.forEach(filterToMatch => {
+				if (searchJS.matchObject(notification, filterToMatch)) {
 					isMatch = false;
 				}
 			});

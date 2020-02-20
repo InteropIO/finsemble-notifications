@@ -6,7 +6,8 @@
 		"watch": "nodemon --delay 500ms -e js,ts,tsx,jsx,html,css,json copy.js",
 		"copy-files": "node copy.js",
 		"lint": "eslint services/** components/** ",
-		"lint:fix": "eslint services/** components/** --fix ",
+		"lint:fix": "eslint services/** components/** tests/** --fix --quiet",
+		"prettier:fix": "prettier services/** components/** --write",
 		"test": "mocha --color --bail",
 		"test:watch": "nodemon --delay 500ms -e ts --exec \"mocha --color --bail\""
 	},
@@ -16,10 +17,9 @@
 		}
 	},
 	"lint-staged": {
-		"*.{js,jsx,ts,tsx,md,html,css}": [
-			"eslint --fix",
-			"prettier --write",
-			"git add"
+		"*.{js,jsx,ts,tsx,html,css}": [
+			"eslint --fix --quiet",
+			"prettier --write"
 		]
 	},
 	"repository": {
@@ -40,18 +40,19 @@
 		"uuid": "^3.3.3"
 	},
 	"devDependencies": {
-		"@chartiq/finsemble": "^3.13.1",
-		"@types/chai": "^4.2.7",
-		"@types/mocha": "^5.2.7",
-		"@types/node": "^12.12.5",
 		"@babel/core": "^7.8.4",
 		"@babel/preset-env": "^7.8.4",
 		"@babel/preset-react": "^7.8.3",
 		"@babel/register": "^7.8.3",
+		"@chartiq/finsemble": "^3.13.1",
 		"@testing-library/react": "^9.4.0",
+		"@types/chai": "^4.2.7",
 		"@types/lodash.get": "^4.4.6",
+		"@types/mocha": "^5.2.7",
+		"@types/node": "^12.12.5",
 		"@types/react-devtools": "^3.6.0",
 		"@types/react-dom": "^16.9.3",
+		"@types/uuid": "^3.4.7",
 		"@typescript-eslint/eslint-plugin": "^2.10.0",
 		"@typescript-eslint/parser": "^2.10.0",
 		"ansi-html": "0.0.7",
@@ -63,9 +64,9 @@
 		"eslint-plugin-react-hooks": "^2.3.0",
 		"fs-extra": "^8.1.0",
 		"husky": "^4.2.3",
-		"lint-staged": "^10.0.7",
 		"jsdom": "^16.1.0",
 		"jsdom-global": "^3.0.2",
+		"lint-staged": "^10.0.7",
 		"mocha": "^7.0.0",
 		"nodemon": "^2.0.0",
 		"prettier": "^1.19.1",

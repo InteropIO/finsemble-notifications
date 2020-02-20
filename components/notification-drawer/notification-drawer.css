@@ -137,8 +137,7 @@ body {
 }
 
 img#notification-center-icon {
-	filter: invert(27%) sepia(51%) saturate(2878%) hue-rotate(163deg)
-		brightness(104%) contrast(97%);
+	filter: invert(27%) sepia(51%) saturate(2878%) hue-rotate(163deg) brightness(104%) contrast(97%);
 	margin-top: 0px;
 	height: 28px;
 	padding: 5px;

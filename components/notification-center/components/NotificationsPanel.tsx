@@ -27,9 +27,7 @@ const NotificationsPanel = (props: Props) => (
 				<div>{notification.id}</div>
 				<div>{notification.title} </div>
 				<div>{notification.headerText} </div>
-				<div>
-					{format(parseISO(notification.issuedAt), "yyyy-MM-dd' at 'HH:mm:ss")}
-				</div>
+				<div>{format(parseISO(notification.issuedAt), "yyyy-MM-dd' at 'HH:mm:ss")}</div>
 				<div>{notification.type} </div>
 			</div>
 		))}

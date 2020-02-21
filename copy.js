@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-disable @typescript-eslint/no-var-requires */
 const config = require("./copy.config.json");
 const path = require("path");
 const { copy } = require("fs-extra");
@@ -24,8 +25,5 @@ const wpfDest = path.join(dest, "dot-net-examples");
 const wpfResources = ["NotifyComponent"];
 wpfResources.forEach(resource => {
 	copy(path.join(wpfSource, resource, "bin"), path.join(wpfDest, resource));
-	copy(
-		path.join(wpfSource, resource, "config.json"),
-		path.join(wpfDest, resource, "config.json")
-	);
+	copy(path.join(wpfSource, resource, "config.json"), path.join(wpfDest, resource, "config.json"));
 });

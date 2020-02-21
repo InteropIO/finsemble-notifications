@@ -10,21 +10,8 @@
 		"preserveConstEnums": true,
 		"sourceMap": true,
 		"jsx": "react",
-		"types": [
-			"@types/mocha",
-			"@types/node",
-			"@types/chai",
-			"@testing-library/react"
-		]
+		"types": ["@types/mocha", "@types/node", "@types/chai", "@testing-library/react"]
 	},
 	"include": ["**/*"],
-	"exclude": [
-		"./node_modules/**",
-		"**/*.spec.ts",
-		"./types",
-		"./docs",
-		"./tests",
-		"./preloads",
-		"./services"
-	]
+	"exclude": ["./node_modules/**", "**/*.spec.ts", "./types", "./docs", "./tests", "./preloads", "./services"]
 }

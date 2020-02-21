@@ -6,23 +6,23 @@ This project requires the [Finsemble Seed Project](https://github.com/ChartIQ/fi
 ## Table of Contents
 
 **[Setup](#setup)**  
-&nbsp;&nbsp;&nbsp;&nbsp;[Getting the Sourcecode](#getting-the-sourcecode)  
-&nbsp;&nbsp;&nbsp;&nbsp;[Finsemble Config](#finsemble-config)  
-&nbsp;&nbsp;&nbsp;&nbsp;[Selective Finsemble Config](#selective-finsemble-config)  
-&nbsp;&nbsp;&nbsp;&nbsp;[Updating](#updating)  
+* [Getting the Sourcecode](#getting-the-sourcecode)  
+* [Finsemble Config](#finsemble-config)  
+* [Selective Finsemble Config](#selective-finsemble-config)  
+* [Updating](#updating)  
+
 **[Configuring the Notifications](#configuring-the-notifications)**  
-&nbsp;&nbsp;&nbsp;&nbsp;[Configuring the Service](#configuring-the-service)  
-&nbsp;&nbsp;&nbsp;&nbsp;[Configuring the Components](#configuring-the-components)   
+* [Configuring the Service](#configuring-the-service)  
+* [Configuring the Components](#configuring-the-components)   
+
 **[Using the Notifications API](#using-the-notifications-api)**  
-&nbsp;&nbsp;&nbsp;&nbsp;[Sending Notifications](#sending-notifications)  
-&nbsp;&nbsp;&nbsp;&nbsp;[Receiving Notifications](#receiving-notifications)  
-&nbsp;&nbsp;&nbsp;&nbsp;[Custom Actions](#custom-actions)  
+* [Sending Notifications](#sending-notifications)  
+* [Receiving Notifications](#receiving-notifications)  
+* [Custom Actions](#custom-actions)  
+* [.Net Notifications client](#dot-net-client)
 
-
----   
-[Making changes to this project?](#making-changes-to-this-project)
-
----
+**[Making changes to this project?](#making-changes-to-this-project)**
+* [how to setup the project up for development](./docs/developing.md)
 
 ## Setup
 
@@ -43,7 +43,7 @@ You can do this by doing the following:
 ### Finsemble Config
 You now have the source in your seed. Now you need to tell Finsemble to use it.  
 Add the notification config your finsemble seed config file: `./finsemble-seed/configs/application/config.json`
-``` 
+``` JSON
 "importConfig": [
     ...
     "$applicationRoot/components/finsemble-notifications/config.json"
@@ -55,7 +55,7 @@ This line will add the Notifications Service, Notification Center, Toasts, toast
 ### Selective Finsemble Config
 Alternatively, if you want to customise your experience and incorporate only some of the components, you'd want to use something like:
 
-```
+```JSON
 "importConfig": [
     // This config is required for notifcations to funtion.
     "$applicationRoot/components/finsemble-notifications/services/notification/config.json"
@@ -81,7 +81,7 @@ Certain directives can be provided to the service.
 You can do this by adding a `notifications` object to the `servicesConfig` object in `./configs/application/config.json` in the finsemble seed.
 All the configuration below is optional:
 
-```
+```JSON
 {
     ...
     "servicesConfig": {
@@ -159,8 +159,6 @@ notifications using the [selective configuration method](#selective-finsemble-co
 * [notification-toaster config](components/notification-toaster/config.json)  
 * [notification-toasts config](components/notification-toasts/config.json)  
 
-
-
 ## Using the Notifications API
 
 This package includes two example components and an example service to give an example how to send, receive and 
@@ -186,5 +184,89 @@ See the [Subscriber component example](components/subscriber)
 ### Custom Actions
 See the [Custom Action Service example](services/exampleCustomAction)
 
-#### Making changes to this project?  
-Follow the instructions [how to setup the project up for development](./docs/developing.md). 
+### Dot Net Client
+A .Net port of the notifications client, which allows WPF and Winforms-based components to send and receive notifications, and makes use of implementations of the Object types [Notification](dot-net-notifications/FinsembleNotifications/Notification.cs), [Action](dot-net-notifications/FinsembleNotifications/Action.cs), [Subscription](dot-net-notifications/FinsembleNotifications/Subscription.cs), [Filter](dot-net-notifications/FinsembleNotifications/Filter.cs) and [PerformedAction](dot-net-notifications/FinsembleNotifications/PerformedAction.cs). The client and Object implementations are provided as a separate DLL which is built by the [FinsembleNotifications project](dot-net-notifications/FinsembleNotifications). To use the client, import its namespace, and handle any namespace conflicts as below: 
+```C#
+using ChartIQ.Finsemble.Notifications;
+using NAction = ChartIQ.Finsemble.Notifications.Action;
+```
+To instantiate the client, it must be passed an instance of the Finsemble bridge, provided by the main Finsemble DLL (available from [nuget](https://www.nuget.org/packages/Finsemble), see the [Finsemble dot-net-seed project](https://github.com/ChartIQ/finsemble-dotnet-seed) for further examples of use). This is best done inside the handler for the bridge's connected event:
+```C#
+    private void Finsemble_Connected(object sender, EventArgs e)
+    {
+        Application.Current.Dispatcher.Invoke(delegate //main thread
+        {
+            // Initialize this Window and show it
+            InitializeComponent(); // Initialize after Finsemble is connected
+            FinsembleHeader.SetBridge(FSBL); // The Header Control needs a connected finsemble instance
+
+            //perform other setup here
+            ...
+
+            notifier = new NotificationClient(FSBL);
+
+            this.Show();
+        });
+    }
+```
+
+You can then instantiate a notification Object and submit to the client:
+```C#
+Notification not = new Notification();
+not.issuedAt = DateTime.Now;
+not.source = "WPF NotifyComponent";
+not.headerText = "WPF minmal notification, no actions";
+not.details = "Should create a new notification in UI every time it's sent (from WPF)";
+not.type = "email";
+not.headerLogo = "http://localhost:3375/components/finsemble-notifications/components/shared/assets/email.svg";
+not.contentLogo = "http://localhost:3375/components/finsemble-notifications/components/shared/assets/graph.png";
+
+notifier.notify((new[] { not }), (s, r) => {
+    FSBL.RPC("Logger.log", new List<JToken> {
+        "Notification sent,\nnotification: " + not.ToString()
+        + "\nresponse: " + (r.response != null ? r.response.ToString() : "null")
+        + "\nerror: " + (r.error != null ? r.error.ToString() : "null")
+    });
+});
+```
+or subscribe to the notifications stream:
+```C#
+Subscription sub = new Subscription();
+sub.filter = new Filter();
+//sub.filter.include = new Dictionary<String, Object>();
+//sub.filter.include.Add("type", "email");
+
+EventHandler<FinsembleEventArgs> onSubHandler = (s, r) =>
+{
+    FSBL.RPC("Logger.log", new List<JToken> {
+        "Subscription request sent,\nSubscription: " + sub.ToString()
+        + "\nresponse: " + (r.response != null ? r.response.ToString() : "null")
+        + "\nerror: " + (r.error != null ? r.error.ToString() : "null")
+    });
+    if (r.response != null)
+    {
+        //retrieve the subscription object that should now include a subscription id
+        subscription = Subscription.FromJObject((JObject)r.response);
+    }
+};
+
+EventHandler<Notification> onNotifyHandler = (s, r) =>
+{
+    FSBL.RPC("Logger.log", new List<JToken> {
+        "Received Notification,\nnotification: " + r.ToString()
+    });
+
+    Application.Current.Dispatcher.Invoke(delegate //main thread
+    {
+        //do something with the received notification object
+        NotificationData.Text = r.ToString();
+    });
+};
+
+notifier.subscribe(sub, onSubHandler, onNotifyHandler);
+```
+
+#### Example .Net notification component ####
+An [example WPF component](dot-net-notifications/NotifyComponent) is  provided that uses the FinsembleNotifications.dll and Finsemble.dll to send notifications and to subscribe to the notifications stream. Please build both the [NotifyComponent](dot-net-notifications/NotifyComponent) and [FinsembleNotifications.dll](dot-net-notifications/FinsembleNotifications)   using the included [Visual Studio solution](dot-net-notifications).
+
+Note: The example [configuration file](dot-net-notifications/NotifyComponent/config.json) makes use of a variable `$wpfExampleBase` set in the [sample config file](sample.config.json) to construct the path to the example executable.   Set `$wpfExampleBase` such that the path in the [NotifyComponent config](dot-net-notifications/NotifyComponent/config.json) points to the built .exe file(s).

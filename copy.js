@@ -20,10 +20,13 @@ resources.forEach(resource => {
 	copy(path.join(source, resource), path.join(dest, resource));
 });
 
-const wpfSource = path.join(source, "dot-net-notifications");
-const wpfDest = path.join(dest, "dot-net-examples");
-const wpfResources = ["NotifyComponent"];
-wpfResources.forEach(resource => {
-	copy(path.join(wpfSource, resource, "bin"), path.join(wpfDest, resource));
-	copy(path.join(wpfSource, resource, "config.json"), path.join(wpfDest, resource, "config.json"));
-});
+// const wpfSource = path.join(source, "dot-net-notifications");
+// const wpfDest = path.join(dest, "dot-net-examples");
+// const wpfResources = ["NotifyComponent"];
+// wpfResources.forEach(resource => {
+// 	copy(path.join(wpfSource, resource, "bin"), path.join(wpfDest, resource));
+// 	copy(
+// 		path.join(wpfSource, resource, "config.json"),
+// 		path.join(wpfDest, resource, "config.json")
+// 	);
+// });

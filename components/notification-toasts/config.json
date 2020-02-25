@@ -12,7 +12,7 @@
 				"width": 450,
 				"position": "available",
 				"data": {
-					"displayDuration": 6000,
+					"displayDuration": 12000,
 					"animateIn": "slide-in-right",
 					"animateOut": "slide-out-right",
 					"bottom": 0,

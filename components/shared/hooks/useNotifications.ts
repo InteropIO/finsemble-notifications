@@ -10,7 +10,7 @@ import { SpawnParams } from "../../../types/FSBL-definitions/services/window/Lau
 import WindowConfig, { NotificationsConfig } from "../../../types/Notification-definitions/NotificationConfig";
 import IFilter from "../../../types/Notification-definitions/IFilter";
 import { NotificationGroupList } from "../../../types/Notification-definitions/NotificationHookTypes";
-// @ts-ignore
+
 const _get = require("lodash.get");
 
 const FSBL = window.FSBL;

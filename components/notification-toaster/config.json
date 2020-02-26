@@ -2,8 +2,8 @@
 	"components": {
 		"notification-toaster": {
 			"window": {
+				"name": "notification-toaster",
 				"url": "$applicationRoot/components/finsemble-notifications/components/notification-toaster/notification-toaster.html",
-
 				"autoShow": true,
 				"forceOntoMonitor": true,
 				"bottom": 0,
@@ -14,7 +14,8 @@
 				"options": {
 					"resizable": false,
 					"transparent": true,
-					"alwaysOnTop": true
+					"alwaysOnTop": true,
+					"showTaskbarIcon": false
 				}
 			},
 			"component": {

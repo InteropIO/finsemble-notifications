@@ -2,6 +2,7 @@
 	"components": {
 		"notification-center": {
 			"window": {
+				"name": "notification-center",
 				"url": "$applicationRoot/components/finsemble-notifications/components/notification-center/notification-center.html",
 				"frame": false,
 				"resizable": true,
@@ -19,7 +20,7 @@
 			},
 			"component": {
 				"preload": false,
-				"spawnOnStartup": true,
+				"spawnOnStartup": false,
 				"singleton": true
 			},
 			"foreign": {

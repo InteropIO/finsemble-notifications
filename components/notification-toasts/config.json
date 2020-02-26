@@ -2,6 +2,7 @@
 	"components": {
 		"notification-toasts": {
 			"window": {
+				"name": "notification-toasts",
 				"url": "$applicationRoot/components/finsemble-notifications/components/notification-toasts/notification-toasts.html",
 				"resizable": false,
 				"autoShow": true,
@@ -39,7 +40,8 @@
 				},
 				"options": {
 					"transparent": true,
-					"alwaysOnTop": true
+					"alwaysOnTop": true,
+					"showTaskbarIcon": false
 				}
 			},
 			"component": {

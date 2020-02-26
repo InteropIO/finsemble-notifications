@@ -2,8 +2,8 @@
 	"components": {
 		"notification-drawer": {
 			"window": {
+				"name": "notification-drawer",
 				"url": "$applicationRoot/components/finsemble-notifications/components/notification-drawer/notification-drawer.html",
-				"resizable": false,
 				"forceOntoMonitor": true,
 				"top": 0,
 				"right": 0,
@@ -15,7 +15,9 @@
 				"options": {
 					"transparent": true,
 					"alwaysOnTop": true,
-					"autoShow": false
+					"autoShow": false,
+					"resizable": false,
+					"showTaskbarIcon": false
 				},
 				"data": {
 					"notifications": {

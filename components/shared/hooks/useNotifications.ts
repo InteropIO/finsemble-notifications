@@ -108,7 +108,7 @@ export default function useNotifications() {
 			});
 		} catch (e) {
 			// NOTE: The request to perform the action has failed
-			console.log("fail", e);
+			console.error("could not create a notification client", e);
 		}
 	}
 
@@ -175,12 +175,14 @@ export default function useNotifications() {
 	 * @param param0
 	 */
 	const setNotificationDrawerPosition = async (windowShowParams: SpawnParams) => {
+		console.log("HIT: setNotificationDrawerPosition");
 		const windowId: WindowIdentifier = await LauncherClient.getMyWindowIdentifier();
 		await setWindowPosition(windowId, windowShowParams);
 	};
 
 	const minimizeWindow = () => {
-		WindowClient.minimize(console.log);
+		// WindowClient.minimize(console.log);
+		window.finsembleWindow && window.finsembleWindow.hide();
 	};
 
 	const getWindowSpawnData = () => {

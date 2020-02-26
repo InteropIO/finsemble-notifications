@@ -16,6 +16,7 @@ const sendNotifications = () => {
 	not1.type = "email";
 	not1.headerLogo = "http://localhost:3375/components/finsemble-notifications/components/shared/assets/email.svg";
 	not1.contentLogo = "http://localhost:3375/components/finsemble-notifications/components/shared/assets/graph.png";
+	not1.cssClassName = "css-class";
 
 	const dismiss = new Action();
 	dismiss.buttonText = "Dismiss";
@@ -42,7 +43,7 @@ const sendNotifications = () => {
 	not2.type = "chat";
 	not2.headerLogo = "http://localhost:3375/components/finsemble-notifications/components/shared/assets/chat.svg";
 	not2.contentLogo = "http://localhost:3375/components/finsemble-notifications/components/shared/assets/sheild.png";
-	not2.meta.cssClassName = "border-red";
+	not2.cssClassName = "border-red";
 
 	const query = new Action();
 	query.buttonText = "Send Query";
@@ -91,7 +92,7 @@ const timedNotification = () => {
 		customNot.headerLogo = "http://localhost:3375/components/finsemble-notifications/components/shared/assets/info.svg";
 		customNot.contentLogo =
 			"http://localhost:3375/components/finsemble-notifications/components/shared/assets/call-center-agent.svg";
-		customNot.meta.cssClassName = "inverted";
+		customNot.cssClassName = "inverted";
 
 		const dismiss = new Action();
 		dismiss.buttonText = "Dismiss";

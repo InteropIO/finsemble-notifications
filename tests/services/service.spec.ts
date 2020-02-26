@@ -74,9 +74,10 @@ describe("Configuration", () => {
 					title: "defaultTitle",
 					details: "defaultDetails",
 					headerText: "defaultHeaderText",
+					cssClassName: "cssClassName",
+					notificationAlertSound: "defaultNotificationSound",
 					meta: {
-						cssClassName: "cssClassName",
-						notificationAlertSound: "defaultNotificationSound"
+						other: "red"
 					}
 				},
 				displayPriority: 2
@@ -180,7 +181,7 @@ describe("Configuration", () => {
 		let defaultNotification = new Notification();
 		defaultNotification.type = "should-apply-default";
 		defaultNotification = ServiceHelper.applyDefaults(normalisedConfig, defaultNotification);
-		defaultNotification.meta["notificationAlertSound"] = "already set";
+		defaultNotification.meta.other = "already set";
 
 		expect(defaultNotification).to.be.an("object");
 		expect(defaultNotification.timeout).to.equal(1234, "timeout not set");
@@ -190,8 +191,8 @@ describe("Configuration", () => {
 		expect(defaultNotification.details).to.equal("defaultDetails", "Detail not set");
 		expect(defaultNotification.headerText).to.equal("defaultHeaderText", "Header text not set");
 		expect(defaultNotification.meta).to.be.an("Object", "Meta is not an object");
-		expect(defaultNotification.meta["cssClassName"]).to.equal("cssClassName", "Css class name not set");
-		expect(defaultNotification.meta["notificationAlertSound"]).to.equal("already set", "Should not override sound");
+		expect(defaultNotification.cssClassName).to.equal("cssClassName", "Css class name not set");
+		expect(defaultNotification.meta.other).to.equal("already set", "Should not override sound");
 		expect(ServiceHelper.hasDismissAction(defaultNotification)).to.equal(true, "No dismiss action");
 		expect(defaultNotification.actions[0].buttonText).to.equal("Default Button Text", "Button text not set correctly");
 

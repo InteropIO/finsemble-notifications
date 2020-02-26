@@ -52,7 +52,7 @@ You can do this by doing the following:
 You now have the source in your seed. Now you need to tell Finsemble to use it.  
 Add the notification config your finsemble seed config file: `./finsemble-seed/configs/application/config.json`
 
-```JSON
+```
 "importConfig": [
     ...
     "$applicationRoot/components/finsemble-notifications/config.json"
@@ -65,7 +65,7 @@ This line will add the Notifications Service, Notification Center, Toasts, toast
 
 Alternatively, if you want to customise your experience and incorporate only some of the components, you'd want to use something like:
 
-```JSON
+```
 "importConfig": [
     // This config is required for notifcations to funtion.
     "$applicationRoot/components/finsemble-notifications/services/notification/config.json"
@@ -92,7 +92,7 @@ Certain directives can be provided to the service.
 You can do this by adding a `notifications` object to the `servicesConfig` object in `./configs/application/config.json` in the finsemble seed.
 All the configuration below is optional:
 
-```JSON
+```
 {
     ...
     "servicesConfig": {
@@ -125,10 +125,8 @@ All the configuration below is optional:
                         "timeout": 2000,
                         "headerLogo": "toast logo",
                         "contentLogo": "toast content logo"
+                        "cssClassName": "cssClassName",
                         "meta": {
-                            // 'cssClassName' a reserved key and is used in the Notification component
-                            // to apply a customCss class to a notification.
-                            "cssClassName": "cssClassName",
                             "anykey": "anyvalue",
                             "anykey2": "anyvalue2",
                             "anykey3": "anyvalue3",

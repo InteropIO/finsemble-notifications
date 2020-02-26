@@ -25,6 +25,8 @@ const Notification = (props: Props) => {
 		contentLogo,
 		actions,
 		timeout,
+		cssClassName,
+		notificationAlertSound,
 		meta,
 		actionsHistory
 	} = notification;
@@ -46,7 +48,7 @@ const Notification = (props: Props) => {
 	});
 
 	return (
-		<div className={`notification ${(meta && meta.cssClassName) || ""}`}>
+		<div className={`notification ${cssClassName || ""}`}>
 			<div className="detail-area">
 				<div>
 					<img src={headerLogo} />

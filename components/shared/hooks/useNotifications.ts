@@ -1,3 +1,4 @@
+import { FSBL } from "./../../../types/FSBL-definitions/globals.d";
 /* eslint-disable @typescript-eslint/ban-ts-ignore */
 import * as react from "react";
 import { WindowIdentifier } from "../../../types/FSBL-definitions/globals";
@@ -146,6 +147,7 @@ export default function useNotifications() {
 		return NOTIFICATION_CLIENT.fetchHistory(since, filter);
 	};
 
+	//TODO: move out to a Finsemble hook and import here
 	/**
 	 * Get Notification's config from
 	 * @param componentType Finsemble component type e.g "Welcome-Component"
@@ -155,9 +157,10 @@ export default function useNotifications() {
 
 		const config: WindowConfig = data;
 
-		return _get(config, "config.window.data.notifications", null);
+		return _get(config, "window.data.notifications", null);
 	};
 
+	//TODO: move out to a Finsemble hook and import here
 	/*
 	Finsemble Window manipulation
 */

@@ -40,9 +40,6 @@
 		"uuid": "^3.3.3"
 	},
 	"devDependencies": {
-		"@babel/core": "^7.8.4",
-		"@babel/preset-env": "^7.8.4",
-		"@babel/preset-react": "^7.8.3",
 		"@babel/register": "^7.8.3",
 		"@chartiq/finsemble": "^3.13.1",
 		"@testing-library/react": "^9.4.0",
@@ -75,11 +72,5 @@
 		"react-dom": "16.8.4",
 		"ts-node": "^8.6.2",
 		"typescript": "^3.7.5"
-	},
-	"babel": {
-		"presets": [
-			"@babel/preset-env",
-			"@babel/preset-react"
-		]
 	}
 }

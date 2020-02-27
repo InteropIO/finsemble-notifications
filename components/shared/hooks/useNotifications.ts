@@ -175,7 +175,6 @@ export default function useNotifications() {
 	 * @param param0
 	 */
 	const setNotificationDrawerPosition = async (windowShowParams: SpawnParams) => {
-		console.log("HIT: setNotificationDrawerPosition");
 		const windowId: WindowIdentifier = await LauncherClient.getMyWindowIdentifier();
 		await setWindowPosition(windowId, windowShowParams);
 	};

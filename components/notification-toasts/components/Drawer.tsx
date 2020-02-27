@@ -21,7 +21,6 @@ function Drawer(props: Props): React.ReactElement {
 			// windowShowParams are either set via config or have some defaults at the parent level
 			windowShowParams.height = Math.ceil(inputEl.current.getBoundingClientRect().height);
 			setNotificationDrawerPosition(windowShowParams);
-			console.log("@@@@@hit");
 		};
 
 		const notificationListIsEmpty = notifications.length === 0;

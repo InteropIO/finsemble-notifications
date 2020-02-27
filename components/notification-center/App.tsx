@@ -18,12 +18,19 @@ const App = (): React.ReactElement => {
 			<NotificationCenter title="Notification Center">
 				{/* <FilterPanel types={types} /> */}
 				<div id="main-content">
-					<NotificationsPanel notifications={notifications} setActiveNotification={setActiveNotification} />
-					{activeNotification && (
-						<NotificationDetailPanel
-							notification={activeNotification}
-							clearActiveNotification={setActiveNotification}
-						/>
+					{notifications.length === 0 ? (
+						// TODO:Add animated no notification component
+						<p>Good news no notifications!</p>
+					) : (
+						<>
+							<NotificationsPanel notifications={notifications} setActiveNotification={setActiveNotification} />
+							{activeNotification && (
+								<NotificationDetailPanel
+									notification={activeNotification}
+									clearActiveNotification={setActiveNotification}
+								/>
+							)}
+						</>
 					)}
 				</div>
 			</NotificationCenter>

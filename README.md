@@ -162,12 +162,13 @@ All the configuration below is optional:
 
 Configuring Notification components is done in the component configuration itself. If this is something you need to do,
 need to configure the components at an individual level, you will need to do. You will need to import the
-notifications using the [selective configuration method](#selective-finsemble-config), and using the provided configs as a base:
+notifications using the [selective configuration method](#selective-finsemble-config), and using the provided configs 
+as a base. Take a look at the readme for the individual components for more details
 
-- [notification-center config](components/notification-center/config.json)
-- [notification-drawer config](components/notification-drawer/config.json)
-- [notification-toaster config](components/notification-toaster/config.json)
-- [notification-toasts config](components/notification-toasts/config.json)
+- [The Notification Center](components/notification-center/Readme.md)
+- [The Notification Drawer](components/notification-drawer/Readme.md)
+- [The Notification Toaster](components/notification-toaster/Readme.md)
+- [Notification Toasts](components/notification-toasts/Readme.md)
 
 ## Using the Notifications API
 

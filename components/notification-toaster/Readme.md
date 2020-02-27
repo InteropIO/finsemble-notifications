@@ -1,5 +1,6 @@
 # The Notification Toaster
 ![Toaster](https://i.imgur.com/uIdPuY0.png)
+
 The Toaster is a portable component that has multiple functionalities. 
 The first thing to note are the toasters icons. The first icon is the drag handle, by clicking and holding on this area you can move the toaster around. The next three icons are buttons. The button icon on the far right (the last one) is a settings button, this currently is unused and will be wired up in a future release. The other two-button icons from left to right are:
 

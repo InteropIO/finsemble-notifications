@@ -1,5 +1,6 @@
 # The Notification Center
-[Description + Screenshot?]
+![enter image description here](https://i.imgur.com/TYNHbQs.gif)
+*The notification center is the heart of keeping track of all of you notifications. The Noticiation Center keeps a full historical log of the notifications you have recieved and the actions taken on each, want to go back to see when a notification was sent and if it was actioned? Then this is the place to go. New and old notifications, read or snoozed, actioned or not, they all go here.*
 
 ### Register the Notification Center with Finsemble
 
@@ -13,14 +14,3 @@ include this components config your finsemble seed config file: `./finsemble-see
         "$applicationRoot/components/finsemble-notifications/components/notification-center/config.json"
     ]
 ```
-
-### Customise the behaviour
-
-[what the customisations can do]
-
-Using [this component's default config](/components/notification-center/config.json) as a base to add a component entry 
-into your `./finsemble-seed/configs/application/components.json`.
-
-Change the following values to get the behaviour your need:
-
- 

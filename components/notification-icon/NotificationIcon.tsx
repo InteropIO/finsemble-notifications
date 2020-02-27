@@ -41,6 +41,7 @@ function App(props: Props): React.ReactElement {
 				{Object.entries(groupNotificationsByType(activeNotifications)).map(
 					// TODO: fix the type any of value it should be an array of INotification but it errors
 					([key, values]: [string, any]) => {
+						// TODO: remove these hardcoded values and should be read from config
 						const colors: object = {
 							chat: "#8b00c596",
 							email: "#005bc5",

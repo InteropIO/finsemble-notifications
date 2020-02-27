@@ -11,6 +11,8 @@ interface Props {
 	closeButton?: boolean;
 }
 
+// TODO: split this up into smaller components?
+
 const Notification = (props: Props) => {
 	const { useEffect, useState } = React;
 	const { notification, doAction, closeAction, closeButton = false } = props;
@@ -60,6 +62,7 @@ const Notification = (props: Props) => {
 					<img src={contentLogo} />
 				</div>
 				<div>
+					{/* TODO: remove this section */}
 					<p>{details}</p>
 					<p>
 						<i>Message ID:{id}</i>

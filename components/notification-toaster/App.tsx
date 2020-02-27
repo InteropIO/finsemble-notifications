@@ -9,9 +9,11 @@ import INotification from "../../types/Notification-definitions/INotification";
 function App(): React.ReactElement {
 	const { notifications } = useNotifications();
 	const { FSBL } = window;
+	// TODO: move this out
 	const showDrawer = () => {
 		FSBL.Clients.LauncherClient.showWindow({ windowName: "", componentType: "notification-drawer" }, {});
 	};
+	// TODO: move this out
 	const showCenter = () => {
 		FSBL.Clients.LauncherClient.showWindow({ windowName: "", componentType: "notification-center" }, {});
 	};

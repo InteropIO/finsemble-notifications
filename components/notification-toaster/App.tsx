@@ -11,11 +11,17 @@ function App(): React.ReactElement {
 	const { FSBL } = window;
 	// TODO: move this out
 	const showDrawer = () => {
-		FSBL.Clients.LauncherClient.showWindow({ windowName: "", componentType: "notification-drawer" }, {});
+		FSBL.Clients.LauncherClient.showWindow(
+			{ windowName: "", componentType: "notification-drawer" },
+			{ spawnIfNotFound: true }
+		);
 	};
 	// TODO: move this out
 	const showCenter = () => {
-		FSBL.Clients.LauncherClient.showWindow({ windowName: "", componentType: "notification-center" }, {});
+		FSBL.Clients.LauncherClient.showWindow(
+			{ windowName: "", componentType: "notification-center" },
+			{ spawnIfNotFound: true }
+		);
 	};
 
 	const activeNotifications = (notifications: INotification[]) =>

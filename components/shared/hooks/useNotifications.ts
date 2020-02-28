@@ -231,7 +231,7 @@ export default function useNotifications() {
 					console.log(data);
 				},
 				(error: any) => {
-					console.log(error);
+					console.error(error);
 				}
 			);
 		} catch (error) {

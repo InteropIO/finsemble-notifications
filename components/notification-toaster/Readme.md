@@ -10,6 +10,9 @@ The notifications button has two functions. The first function is to display how
  **Notification Center:**
  This button's only function is to open the notification center on the same screen as the toaster. This saves the user time and searching for the Notification Center.
 
+**_Tip:_**
+If you can't find the toaster use the hotkey shortcut **CTRL+ALT+SHIFT+T** and it will appear where at your mouse position.
+![](https://i.imgur.com/P86gRCg.png)
 ### Register the Notification Toaster with Finsemble
 
 After following the steps outlined in the [setup](/README.md#setup), the most basic way to use this component is to 

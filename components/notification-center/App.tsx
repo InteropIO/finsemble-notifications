@@ -8,7 +8,7 @@ import INotification from "../../types/Notification-definitions/INotification";
 import { useState } from "react";
 
 const App = (): React.ReactElement => {
-	const { notifications } = useNotifications();
+	const { notifications, doAction } = useNotifications();
 	const [activeNotification, setActiveNotification] = useState();
 
 	const types: string[] = Array.from(new Set(notifications.map((item: INotification) => item.type)));
@@ -28,6 +28,7 @@ const App = (): React.ReactElement => {
 								<NotificationDetailPanel
 									notification={activeNotification}
 									clearActiveNotification={setActiveNotification}
+									doAction={doAction}
 								/>
 							)}
 						</>

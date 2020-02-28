@@ -9,14 +9,19 @@ import INotification from "../../types/Notification-definitions/INotification";
 function App(): React.ReactElement {
 	const { notifications } = useNotifications();
 	const { FSBL } = window;
-	// TODO: move this out
+
+	FSBL.Clients.HotkeyClient.addGlobalHotkey(["ctrl", "alt", "shift", "t"], () => {
+		FSBL.Clients.WindowClient.showAtMousePosition();
+	});
+
+	// TODO: move this out and change to toggle
 	const showDrawer = () => {
 		FSBL.Clients.LauncherClient.showWindow(
 			{ windowName: "", componentType: "notification-drawer" },
 			{ spawnIfNotFound: true }
 		);
 	};
-	// TODO: move this out
+	// TODO: move this out and change to toggle
 	const showCenter = () => {
 		FSBL.Clients.LauncherClient.showWindow(
 			{ windowName: "", componentType: "notification-center" },

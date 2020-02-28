@@ -1,3 +1,4 @@
+import { ToggleComponent } from "./../../../types/Notification-definitions/NotificationHookTypes.d";
 import { FSBL } from "./../../../types/FSBL-definitions/globals.d";
 /* eslint-disable @typescript-eslint/ban-ts-ignore */
 import * as react from "react";
@@ -188,6 +189,35 @@ export default function useNotifications() {
 		return WindowClient.getSpawnData();
 	};
 
+	const toggleComponent = async ({
+		windowName,
+		componentType,
+		showAction,
+		hideAction
+	}: ToggleComponent): Promise<void> => {
+		//set window.name to make the it easier to wrap (as name will be fixed)
+		const { wrap: component } = await FSBL.FinsembleWindow.wrap({ windowName }, (err: Error, wrap: object) =>
+			err ? console.error : wrap
+		);
+
+		//toggle visibility (onto monitor its being called on!)
+		component.isShowing({}, (err: Error, isShowing: boolean) => {
+			try {
+				if (isShowing) {
+					// default action
+					!hideAction ? component.hide() : hideAction();
+				} else {
+					// default action
+					!showAction
+						? LauncherClient.showWindow({ windowName, componentType }, { spawnIfNotFound: true })
+						: showAction();
+				}
+			} catch (error) {
+				console.error(error);
+			}
+		});
+	};
+
 	/**
 	 * Main init function to start the subscription
 	 */
@@ -248,6 +278,7 @@ export default function useNotifications() {
 		notifications: state.notifications,
 		removeNotification,
 		setNotificationDrawerPosition,
-		getNotificationConfig
+		getNotificationConfig,
+		toggleComponent
 	};
 }

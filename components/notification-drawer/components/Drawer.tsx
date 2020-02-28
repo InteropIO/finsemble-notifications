@@ -10,13 +10,14 @@ const { FSBL } = window;
 function Drawer(props: Props): React.ReactElement {
 	const [animationClass, setAnimationClass] = useState("slide-in-right");
 
-	// TODO: use finsemble events instead to work out if the window is shown or hidden
-	window.onblur = () => {
-		setAnimationClass("slide-out-right");
-		console.log("* window blurred");
-	};
+	// TODO: use finsemble events instead to work out if the window is shown or hidden - finsembleWindow.windowState
+	// window.onblur = () => {
+	// 	setAnimationClass("slide-out-right");
+	// 	console.log("* window blurred");
+	// };
 
 	window.onfocus = () => {
+		setAnimationClass("");
 		setAnimationClass("slide-in-right");
 		console.log("* window has focus");
 	};

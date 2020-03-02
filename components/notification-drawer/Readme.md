@@ -1,6 +1,6 @@
 # The Notification Drawer
-
-[Description + Screenshot?]
+![enter image description here](https://i.imgur.com/mIdsn7c.gif)
+The Notification Drawer is a holding place for all your notifications that have not been snoozed or actioned. Any new notications will also be added to the top of this list.
 
 ### Register the Notification Drawer with Finsemble
 
@@ -17,11 +17,9 @@ include this components config your finsemble seed config file: `./finsemble-see
 
 ### Customise the behaviour
 
-[what the customisations can do]
-
 Using [this component's default config](/components/notification-drawer/config.json) as a base to add a component entry 
 into your `./finsemble-seed/configs/application/components.json`.
 
-Change the following values to get the behaviour your need:
+The notifications held in the drawer are styled by the cssName added to the notification when it's created. In order to style it the css string value attached to the cssName needs to be available either via css file, inline or via another hosted css file.
 
- 
+The drawer is designed to be responsive therefore it is governed by the config width for the component. If you wish to increase or decrease the width change the width property found under window in the config file for this component.

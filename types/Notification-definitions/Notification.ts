@@ -16,6 +16,9 @@ export default class Notification implements INotification {
 	contentLogo?: string;
 	timeout?: number;
 
+	cssClassName?: string;
+	notificationAlertSound?: string;
+
 	isRead: boolean;
 	isSnoozed: boolean;
 

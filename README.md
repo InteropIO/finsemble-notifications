@@ -9,9 +9,10 @@ This project requires the [Finsemble Seed Project](https://github.com/ChartIQ/fi
 **[Setup](#setup)**
 
 - [Getting the Sourcecode](#getting-the-sourcecode)
+    - [As a copy](#as-a-copy)
+    - [As a submodule](#as-a-submodule)
 - [Finsemble Config](#finsemble-config)
 - [Selective Finsemble Config](#selective-finsemble-config)
-- [Updating](#updating)
 
 **[Configuring the Notifications](#configuring-the-notifications)**
 
@@ -25,7 +26,7 @@ This project requires the [Finsemble Seed Project](https://github.com/ChartIQ/fi
 - [Custom Actions](#custom-actions)
 - [.Net Notifications client](#dot-net-client)
 
-**[Making changes to this project?](#making-changes-to-this-project)**
+**[Making changes to this project?]()**
 
 - [how to setup the project up for development](./docs/developing.md)
 
@@ -33,12 +34,41 @@ This project requires the [Finsemble Seed Project](https://github.com/ChartIQ/fi
 
 Getting the Finsemble notification code running and transpiling in your Finsemble seed project.
 
+**Note: We suggest working directly with the source code at this point. This effectively means checking out the 
+notifications source code, getting it into your own project and building the source as part of your normal process (we 
+provide two methods to achieve this below). We're doing it this way as part of the initial release. As part of your 
+feedback we'd like to know your thoughts on where you felt the need to customise or use only parts of the package. 
+This will help us inform to better separate or distribute the package in future phases** 
+
 ### Getting the Sourcecode
 
-The simplest method of adding notifications to your project and to facilitate an easy upgrade path,
-we suggest adding the this project to your finsemble seed as a git submodule.
+We provide two ways of integrating the notifications project into your project. As a copy and as a submodule. We use 
+the copy method internally and believe it allows the most flexibility. If you're unsure we suggest using that method 
+too.
 
-You can do this by doing the following:
+#### As a copy
+
+1. git clone this project into the directory of your choice.
+1. Copy `example.copy.config.json` to `copy.config.json`
+1. Edit `copy.config.json`: 
+    1. Make sure  `source` path points to this project
+    1. Change the `destination` path to point to a directory inside your `finsemble-seed` components directory (It will
+    create the directory if one does not exist).
+1. You're now setup to copy. Running `npm run copy-files` should now have copied all the required files in your 
+seed project.
+1. Your seed will likely be missing some of the required packages for this to run. 
+`npm install uuid date-fns immutable searchjs lodash.get` (we also suggest install `@types/react` if you have not 
+already)
+1. Make sure your seed can transpile tsx by adding `"jsx": "react"` to your seed's `compilerOptions` in the `tsconfig.json`
+1. In the seed, edit _./build/webpack/defaultWebpackConfig.js_ in the section for the `ts-loader`, set `"test": /\.ts(x)?$/` if it's not already.
+
+#### As a submodule
+
+This is a simpler method of adding notifications to your project however we find that due to the nature of the code 
+needing to be built, there may be conflicts between packages your seed's package dependencies and the notification's 
+during the build process.
+
+To add notifications as a submodule follow these steps:
 
 1. cd into your seed's components directory. `$ cd scr/components`
 1. Add the project as a submodule `$ git submodule add git@github.com:ChartIQ/finsemble-notifications.git`
@@ -52,7 +82,7 @@ You can do this by doing the following:
 You now have the source in your seed. Now you need to tell Finsemble to use it.  
 Add the notification config your finsemble seed config file: `./finsemble-seed/configs/application/config.json`
 
-```JSON
+```
 "importConfig": [
     ...
     "$applicationRoot/components/finsemble-notifications/config.json"
@@ -65,7 +95,7 @@ This line will add the Notifications Service, Notification Center, Toasts, toast
 
 Alternatively, if you want to customise your experience and incorporate only some of the components, you'd want to use something like:
 
-```JSON
+```
 "importConfig": [
     // This config is required for notifcations to funtion.
     "$applicationRoot/components/finsemble-notifications/services/notification/config.json"
@@ -92,7 +122,7 @@ Certain directives can be provided to the service.
 You can do this by adding a `notifications` object to the `servicesConfig` object in `./configs/application/config.json` in the finsemble seed.
 All the configuration below is optional:
 
-```JSON
+```
 {
     ...
     "servicesConfig": {
@@ -125,10 +155,8 @@ All the configuration below is optional:
                         "timeout": 2000,
                         "headerLogo": "toast logo",
                         "contentLogo": "toast content logo"
+                        "cssClassName": "cssClassName",
                         "meta": {
-                            // 'cssClassName' a reserved key and is used in the Notification component
-                            // to apply a customCss class to a notification.
-                            "cssClassName": "cssClassName",
                             "anykey": "anyvalue",
                             "anykey2": "anyvalue2",
                             "anykey3": "anyvalue3",

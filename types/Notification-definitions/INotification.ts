@@ -35,6 +35,8 @@ export default interface INotification {
 	contentLogo?: string;
 	actions?: IAction[];
 	timeout?: number;
+	cssClassName?: string;
+	notificationAlertSound?: string;
 	meta?: Meta;
 	isRead: boolean;
 	isSnoozed: boolean;

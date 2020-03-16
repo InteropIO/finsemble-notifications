@@ -4,6 +4,7 @@
 		"$applicationRoot/components/finsemble-notifications/components/notify/config.json",
 		"$applicationRoot/components/finsemble-notifications/components/subscriber/config.json",
 		"$applicationRoot/components/finsemble-notifications/services/exampleCustomAction/config.json",
-		"$applicationRoot/components/finsemble-notifications/dot-net-examples/NotifyComponent/config.json"
+		"$applicationRoot/components/finsemble-notifications/dot-net-notifications/NotifyComponent/config.json"
+
 	]
 }

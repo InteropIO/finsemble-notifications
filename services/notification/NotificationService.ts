@@ -23,6 +23,8 @@ const Finsemble = require("@chartiq/finsemble");
 Finsemble.Clients.Logger.start();
 Finsemble.Clients.Logger.log("notification Service starting up");
 
+const NO_SOURCE = "NO_SOURCE_DEFINED";
+
 /**
  * A service used to transport notification data across the system
  * TODO: Decide and set what log levels all this should be at.
@@ -48,7 +50,7 @@ export default class NotificationService extends Finsemble.baseService implement
 		lastIssued: Map<string, ILastIssued>;
 	};
 
-	private proxyToWebAPiFilter: IFilter | false;
+	private proxyToWebApiFilter: IFilter | false;
 	private routerWrapper: RouterWrapper;
 
 	private config: any = {
@@ -73,7 +75,7 @@ export default class NotificationService extends Finsemble.baseService implement
 			}
 		});
 
-		this.proxyToWebAPiFilter = false;
+		this.proxyToWebApiFilter = false;
 		this.storageAbstraction = {
 			subscriptions: new Map<string, ISubscription>(),
 			snoozeTimers: new Map<string, ISnoozeTimer>(),
@@ -146,8 +148,8 @@ export default class NotificationService extends Finsemble.baseService implement
 			}
 		});
 		if (
-			this.config["service"]["proxyToWebAPiFilter"] &&
-			ServiceHelper.filterMatches(this.config["service"]["proxyToWebAPiFilter"], notification)
+			this.config["service"]["proxyToWebApiFilter"] &&
+			ServiceHelper.filterMatches(this.config["service"]["proxyToWebApiFilter"], notification)
 		) {
 			this.webApiNotify(notification);
 		}
@@ -262,7 +264,7 @@ export default class NotificationService extends Finsemble.baseService implement
 	 */
 	saveLastIssuedAt(source: string, issuedAt: string): void {
 		if (!source) {
-			return;
+			source = NO_SOURCE;
 		}
 
 		if (this.storageAbstraction.lastIssued.has(source)) {
@@ -580,7 +582,9 @@ export default class NotificationService extends Finsemble.baseService implement
 
 	/**
 	 * Gets the last issued date for the source provided
-	 * If source is not provided it will get the latest issue from the all registered sources
+	 *
+	 * If no source is provided it will get the latest issue date for all notifications
+	 * (I.e the last time any notification was issue to the service)
 	 *
 	 * @param source
 	 */

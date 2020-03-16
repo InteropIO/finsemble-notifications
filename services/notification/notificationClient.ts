@@ -17,7 +17,6 @@ const FSBL = window.FSBL;
  *
  * Used to send, receive and manipulate notifications
  *
- * TODO: Decide and set what log levels all this should be at.
  */
 export default class NotificationClient implements INotificationClient {
 	/**
@@ -59,13 +58,13 @@ export default class NotificationClient implements INotificationClient {
 	/**
 	 * Used by UI components that need to display a list of historical notifications.
 	 *
-	 * @param {string} since ISO8601 formatted string to fetch notifications from.
+	 * @param {string} since ISO8601 formatted date string to fetch notifications from.
 	 * @param {IFilter} filter to match to notifications.
 	 * @returns {INotification[]} array of notifications.
-	 * @throws Error
-	 * TODO: Implement
+	 * @throws Error throws an error on par with the Promise standard, containing detail why the request did not complete
 	 */
 	fetchHistory(since: string, filter?: IFilter): Promise<INotification[]> {
+		this.loggerClient.info("FetchHistory() called with params: ", since, filter);
 		return new Promise<INotification[]>(async (resolve, reject) => {
 			try {
 				const data = await this.routerWrapper.query(ROUTER_ENDPOINTS.FETCH_HISTORY, {
@@ -81,13 +80,15 @@ export default class NotificationClient implements INotificationClient {
 
 	/**
 	 * Return an ISO8601 date a notification matching the specified source was issued.
+	 * If no source is provided it will get the latest issue date for all notifications
+	 * (I.e the last time any notification was issue to the service)
 	 *
 	 * @param {string} source to identify which notification to save lastUpdated time for.
 	 * @returns last issued at date string in the ISO8601 date format.
-	 * @throws Error
-	 * TODO: Implement
+	 * @throws Error throws an error on par with the Promise standard, containing detail why the request did not complete
 	 */
 	getLastIssuedAt(source?: string): Promise<string> {
+		this.loggerClient.info("getLastIssued called with params: ", source);
 		return new Promise<string>(async (resolve, reject) => {
 			try {
 				const data = await this.routerWrapper.query(ROUTER_ENDPOINTS.LAST_ISSUED, source);
@@ -101,11 +102,12 @@ export default class NotificationClient implements INotificationClient {
 	/**
 	 * Tells the service to perform the action on the notification(s)
 	 *
-	 * @param {INotification[]} notifications Notifications to apply action to.
+	 * @param {INotification[]|INotification} notifications Notifications to apply action to.
 	 * @param {IAction} action which has been triggered by user.
-	 * @throws Error If no error is thrown the service has received the request to perform the action successfully. Note a successful resolution of the promise does not mean successful completion of the action.
+	 * @throws Error Error If no error is thrown, the service has received the request to perform the action successfully. Note a successful resolution of the promise does not mean successful completion of the action.
 	 */
-	performAction(notifications: INotification[], action: IAction): Promise<void> {
+	performAction(notifications: INotification[] | INotification, action: IAction): Promise<void> {
+		this.loggerClient.info("performAction() called with params: ", notifications, action);
 		// I think this is a clumsy interface. The default case will likely be a single notification.
 		// No need to punish the developer
 		if (!Array.isArray(notifications)) {
@@ -132,6 +134,7 @@ export default class NotificationClient implements INotificationClient {
 	 * @throws Error If no error is thrown the service has received the notifications successfully
 	 */
 	notify(notifications: INotification[]): Promise<void> {
+		this.loggerClient.info("notify() called with params: ", notifications);
 		return new Promise<void>((resolve, reject) => {
 			try {
 				this.routerWrapper.query(ROUTER_ENDPOINTS.NOTIFY, notifications).then(() => {
@@ -149,7 +152,7 @@ export default class NotificationClient implements INotificationClient {
 	 * @param {ISubscription} subscription with name value pair used to match on.
 	 * @param {Function} onSubscriptionSuccess called when subscription is successfully created.
 	 * @param {Function} onSubscriptionFault if there is an error creating the subscription.
-	 * @throws Error
+	 * @throws Error throws an error on par with the Promise standard, containing detail why the request did not complete
 	 *
 	 * TODO: onSubscriptionSuccess and onSubscriptionFault can do a better job of explaining what params will be passed in
 	 */
@@ -158,7 +161,12 @@ export default class NotificationClient implements INotificationClient {
 		onSubscriptionSuccess?: Function,
 		onSubscriptionFault?: Function
 	): Promise<string> {
-		this.loggerClient.log("Creating subscription: ", subscription);
+		this.loggerClient.info(
+			"subscribe() called with params: ",
+			subscription,
+			onSubscriptionSuccess,
+			onSubscriptionFault
+		);
 		return new Promise<string>(async (resolve, reject) => {
 			try {
 				// Get a channel from the service to monitor
@@ -175,7 +183,7 @@ export default class NotificationClient implements INotificationClient {
 				}
 
 				this.subscriptions.push(returnValue);
-				resolve(returnValue.id);
+				resolve(returnValue);
 			} catch (e) {
 				if (onSubscriptionFault) {
 					onSubscriptionFault(e);
@@ -188,10 +196,10 @@ export default class NotificationClient implements INotificationClient {
 	/**
 	 * Used to unsubscribe to a notification stream.
 	 * @param {string} subscriptionId which was returned when subscription was created.
-	 * @throws Error
-	 * TODO: implement
+	 * @throws Error throws an error on par with the Promise standard, containing detail why the request did not complete
 	 */
 	unsubscribe(subscriptionId: string): Promise<void> {
+		this.loggerClient.info("unsubscribe() called with params: ", subscriptionId);
 		return new Promise<void>(async (resolve, reject) => {
 			try {
 				await this.routerWrapper.query(ROUTER_ENDPOINTS.UNSUBSCRIBE, subscriptionId);
@@ -203,7 +211,11 @@ export default class NotificationClient implements INotificationClient {
 		});
 	}
 
+	/**
+	 * Unsubscribe from all subscriptions registered with this instance of INotificationClient
+	 */
 	public unsubscribeAll(): void {
+		this.loggerClient.info("unsubscribeAll() called");
 		this.subscriptions.forEach(subscription => {
 			this.routerWrapper.query(ROUTER_ENDPOINTS.UNSUBSCRIBE, subscription.id);
 			this.routerWrapper.removeResponder(subscription.id);
@@ -231,9 +243,9 @@ export default class NotificationClient implements INotificationClient {
 	 */
 	private monitorChannel(channel: string, onNotification: Function): Promise<void> {
 		return new Promise(resolve => {
-			this.loggerClient.log("Listening for messages on channel", channel);
+			this.loggerClient.info("Listening for messages on channel", channel);
 			this.routerWrapper.addResponder(channel, queryMessage => {
-				this.loggerClient.log("Notification received: ", queryMessage.id);
+				this.loggerClient.info("Notification received: ", queryMessage.id);
 
 				// Catching user-code errors to allow for successful sending of receipt.
 				// TODO: 2nd pair of eyes: Is there situation where this will be confusing to anyone trying to debug an issue

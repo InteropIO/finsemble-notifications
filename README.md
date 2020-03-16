@@ -70,7 +70,7 @@ during the build process.
 
 To add notifications as a submodule follow these steps:
 
-1. cd into your seed's components directory. `$ cd scr/components`
+1. cd into your seed's components directory. `$ cd src/components`
 1. Add the project as a submodule `$ git submodule add git@github.com:ChartIQ/finsemble-notifications.git`
 1. cd into the submodule directory: `cd finsemble-notifications`
 1. Install the required packages to run `npm install --production`

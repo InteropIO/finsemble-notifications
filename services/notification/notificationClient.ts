@@ -8,6 +8,10 @@ import RouterWrapper, { ROUTER_ENDPOINTS, ROUTER_NAMESPACE } from "../helpers/Ro
 import { ActionTypes } from "../../types/Notification-definitions/ActionTypes";
 import { IRouterClient } from "../../types/FSBL-definitions/clients/IRouterClient";
 import { ILogger } from "../../types/FSBL-definitions/clients/logger.interface";
+import OnSubscriptionSuccessCallback, {
+	OnNotificationCallback,
+	OnSubscriptionFaultCallback
+} from "../../types/Notification-definitions/Callbacks";
 
 const { Logger } = require("@chartiq/finsemble").Clients;
 const FSBL = window.FSBL;
@@ -147,16 +151,16 @@ export default class NotificationClient implements INotificationClient {
 	 * Subscribe to a notification stream given a set of name/value pair filters. Returns subscriptionId
 	 *
 	 * @param {ISubscription} subscription with name value pair used to match on.
-	 * @param {Function} onSubscriptionSuccess called when subscription is successfully created.
-	 * @param {Function} onSubscriptionFault if there is an error creating the subscription.
+	 * @param {OnSubscriptionSuccessCallback} onSubscriptionSuccess called when subscription is successfully created.
+	 * @param {OnSubscriptionFaultCallback} onSubscriptionFault if there is an error creating the subscription.
 	 * @throws Error
 	 *
 	 * TODO: onSubscriptionSuccess and onSubscriptionFault can do a better job of explaining what params will be passed in
 	 */
 	subscribe(
 		subscription: ISubscription,
-		onSubscriptionSuccess?: Function,
-		onSubscriptionFault?: Function
+		onSubscriptionSuccess?: OnSubscriptionSuccessCallback,
+		onSubscriptionFault?: OnSubscriptionFaultCallback
 	): Promise<string> {
 		this.loggerClient.log("Creating subscription: ", subscription);
 		return new Promise<string>(async (resolve, reject) => {
@@ -229,7 +233,7 @@ export default class NotificationClient implements INotificationClient {
 	 * @param channel the channel to listen to.
 	 * @param onNotification the action to take when a notification comes though
 	 */
-	private monitorChannel(channel: string, onNotification: Function): Promise<void> {
+	private monitorChannel(channel: string, onNotification: OnNotificationCallback): Promise<void> {
 		return new Promise(resolve => {
 			this.loggerClient.log("Listening for messages on channel", channel);
 			this.routerWrapper.addResponder(channel, queryMessage => {

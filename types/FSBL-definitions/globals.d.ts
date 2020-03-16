@@ -26,7 +26,7 @@ export type FSBL = {
 	ConfigUtils: any;
 	onShutdown: any;
 	shutdownComplete: any;
-	addEventListener: Function
+	addEventListener: Function;
 };
 interface Clients {
 	AuthenticationClient: AuthenticationClient;
@@ -45,7 +45,7 @@ interface Clients {
 	WindowClient: WindowClient;
 	WorkspaceClient: WorkspaceClient;
 }
-export declare var chrome: any;
+export declare let chrome: any;
 export declare type WindowIdentifier = {
 	windowName: string;
 	componentType?: string;
@@ -59,23 +59,12 @@ export declare type WINDOWSTATE = {
 	HIDDEN: 3;
 };
 export declare type ApplicationState = {
-	state:
-		| "undefined"
-		| "initializing"
-		| "authenticating"
-		| "authenticated"
-		| "configuring"
-		| "ready"
-		| "closing";
+	state: "undefined" | "initializing" | "authenticating" | "authenticated" | "configuring" | "ready" | "closing";
 };
 export declare type ApplicationStateChange = {
 	data: ApplicationState;
 };
-export declare type ServiceState =
-	| "initializing"
-	| "ready"
-	| "closing"
-	| "closed";
+export declare type ServiceState = "initializing" | "ready" | "closing" | "closed";
 export declare type ServiceStateChange = {
 	data: ServiceState;
 };
@@ -89,13 +78,7 @@ export declare type ServiceConstructorParams = {
 	addOFWrapper: boolean;
 	name: string;
 };
-export declare type WrapState =
-	| "created"
-	| "initializing"
-	| "ready"
-	| "reloading"
-	| "closing"
-	| "closed";
+export declare type WrapState = "created" | "initializing" | "ready" | "reloading" | "closing" | "closed";
 export declare type WindowEventName =
 	| "blurred"
 	| "bounds-change-start"
@@ -177,8 +160,8 @@ export declare type CallbackError = {
 /**
  * The callback to be invoked if the method fails.
  */
-export declare type StandardCallback<
-	E = CallbackError | Error | string | null,
-	R = any
-> = (err: E, response?: R) => void;
+export declare type StandardCallback<E = CallbackError | Error | string | null, R = any> = (
+	err: E,
+	response?: R
+) => void;
 export {};

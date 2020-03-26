@@ -11,6 +11,7 @@
 				"right": 0,
 				"maxHeight": "100%",
 				"width": 450,
+				"minWidth": 450,
 				"position": "available",
 				"data": {
 					"notifications": {
@@ -29,7 +30,8 @@
 							"bottom": 0,
 							"right": 0,
 							"monitor": 0,
-							"maxHeight": "100%"
+							"maxHeight": "100%",
+							"minWidth": 450
 						},
 						"animation": {
 							"displayDuration": 6000,

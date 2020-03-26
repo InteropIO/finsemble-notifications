@@ -10,6 +10,7 @@
 				"right": 0,
 				"maxHeight": "100%",
 				"width": 450,
+				"minWidth": 450,
 				"position": "available",
 				"data": {
 					"displayDuration": 12000,
@@ -18,7 +19,8 @@
 					"bottom": 0,
 					"right": 0,
 					"monitor": 0,
-					"maxHeight": "100%"
+					"maxHeight": "100%",
+					"minWidth": 450
 				},
 				"options": {
 					"transparent": true,

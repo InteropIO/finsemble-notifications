@@ -161,6 +161,7 @@ export default function useNotifications() {
 	};
 
 	const minimizeWindow = () => {
+		console.log("__N: minimize hit");
 		WindowClient.minimize(console.log);
 	};
 

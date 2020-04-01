@@ -17,11 +17,19 @@ function Drawer(props: Props): React.ReactElement {
 	const { notifications, windowShowParams } = props;
 
 	useEffect(() => {
-		windowShowParams.height = inputEl.current.getBoundingClientRect().height;
-		notifications.length === 0
-			? minimizeWindow()
-			: setNotificationDrawerPosition(windowShowParams);
-	}, [notifications]);
+		const test = async () => {
+			windowShowParams.height = inputEl.current.getBoundingClientRect().height;
+			(await notifications.length) === 0
+				? await minimizeWindow()
+				: await setNotificationDrawerPosition(windowShowParams);
+		};
+		test();
+	}, [
+		minimizeWindow,
+		notifications,
+		setNotificationDrawerPosition,
+		windowShowParams
+	]);
 
 	return (
 		<div id="toasts-drawer" ref={inputEl}>

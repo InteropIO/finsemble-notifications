@@ -10,6 +10,7 @@
 				"right": 0,
 				"width": 450,
 				"minWidth": 450,
+				"height": 900,
 				"position": "available",
 				"data": {
 					"displayDuration": 12000,

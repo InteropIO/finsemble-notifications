@@ -164,7 +164,7 @@ export default function useNotifications() {
 	const minimizeWindow = async () => {
 		console.log("__N: minimize hit");
 		// 	WindowClient.minimize(console.log);
-		await window.finsembleWindow.hide(); // eslint-disable-line
+		setTimeout(() => window.finsembleWindow.hide(), 5000); // eslint-disable-line
 	};
 
 	const getWindowSpawnData = () => {

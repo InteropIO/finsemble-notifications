@@ -4,6 +4,7 @@ import INotification from "../../../types/Notification-definitions/INotification
 import Subscription from "../../../types/Notification-definitions/Subscription";
 import NotificationClient from "../../../services/notification/notificationClient";
 import { SpawnParams } from "../../../types/FSBL-definitions/services/window/Launcher/launcher";
+import { FinsembleWindow } from "../../../types/FSBL-definitions/common/window/FinsembleWindow";
 
 const FSBL = window.FSBL;
 
@@ -162,7 +163,8 @@ export default function useNotifications() {
 
 	const minimizeWindow = () => {
 		console.log("__N: minimize hit");
-		WindowClient.minimize(console.log);
+		// 	WindowClient.minimize(console.log);
+		window.finsembleWindow.hide(); // eslint-disable-line
 	};
 
 	const getWindowSpawnData = () => {

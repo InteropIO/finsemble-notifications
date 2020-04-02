@@ -18,10 +18,10 @@ function Drawer(props: Props): React.ReactElement {
 
 	useEffect(() => {
 		const test = async () => {
-			await windowShowParams.height = inputEl.current.getBoundingClientRect().height;
-		await notifications.length === 0
+			windowShowParams.height = inputEl.current.getBoundingClientRect().height;
+			(await notifications.length) === 0
 				? await minimizeWindow()
-				: await setNotificationDrawerPosition(windowShowParams);
+				: await setNotificationDrawerPosition(await windowShowParams);
 		};
 		test();
 	}, [

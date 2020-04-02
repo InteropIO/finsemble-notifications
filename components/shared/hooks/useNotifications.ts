@@ -157,7 +157,8 @@ export default function useNotifications() {
 	const setNotificationDrawerPosition = async (
 		windowShowParams: SpawnParams
 	) => {
-		const windowId: WindowIdentifier = await LauncherClient.getMyWindowIdentifier();
+		const windowId: WindowIdentifier =
+			FSBL.Clients.WindowClient.options.windowIdentifier;
 		return await setWindowPosition(windowId, windowShowParams);
 	};
 

@@ -10,11 +10,7 @@ const { useEffect, useState } = React;
 function App(): React.ReactElement {
 	const { notifications, doAction, removeNotification, getNotificationConfig } = useNotifications();
 
-	// const [config, setConfig] = useState(null);
-	const config = async () => {
-		const conf = await getNotificationConfig("notification-toasts");
-		return conf;
-	};
+	const config = getNotificationConfig("notification-toasts");
 
 	return (
 		<Drawer
@@ -25,7 +21,7 @@ function App(): React.ReactElement {
 				monitor: 0
 			}}
 		>
-			{config() &&
+			{config &&
 				notifications &&
 				notifications.map(
 					(notification: INotification) =>

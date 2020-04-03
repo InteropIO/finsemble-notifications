@@ -11,15 +11,15 @@ namespace ChartIQ.Finsemble.Notifications
 	public class NotificationClient
 	{
 		/// Internal (private) router channels, should not need to be referenced by outside of the Client src
-		internal static String ROUTER_NAMESPACE = "notification.";
-		internal static String ROUTER_ENDPOINT_NOTIFY = ROUTER_NAMESPACE + "notify";
-		internal static String ROUTER_ENDPOINT_SUBSCRIBE = ROUTER_NAMESPACE + "subscribe";
-		internal static String ROUTER_ENDPOINT_UNSUBSCRIBE = ROUTER_NAMESPACE + "unsubscribe";
-		internal static String ROUTER_ENDPOINT_HANDLE_ACTION = ROUTER_NAMESPACE + "handle_action";
-		internal static String ROUTER_ENDPOINT_LAST_ISSUED = ROUTER_NAMESPACE + "last_issued";
-		internal static String ROUTER_ENDPOINT_FETCH_HISTORY = ROUTER_NAMESPACE + "fetch_history";
-		internal static String ROUTER_ENDPOINT_CHANNEL_PREFIX = ROUTER_NAMESPACE + "notification";
-		internal static String ROUTER_ENDPOINT_ACTION_PREFIX = ROUTER_NAMESPACE + "action.";
+		internal const String ROUTER_NAMESPACE = "notification.";
+		internal const String ROUTER_ENDPOINT_NOTIFY = ROUTER_NAMESPACE + "notify";
+		internal const String ROUTER_ENDPOINT_SUBSCRIBE = ROUTER_NAMESPACE + "subscribe";
+		internal const String ROUTER_ENDPOINT_UNSUBSCRIBE = ROUTER_NAMESPACE + "unsubscribe";
+		internal const String ROUTER_ENDPOINT_HANDLE_ACTION = ROUTER_NAMESPACE + "handle_action";
+		internal const String ROUTER_ENDPOINT_LAST_ISSUED = ROUTER_NAMESPACE + "last_issued";
+		internal const String ROUTER_ENDPOINT_FETCH_HISTORY = ROUTER_NAMESPACE + "fetch_history";
+		internal const String ROUTER_ENDPOINT_CHANNEL_PREFIX = ROUTER_NAMESPACE + "notification";
+		internal const String ROUTER_ENDPOINT_ACTION_PREFIX = ROUTER_NAMESPACE + "action.";
 
 		private Finsemble bridge;
 		private RouterClient routerClient;

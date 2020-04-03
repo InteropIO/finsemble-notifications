@@ -13,11 +13,7 @@ const { useEffect, useState } = React;
 function App(): React.ReactElement {
 	const { notifications, doAction, removeNotification, getNotificationConfig } = useNotifications();
 
-	const [config, setConfig] = useState(null);
-
-	useEffect(() => {
-		(async () => setConfig(await getNotificationConfig("notification-toasts")))();
-	}, [getNotificationConfig]);
+	const config = getNotificationConfig("notification-toasts");
 
 	const windowShowParams: SpawnParams = _get(config, "config.position", {
 		bottom: 0,

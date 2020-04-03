@@ -3,6 +3,8 @@ import IPerformedAction from "./IPerformedAction";
 import Meta from "./Meta";
 
 /**
+ * @description Interface to define what structure the Finsemble notification service is able to process
+ *
  * @property {string} id - Either sent when notification is created to refer to id an external |
  * system or if null set to UUID.
  * @property {string} issuedAt ISO8601 date format - When the notification occurred.
@@ -20,7 +22,6 @@ import Meta from "./Meta";
  * @property {Boolean} isSnoozed - if the notification is snoozed.
  * @property {IPerformedAction[]} actionsHistory - list of actions which have been performed on a notification.
  *
- * TODO: Ensure this interface (or implemented type) is publicly accessible
  */
 export default interface INotification {
 	id?: string;

@@ -153,10 +153,8 @@ export default function useNotifications() {
 	 * Get Notification's config from
 	 * @param componentType Finsemble component type e.g "Welcome-Component"
 	 */
-	const getNotificationConfig = async (componentType: string): Promise<NotificationsConfig> => {
-		const { data }: any = await LauncherClient.getComponentDefaultConfig(componentType);
-
-		const config: WindowConfig = data;
+	const getNotificationConfig = (componentType: string): Promise<NotificationsConfig> => {
+		const config: WindowConfig = WindowClient.options.customData;
 
 		return _get(config, "window.data.notifications", null);
 	};

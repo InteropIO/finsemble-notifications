@@ -4,6 +4,7 @@ import INotification from "../../../types/Notification-definitions/INotification
 import Subscription from "../../../types/Notification-definitions/Subscription";
 import NotificationClient from "../../../services/notification/notificationClient";
 import { SpawnParams } from "../../../types/FSBL-definitions/services/window/Launcher/launcher";
+import { FinsembleWindow } from "../../../types/FSBL-definitions/common/window/FinsembleWindow";
 
 const FSBL = window.FSBL;
 
@@ -156,12 +157,13 @@ export default function useNotifications() {
 	const setNotificationDrawerPosition = async (
 		windowShowParams: SpawnParams
 	) => {
-		const windowId: WindowIdentifier = await LauncherClient.getMyWindowIdentifier();
-		await setWindowPosition(windowId, windowShowParams);
+		const windowId: WindowIdentifier =
+			FSBL.Clients.WindowClient.options.windowIdentifier;
+		return await setWindowPosition(windowId, windowShowParams);
 	};
 
-	const minimizeWindow = () => {
-		WindowClient.minimize(console.log);
+	const minimizeWindow = async () => {
+		return await window.finsembleWindow.hide();
 	};
 
 	const getWindowSpawnData = () => {

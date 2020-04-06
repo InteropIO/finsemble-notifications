@@ -3,7 +3,7 @@ import useNotifications from "../../shared/hooks/useNotifications";
 import INotification from "../../../types/Notification-definitions/INotification";
 import { SpawnParams } from "../../../types/FSBL-definitions/services/window/Launcher/launcher";
 
-const { useEffect, useRef } = React;
+const { useEffect, useLayoutEffect, useRef } = React;
 
 interface Props {
 	children: React.PropsWithChildren<any>;
@@ -12,16 +12,34 @@ interface Props {
 }
 
 function Drawer(props: Props): React.ReactElement {
-	const { setNotificationDrawerPosition, minimizeWindow } = useNotifications();
+	const {
+		notifications,
+		setNotificationDrawerPosition,
+		minimizeWindow,
+	} = useNotifications();
 	const inputEl = useRef(null);
-	const { notifications, windowShowParams } = props;
+	const { windowShowParams } = props;
 
 	useEffect(() => {
-		windowShowParams.height = inputEl.current.getBoundingClientRect().height;
-		notifications.length === 0
-			? minimizeWindow()
-			: setNotificationDrawerPosition(windowShowParams);
-	}, [notifications]);
+		const test = async () => {
+			windowShowParams.height = 145 * notifications.length;
+			windowShowParams.width =
+				FSBL.Clients.WindowClient.options.customData.window.width;
+
+			if (windowShowParams.height === 0) {
+				windowShowParams.height = 1;
+				windowShowParams.width = 1;
+			}
+
+			await setNotificationDrawerPosition(windowShowParams); // sets the window size / height
+		};
+		test();
+	}, [
+		minimizeWindow,
+		notifications,
+		setNotificationDrawerPosition,
+		windowShowParams,
+	]);
 
 	return (
 		<div id="toasts-drawer" ref={inputEl}>

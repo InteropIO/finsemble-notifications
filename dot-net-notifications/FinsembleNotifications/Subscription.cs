@@ -27,7 +27,6 @@ namespace ChartIQ.Finsemble.Notifications
 
 		public JObject ToJObject()
 		{
-			//check this works with the objects embedded under the notification
 			return JObject.FromObject(this);
 		}
 

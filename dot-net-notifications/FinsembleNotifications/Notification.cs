@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
+﻿ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 
@@ -6,23 +6,23 @@ namespace ChartIQ.Finsemble.Notifications
 {
     public class Notification
     {
-		public String id;
-		public DateTime issuedAt;
-		public String receivedAt;
-		public String type;
-		public String source;
-		public String title;
-		public String details;
-		public String headerText;
-		public String headerLogo;
-		public String contentLogo;
-		public List<Action> actions;
-		public int timeout;
-		public Dictionary<String, Object> meta;
-		public Boolean isActionPerformed;
-		public Boolean isSnoozed;
-		public List<PerformedAction> actionsHistory;
-		public List<Notification> stateHistory;
+		public String id { get; set; }
+		public DateTime issuedAt { get; set; }
+		public String receivedAt { get; private set; }
+		public String type { get; set; }
+		public String source { get; set; }
+		public String title { get; set; }
+		public String details { get; set; }
+		public String headerText { get; set; }
+		public String headerLogo { get; set; }
+		public String contentLogo { get; set; }
+		public IList<Action> actions { get; private set; }
+		public int timeout { get; set; }
+		public IDictionary<String, Object> meta { get; private set; }
+		public Boolean isActionPerformed { get; private set; }
+		public Boolean isSnoozed { get; private set; }
+		public IList<PerformedAction> actionsHistory { get; private set; }
+		public IList<Notification> stateHistory { get; private set; }
 
 		public Notification()
 		{
@@ -43,7 +43,6 @@ namespace ChartIQ.Finsemble.Notifications
 
 		public JObject ToJObject()
 		{
-			//check this works with the objects embedded under the notification
 			return JObject.FromObject(this);
 		}
 

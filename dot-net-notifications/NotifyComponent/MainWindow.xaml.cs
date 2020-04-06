@@ -48,6 +48,7 @@ namespace NotifyComponent
 			not1.issuedAt = DateTime.Now;
 			not1.source = "WPF NotifyComponent";
 			not1.headerText = "WPF Internal Actions (No Id)";
+			not1.title = "test notification 1";
 			not1.details = "Should create a new notification in UI every time it's sent (from WPF)";
 			not1.type = "email";
 			not1.headerLogo = "http://localhost:3375/components/finsemble-notifications/components/shared/assets/email.svg";
@@ -90,6 +91,7 @@ namespace NotifyComponent
 			not2.issuedAt = DateTime.Now;
 			not2.id = "wpf_notification_456";
 			not2.source = "WPF NotifyComponent";
+			not2.title = "test notification 2";
 			not2.headerText = "WPF Notification Same Id";
 			not2.details = "Should only be in UI once (WPF)";
 			not2.type = "chat";
@@ -140,7 +142,8 @@ namespace NotifyComponent
 			Notification not3 = new Notification();
 			not3.issuedAt = DateTime.Now;
 			not3.source = "WPF NotifyComponent";
-			not3.headerText = "WPF minmal notification, no actions";
+			not3.headerText = "WPF minimal notification, no actions";
+			not3.title = "test notification 3";
 			not3.details = "Should create a new notification in UI every time it's sent (from WPF)";
 			not3.type = "email";
 			not3.headerLogo = "http://localhost:3375/components/finsemble-notifications/components/shared/assets/email.svg";

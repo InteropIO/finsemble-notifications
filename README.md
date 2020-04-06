@@ -70,7 +70,7 @@ during the build process.
 
 To add notifications as a submodule follow these steps:
 
-1. cd into your seed's components directory. `$ cd scr/components`
+1. cd into your seed's components directory. `$ cd src/components`
 1. Add the project as a submodule `$ git submodule add git@github.com:ChartIQ/finsemble-notifications.git`
 1. cd into the submodule directory: `cd finsemble-notifications`
 1. Install the required packages to run `npm install --production`
@@ -321,4 +321,4 @@ notifier.subscribe(sub, onSubHandler, onNotifyHandler);
 
 An [example WPF component](dot-net-notifications/NotifyComponent) is provided that uses the FinsembleNotifications.dll and Finsemble.dll to send notifications and to subscribe to the notifications stream. Please build both the [NotifyComponent](dot-net-notifications/NotifyComponent) and [FinsembleNotifications.dll](dot-net-notifications/FinsembleNotifications) using the included [Visual Studio solution](dot-net-notifications).
 
-Note: The example [configuration file](dot-net-notifications/NotifyComponent/config.json) makes use of a variable `$wpfExampleBase` set in the [sample config file](sample.config.json) to construct the path to the example executable. Set `$wpfExampleBase` such that the path in the [NotifyComponent config](dot-net-notifications/NotifyComponent/config.json) points to the built .exe file(s).
+Note: The example [configuration file](dot-net-notifications/NotifyComponent/config.json) makes use of a variable `$wpfNotificationExampleBase` set in the [sample config file](sample.config.json) to construct the path to the example executable. Set `$wpfNotificationExampleBase` such that the path in the [NotifyComponent config](dot-net-notifications/NotifyComponent/config.json) points to the built .exe file(s).

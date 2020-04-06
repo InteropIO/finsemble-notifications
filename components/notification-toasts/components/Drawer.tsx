@@ -15,25 +15,30 @@ function Drawer(props: Props): React.ReactElement {
 	const {
 		notifications,
 		setNotificationDrawerPosition,
-		minimizeWindow
+		minimizeWindow,
 	} = useNotifications();
 	const inputEl = useRef(null);
 	const { windowShowParams } = props;
 
-	useLayoutEffect(() => {
+	useEffect(() => {
 		const test = async () => {
-			windowShowParams.height = inputEl.current.getBoundingClientRect().height;
+			windowShowParams.height = 145 * notifications.length;
+			windowShowParams.width =
+				FSBL.Clients.WindowClient.options.customData.window.width;
 
-			notifications.length === 0
-				? await minimizeWindow()
-				: await setNotificationDrawerPosition(windowShowParams);
+			if (windowShowParams.height === 0) {
+				windowShowParams.height = 1;
+				windowShowParams.width = 1;
+			}
+
+			await setNotificationDrawerPosition(windowShowParams); // sets the window size / height
 		};
 		test();
 	}, [
 		minimizeWindow,
 		notifications,
 		setNotificationDrawerPosition,
-		windowShowParams
+		windowShowParams,
 	]);
 
 	return (

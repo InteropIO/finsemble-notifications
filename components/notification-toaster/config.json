@@ -12,10 +12,15 @@
 				"width": 120,
 				"position": "available",
 				"options": {
-					"resizable": true,
+					"resizable": false,
 					"transparent": true,
 					"alwaysOnTop": true,
 					"showTaskbarIcon": true
+				},
+				"data": {
+					"notifications": {
+						"hotkey": ["ctrl", "alt", "shift", "t"]
+					}
 				}
 			},
 			"component": {

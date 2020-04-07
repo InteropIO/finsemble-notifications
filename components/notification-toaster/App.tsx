@@ -5,14 +5,20 @@ import NotificationIcon from "../shared/components/icons/NotificationIcon";
 import CenterIcon from "../shared/components/icons/CenterIcon";
 import SettingsIcon from "../shared/components/icons/settings";
 import INotification from "../../types/Notification-definitions/INotification";
+import _get = require("lodash/get");
 
 function App(): React.ReactElement {
 	const { notifications, toggleComponent } = useNotifications();
 	const { FSBL } = window;
 
-	FSBL.Clients.HotkeyClient.addGlobalHotkey(["ctrl", "alt", "shift", "t"], () => {
-		FSBL.Clients.WindowClient.showAtMousePosition();
-	});
+	const hotkey = _get(FSBL.Clients.WindowClient.getSpawnData(), "notifications.hotkey", null);
+
+	if (hotkey) {
+		console.log(hotkey);
+		FSBL.Clients.HotkeyClient.addGlobalHotkey(hotkey, () => {
+			FSBL.Clients.WindowClient.showAtMousePosition();
+		});
+	}
 
 	const activeNotifications = (notifications: INotification[]) =>
 		notifications.filter(notification => !notification.isSnoozed && !notification.isRead);

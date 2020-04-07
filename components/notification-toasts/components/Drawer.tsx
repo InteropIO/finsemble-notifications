@@ -5,7 +5,7 @@ import { SpawnParams } from "../../../types/FSBL-definitions/services/window/Lau
 
 const _get = require("lodash.get");
 
-const { useEffect, useRef } = React;
+const { useEffect, useState, useRef } = React;
 
 interface Props {
 	children: React.PropsWithChildren<any>;
@@ -20,9 +20,18 @@ function Drawer(props: Props): React.ReactElement {
 	} = useNotifications();
 	const inputEl = useRef(null);
 	const { windowShowParams, notifications } = props;
+	const [monitor, setMonitor] = useState(null);
 
 	useEffect(() => {
 		const test = async () => {
+			if (!monitor) {
+				const monitorInfo = await FSBL.Clients.LauncherClient.getMonitorInfo({
+					monitor: "primary"
+				});
+				setMonitor(monitorInfo);
+			}
+			const { height } = _get(monitor, "data.availableRect", 3000);
+
 			windowShowParams.height = 145 * notifications.length;
 			windowShowParams.width =
 				FSBL.Clients.WindowClient.options.customData.window.width;
@@ -31,9 +40,6 @@ function Drawer(props: Props): React.ReactElement {
 				windowShowParams.height = 1;
 				windowShowParams.width = 1;
 			}
-
-			const monitorInfo = await FSBL.Clients.LauncherClient.getMonitorInfo({ monitor: "primary" });
-			const { height } = _get(monitorInfo, "data.availableRect", null);
 
 			if(windowShowParams.height > height) {
 				windowShowParams.height = height;

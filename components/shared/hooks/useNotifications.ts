@@ -29,7 +29,7 @@ function reducer(
 							? action.payload
 							: notification
 				  )
-				: [...state.notifications, action.payload];
+				: [action.payload, ...state.notifications];
 
 			return { notifications };
 		case "remove":

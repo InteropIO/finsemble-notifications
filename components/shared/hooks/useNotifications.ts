@@ -174,13 +174,12 @@ export default function useNotifications() {
 	 * @param param0
 	 */
 	const setNotificationDrawerPosition = async (windowShowParams: SpawnParams) => {
-		const windowId: WindowIdentifier = await LauncherClient.getMyWindowIdentifier();
+		const windowId: WindowIdentifier = finsembleWindow.windowOptions.windowIdentifier;
 		await setWindowPosition(windowId, windowShowParams);
 	};
 
 	const minimizeWindow = () => {
-		// WindowClient.minimize(console.log);
-		window.finsembleWindow && window.finsembleWindow.hide();
+		finsembleWindow.hide();
 	};
 
 	const getWindowSpawnData = () => {

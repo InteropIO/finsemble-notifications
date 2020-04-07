@@ -32,6 +32,7 @@ function Drawer(props: Props): React.ReactElement {
 				<img
 					src="../shared/assets/dashboard.svg"
 					id="notification-center-icon"
+					// TODO: Move this out
 					onClick={() =>
 						FSBL.Clients.LauncherClient.showWindow(
 							{

@@ -157,8 +157,6 @@ export default class NotificationClient implements INotificationClient {
 	 * @param {OnSubscriptionSuccessCallback} onSubscriptionSuccess called when subscription is successfully created.
 	 * @param {OnSubscriptionFaultCallback} onSubscriptionFault if there is an error creating the subscription.
 	 * @throws Error throws an error on par with the Promise standard, containing detail why the request did not complete
-	 *
-	 * TODO: onSubscriptionSuccess and onSubscriptionFault can do a better job of explaining what params will be passed in
 	 */
 	subscribe(
 		subscription: ISubscription,
@@ -252,7 +250,6 @@ export default class NotificationClient implements INotificationClient {
 				this.loggerClient.info("Notification received: ", queryMessage.id);
 
 				// Catching user-code errors to allow for successful sending of receipt.
-				// TODO: 2nd pair of eyes: Is there situation where this will be confusing to anyone trying to debug an issue
 				try {
 					onNotification(queryMessage);
 				} catch (e) {

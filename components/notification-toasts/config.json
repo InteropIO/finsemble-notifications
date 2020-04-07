@@ -8,8 +8,8 @@
 				"forceOntoMonitor": true,
 				"bottom": 0,
 				"right": 0,
-				"width": 450,
-				"minWidth": 450,
+				"width": 370,
+				"minWidth": 370,
 				"height": 900,
 				"position": "available",
 				"data": {
@@ -19,7 +19,7 @@
 					"bottom": 0,
 					"right": 0,
 					"monitor": 0,
-					"minWidth": 450
+					"minWidth": 370
 				},
 				"options": {
 					"transparent": true,

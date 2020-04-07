@@ -16,20 +16,36 @@ function Drawer(props: Props): React.ReactElement {
 	const { setNotificationDrawerPosition, minimizeWindow: hideWindow } = useNotifications();
 	const inputEl = useRef(null);
 	const { notifications, windowShowParams } = props;
-
+	const [monitor, setMonitor] = useState(null);
 	useEffect(() => {
 		const resizeDrawerHeight = async () => {
-			const monitorInfo = await FSBL.Clients.LauncherClient.getMonitorInfo({ monitor: "primary" });
-			const { height } = _get(monitorInfo, "data.availableRect", null);
-			// windowShowParams are either set via config or have some defaults at the parent level
-			windowShowParams.height = Math.ceil(inputEl.current.getBoundingClientRect().height);
-			windowShowParams.height < height && setNotificationDrawerPosition(windowShowParams);
+			if (!monitor) {
+				const monitorInfo = await FSBL.Clients.LauncherClient.getMonitorInfo({
+					monitor: "primary"
+				});
+				setMonitor(monitorInfo);
+			}
+			const { height: monitorHeight } = _get(monitor, "data.availableRect", 3000);
+			const notificationHeight = 162;
+
+			const { width } = FSBL.Clients.WindowClient.options.customData.window;
+
+			windowShowParams.height = notificationHeight * notifications.length;
+			windowShowParams.width = width;
+
+			if (windowShowParams.height === 0) {
+				windowShowParams.height = 1;
+				windowShowParams.width = 1;
+			}
+
+			if (windowShowParams.height > monitorHeight) {
+				windowShowParams.height = monitorHeight;
+			}
+
+			await setNotificationDrawerPosition(windowShowParams); // sets the window size / height
 		};
-
-		const notificationListIsEmpty = notifications.length === 0;
-
-		notificationListIsEmpty ? hideWindow() : resizeDrawerHeight();
-	}, [notifications]);
+		resizeDrawerHeight();
+	}, [monitor, notifications, setNotificationDrawerPosition, windowShowParams]);
 
 	return (
 		<div id="toasts-drawer" ref={inputEl}>

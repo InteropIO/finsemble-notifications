@@ -38,6 +38,7 @@ body {
 	padding: 10px;
 	font-size: 13px;
 	box-shadow: 3px 3px 2px 0px #00000030;
+	max-height: 162px;
 }
 .notification hr {
 	width: 100%;

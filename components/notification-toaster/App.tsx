@@ -14,7 +14,6 @@ function App(): React.ReactElement {
 	const hotkey = _get(FSBL.Clients.WindowClient.getSpawnData(), "notifications.hotkey", null);
 
 	if (hotkey) {
-		console.log(hotkey);
 		FSBL.Clients.HotkeyClient.addGlobalHotkey(hotkey, () => {
 			FSBL.Clients.WindowClient.showAtMousePosition();
 		});

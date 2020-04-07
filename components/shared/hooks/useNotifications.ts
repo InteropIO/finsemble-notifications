@@ -103,13 +103,12 @@ export default function useNotifications() {
 			NOTIFICATION_CLIENT.performAction([notification], action).then(() => {
 				// NOTE: The request to perform the action has be sent to the notifications service successfully
 				// The action itself has not necessarily been perform successfully
-				console.log("ACTION success");
-
 				// 1) alert user notification has been sent (action may not have completed)
 			});
 		} catch (e) {
 			// NOTE: The request to perform the action has failed
 			console.error("could not create a notification client", e);
+			FSBL.Clients.Logger.error("could not create a notification client", e);
 		}
 	}
 
@@ -211,6 +210,7 @@ export default function useNotifications() {
 				}
 			} catch (error) {
 				console.error(error);
+				FSBL.Clients.Logger.error(error);
 			}
 		});
 	};

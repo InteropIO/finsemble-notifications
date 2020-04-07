@@ -62,11 +62,9 @@ const NotificationsPanel = (props: Props) => {
 				))}
 			</p>
 			<p>Time out after: {timeout}</p>
-			{/* <p>Meta: {meta}</p> */}
 			<p>Action has been performed: {isRead}</p>
 			<p>Notification is snoozed: {isSnoozed}</p>
-			{/* <p> {actionsHistory}</p> */}
-			{/* <p> {stateHistory}</p> */}
+			{/* TODO: add actionsHistory and stateHistory */}
 		</section>
 	);
 };

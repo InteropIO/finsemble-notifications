@@ -46,7 +46,7 @@ function reducer(state: { notifications: INotification[] }, action: { type: stri
 				? state.notifications.map((notification: INotification) =>
 						notification.id === action.payload.id ? action.payload : notification
 				  )
-				: [...state.notifications, action.payload];
+				: [action.payload, ...state.notifications];
 
 			return { notifications };
 		case REMOVE:

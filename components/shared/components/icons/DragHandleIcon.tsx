@@ -1,7 +1,7 @@
 import * as React from "react";
-import SVGBase from "./SVGBase";
+import SVGBase, { SVGProps } from "./SVGBase";
 
-export default function DragHandleIcon(props) {
+export default function DragHandleIcon(props: SVGProps) {
 	return (
 		<SVGBase
 			{...props}

@@ -3,7 +3,9 @@ import useNotifications from "../../shared/hooks/useNotifications";
 import INotification from "../../../types/Notification-definitions/INotification";
 import { SpawnParams } from "../../../types/FSBL-definitions/services/window/Launcher/launcher";
 
-const { useEffect, useLayoutEffect, useRef } = React;
+const _get = require("lodash.get");
+
+const { useEffect, useRef } = React;
 
 interface Props {
 	children: React.PropsWithChildren<any>;
@@ -13,12 +15,11 @@ interface Props {
 
 function Drawer(props: Props): React.ReactElement {
 	const {
-		notifications,
 		setNotificationDrawerPosition,
 		minimizeWindow,
 	} = useNotifications();
 	const inputEl = useRef(null);
-	const { windowShowParams } = props;
+	const { windowShowParams, notifications } = props;
 
 	useEffect(() => {
 		const test = async () => {
@@ -29,6 +30,13 @@ function Drawer(props: Props): React.ReactElement {
 			if (windowShowParams.height === 0) {
 				windowShowParams.height = 1;
 				windowShowParams.width = 1;
+			}
+
+			const monitorInfo = await FSBL.Clients.LauncherClient.getMonitorInfo({ monitor: "primary" });
+			const { height } = _get(monitorInfo, "data.availableRect", null);
+
+			if(windowShowParams.height > height) {
+				windowShowParams.height = height;
 			}
 
 			await setNotificationDrawerPosition(windowShowParams); // sets the window size / height

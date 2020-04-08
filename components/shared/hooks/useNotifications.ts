@@ -223,7 +223,7 @@ export default function useNotifications() {
 			NOTIFICATION_CLIENT = new NotificationClient();
 			const subscription = new Subscription();
 
-			const notificationConfig: NotificationsConfig = await getNotificationConfig(
+			const notificationConfig: NotificationsConfig = getNotificationConfig(
 				await WindowClient.getWindowIdentifier().componentType
 			);
 

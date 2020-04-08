@@ -1,11 +1,12 @@
 import ISubscription from "./ISubscription";
 import INotification from "./INotification";
 import IFilter from "./IFilter";
+import { OnNotificationCallback } from "./Callbacks";
 
 export default class Subscription implements ISubscription {
 	id: string;
 	filter: IFilter;
-	onNotification: (notification: INotification) => void;
+	onNotification: OnNotificationCallback;
 
 	/**
 	 *

@@ -11,31 +11,17 @@ interface Props {
 	closeButton?: boolean;
 }
 
-const Notification = (props: Props) => {
+const HeaderArea = (props: Props) => {
 	const { useEffect, useState } = React;
-	const { notification, doAction, closeAction, closeButton = false } = props;
-	const {
-		id,
-		issuedAt = new Date(),
-		type,
-		title,
-		details,
-		headerText,
-		headerLogo,
-		contentLogo,
-		actions,
-		timeout,
-		cssClassName,
-		notificationAlertSound,
-		meta,
-		actionsHistory
-	} = notification;
+	const { closeAction, closeButton = false, notification } = props;
+	const { issuedAt = new Date() } = notification;
 
 	const [time, setTime] = useState(
 		formatDistanceToNow(new Date(issuedAt), {
 			includeSeconds: true
 		})
 	);
+
 	useEffect(() => {
 		const id = setInterval(() => {
 			setTime(
@@ -48,34 +34,58 @@ const Notification = (props: Props) => {
 	});
 
 	return (
-		<div className={`notification ${cssClassName || ""}`}>
-			<div className="detail-area">
-				<div>
-					<img src={headerLogo} />
-				</div>
-				<div className="detail-area_type">{type}</div>
-				<div className="detail-area_time">{time} ago</div>
-				{closeButton && <img src="../shared/assets/close.svg" id="close-icon" onClick={() => closeAction()} />}
+		<div className="detail-area">
+			<div>
+				<img src={notification.headerLogo} />
 			</div>
-			<div className="content-area">
-				<div>
-					<img src={contentLogo} />
-				</div>
-				<div>
-					<p>{details}</p>
-					<p>
-						<i>Message ID:{id}</i>
-					</p>
-				</div>
+			<div className="detail-area_type">{notification.type}</div>
+			{/* TODO: add a button to toggle actual time / date */}
+			<div className="detail-area_time">{time} ago</div>
+			{closeButton && <img src="../shared/assets/close.svg" id="close-icon" onClick={() => closeAction()} />}
+		</div>
+	);
+};
+
+const ContentArea = (props: Props) => {
+	const { notification } = props;
+
+	return (
+		<div className="content-area">
+			<div>
+				<img src={notification.contentLogo} />
 			</div>
+			<div>
+				<h2>{notification.title}</h2>
+				<p>{notification.details}</p>
+			</div>
+		</div>
+	);
+};
+
+const ActionArea = (props: Props) => {
+	const { doAction, notification } = props;
+
+	return (
+		<div className="action-area">
+			{notification.actions.map((action: IAction) => (
+				<button key={action.buttonText} onClick={() => doAction(notification, action)}>
+					{action.buttonText}
+				</button>
+			))}
+		</div>
+	);
+};
+
+const Notification = (props: Props) => {
+	const { notification } = props;
+	const { meta } = notification;
+
+	return (
+		<div className={`notification ${(meta && meta.cssClassName) || ""}`}>
+			<HeaderArea {...props} />
+			<ContentArea {...props} />
 			<hr />
-			<div className="action-area">
-				{actions.map((action: IAction) => (
-					<button key={action.buttonText} onClick={() => doAction(notification, action)}>
-						{action.buttonText}
-					</button>
-				))}
-			</div>
+			<ActionArea {...props} />
 		</div>
 	);
 };

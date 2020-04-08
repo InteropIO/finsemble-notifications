@@ -1,7 +1,7 @@
 import * as React from "react";
-import SVGBase from "./SVGBase";
+import SVGBase, { SVGProps } from "./SVGBase";
 
-export default function CenterIcon(props) {
+export default function CenterIcon(props: SVGProps) {
 	return (
 		<SVGBase
 			{...props}

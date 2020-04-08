@@ -5,16 +5,19 @@ import NotificationIcon from "../shared/components/icons/NotificationIcon";
 import CenterIcon from "../shared/components/icons/CenterIcon";
 import SettingsIcon from "../shared/components/icons/settings";
 import INotification from "../../types/Notification-definitions/INotification";
+import _get = require("lodash/get");
 
 function App(): React.ReactElement {
-	const { notifications } = useNotifications();
+	const { notifications, toggleComponent } = useNotifications();
 	const { FSBL } = window;
-	const showDrawer = () => {
-		FSBL.Clients.LauncherClient.showWindow({ windowName: "", componentType: "notification-drawer" }, {});
-	};
-	const showCenter = () => {
-		FSBL.Clients.LauncherClient.showWindow({ windowName: "", componentType: "notification-center" }, {});
-	};
+
+	const hotkey = _get(FSBL.Clients.WindowClient.getSpawnData(), "notifications.hotkey", null);
+
+	if (hotkey) {
+		FSBL.Clients.HotkeyClient.addGlobalHotkey(hotkey, () => {
+			FSBL.Clients.WindowClient.showAtMousePosition();
+		});
+	}
 
 	const activeNotifications = (notifications: INotification[]) =>
 		notifications.filter(notification => !notification.isSnoozed && !notification.isRead);
@@ -24,8 +27,19 @@ function App(): React.ReactElement {
 			{activeNotifications(notifications).length > 0 && (
 				<div id="notification-number">{activeNotifications(notifications).length}</div>
 			)}
-			<NotificationIcon className="toaster-icons" onClick={() => showDrawer()} />
-			<CenterIcon className="toaster-icons" onClick={() => showCenter()} />
+			<NotificationIcon
+				className="toaster-icons"
+				onClick={() =>
+					toggleComponent({
+						windowName: "notification-drawer",
+						componentType: "notification-drawer"
+					})
+				}
+			/>
+			<CenterIcon
+				className="toaster-icons"
+				onClick={() => toggleComponent({ windowName: "notification-center", componentType: "notification-center" })}
+			/>
 			<div id="toaster-divider"></div>
 			<SettingsIcon className="toaster-icons" />
 		</>

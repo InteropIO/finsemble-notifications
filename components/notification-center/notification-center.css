@@ -20,7 +20,6 @@ body {
 	box-shadow: 2px 2px 5px 2px #b9b9b9;
 }
 .detail-area {
-	--fr-test: 1fr;
 	display: grid;
 	grid-template-columns: 20px var(--fr-test) auto 5px;
 	grid-column-gap: 20px;
@@ -121,7 +120,6 @@ body {
 #notification-center__search svg {
 	height: 20px;
 	position: absolute;
-	/* top: 17px; */
 	padding: 5px;
 	margin-top: 0em;
 }

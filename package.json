@@ -44,6 +44,7 @@
 		"@chartiq/finsemble": "^3.13.1",
 		"@testing-library/react": "^9.4.0",
 		"@types/chai": "^4.2.7",
+		"@types/lodash": "^4.14.149",
 		"@types/lodash.get": "^4.4.6",
 		"@types/mocha": "^5.2.7",
 		"@types/node": "^12.12.5",

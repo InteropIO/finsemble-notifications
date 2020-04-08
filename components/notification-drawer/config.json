@@ -31,20 +31,13 @@
 				"singleton": true
 			},
 			"foreign": {
-				"services": {
-					"dockingService": {
-						"canGroup": false,
-						"isArrangable": false
-					}
-				},
 				"components": {
 					"App Launcher": {
 						"launchableByUser": true
 					},
 					"Window Manager": {
 						"title": "notification-drawer",
-						"FSBLHeader": false,
-						"persistWindowState": true
+						"FSBLHeader": false
 					},
 					"Toolbar": {
 						"iconClass": "notification-drawer"

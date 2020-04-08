@@ -9,7 +9,7 @@
 				"forceOntoMonitor": true,
 				"bottom": 0,
 				"right": 0,
-				"width": 450,
+				"width": 370,
 				"position": "available",
 				"data": {
 					"notifications": {
@@ -27,11 +27,10 @@
 						"position": {
 							"bottom": 0,
 							"right": 0,
-							"monitor": 0,
-							"maxHeight": "100%"
+							"monitor": 0
 						},
 						"animation": {
-							"displayDuration": 6000,
+							"displayDuration": 10000,
 							"animateIn": "slide-in-right",
 							"animateOut": "slide-out-right"
 						}
@@ -40,6 +39,8 @@
 				"options": {
 					"transparent": true,
 					"alwaysOnTop": true,
+					"autoShow": true,
+					"resizable": false,
 					"showTaskbarIcon": false
 				}
 			},
@@ -49,12 +50,6 @@
 				"singleton": true
 			},
 			"foreign": {
-				"services": {
-					"dockingService": {
-						"canGroup": false,
-						"isArrangable": false
-					}
-				},
 				"components": {
 					"App Launcher": {
 						"launchableByUser": true

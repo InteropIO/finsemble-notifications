@@ -18,10 +18,6 @@ body {
 	bottom: 0;
 	overflow-x: hidden;
 }
-#notifications-drawer {
-	/* height: 100%;
-	background-color: rgb(22, 35, 45); */
-}
 
 #drawer {
 	background-color: rgb(22, 35, 45);
@@ -31,8 +27,6 @@ body {
 .notification {
 	margin: 12px;
 	font-family: var(--notification-font-family);
-	/* width: 100%; */
-	/* max-width: 420px; */
 	min-width: 200px;
 	color: var(--notification-font-color);
 	background-color: var(--notification-background-color);
@@ -68,8 +62,6 @@ body {
 	grid-column-gap: 15px;
 	grid-template-columns: auto 1fr;
 	justify-items: start;
-	/* margin-bottom: 10px; */
-	/* padding-top: 3px; */
 	align-items: center;
 }
 .content-area img {
@@ -88,7 +80,6 @@ body {
 	background-color: rgba(255, 255, 255, 0);
 	border: 0px;
 	color: #b0e8a6;
-	/* height: 20px; */
 	cursor: pointer;
 }
 .action-area > button:hover {

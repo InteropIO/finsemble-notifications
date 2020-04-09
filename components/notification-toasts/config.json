@@ -14,14 +14,7 @@
 				"data": {
 					"notifications": {
 						"filter": {
-							"include": [
-								{
-									"type": "email"
-								},
-								{
-									"type": "timed"
-								}
-							],
+							"include": [],
 							"exclude": []
 						},
 						"position": {

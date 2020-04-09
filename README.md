@@ -190,9 +190,12 @@ All the configuration below is optional:
 
 ### Configuring the Components
 
-Configuring Notification components is done in the component configuration itself. If this is something you need to do,
-need to configure the components at an individual level, you will need to do. You will need to import the
-notifications using the [selective configuration method](#selective-finsemble-config), and using the provided configs as a base:
+Some Notification component behaviours can be changed via configuration. To change this behaviour you will need to 
+change the component configuration entry. The standard configuration provided lumps in all the configurations so if
+modifying the behaviour is what you are after, you will need to configure the components at an individual level. To do
+this, import the service and any components of which you DO NOT want to modify the behaviour using the method outlined 
+in the in the [selective configuration method](#selective-finsemble-config). Following this, for any component configs 
+you wish to modify, create and change your own component configs using the following as base:
 
 - [notification-center config](components/notification-center/config.json)
 - [notification-drawer config](components/notification-drawer/config.json)

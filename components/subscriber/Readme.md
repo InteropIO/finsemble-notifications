@@ -84,7 +84,6 @@ The name of a field in a primitive is _always_ the name of the field to match in
 
 - Basic types: string, number, date - will match directly against the value in the record. Case is **ignored** in string matches.
 - Array: will match against any one of the values in the array. See below.
-- Object: will look for a range. See below.
 
 Primitives will search against individual values and against one or more matches in an array. So the search `{name:"John"}` will match against any of the following objects:
 

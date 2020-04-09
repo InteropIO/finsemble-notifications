@@ -31,8 +31,6 @@ export const ROUTER_NAMESPACE = {
  * Also allows for using the NotificationClient in either a service (Finsemble.Clients.RouterClient) or
  * a component (FSBL.Clients.RouterClient). Also allows for dependency injection to remove Router calls from
  * testing.
- *
- * TODO: Decide and set what log levels all this should be at.
  */
 export default class RouterWrapper {
 	routerClient: IRouterClient;

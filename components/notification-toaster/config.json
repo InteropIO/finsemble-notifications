@@ -15,7 +15,12 @@
 					"resizable": false,
 					"transparent": true,
 					"alwaysOnTop": true,
-					"showTaskbarIcon": false
+					"showTaskbarIcon": true
+				},
+				"data": {
+					"notifications": {
+						"hotkey": ["ctrl", "alt", "shift", "t"]
+					}
 				}
 			},
 			"component": {
@@ -24,13 +29,6 @@
 				"singleton": true
 			},
 			"foreign": {
-				"services": {
-					"dockingService": {
-						"canGroup": false,
-						"isArrangable": true,
-						"manageWindowMovement": true
-					}
-				},
 				"components": {
 					"App Launcher": {
 						"launchableByUser": true

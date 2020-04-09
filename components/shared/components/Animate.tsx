@@ -8,25 +8,29 @@ interface Props {
 	animateOut?: string;
 	animateOutComplete: Function;
 }
-
+/**
+ * Animate the child component
+ * props have default values attached in the component
+ * @param props
+ */
 export default function Animate(props: Props) {
+	// provide some defaults to ensure it still works even though it is blank
 	const { animateIn, animateOut, displayDuration, animateOutComplete } = props;
-	const [css, setCSS] = useState(animateIn);
+	const [css, setCSS] = useState(animateIn || "");
 
 	useEffect(
 		() => {
 			let timer1: NodeJS.Timeout | undefined;
 			if (props.displayDuration) {
 				timer1 = setTimeout(() => {
-					setCSS(animateOut);
+					animateOut && setCSS(animateOut);
 				}, displayDuration);
 			}
 
 			// this will clear Timeout when component unmount like in willComponentUnmount
 			return () => {
 				timer1 && clearTimeout(timer1);
-
-				setCSS(animateOut);
+				animateOut && setCSS(animateOut);
 			};
 		},
 		[animateOut, displayDuration, props.displayDuration]

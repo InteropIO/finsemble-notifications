@@ -1,10 +1,12 @@
 import * as React from "react";
 import INotification from "../../../types/Notification-definitions/INotification";
+import IAction from "../../../types/Notification-definitions/IAction";
 
 interface Props {
 	children?: React.PropsWithChildren<any>;
 	notification?: INotification;
 	clearActiveNotification?: Function;
+	doAction?: Function;
 }
 
 const NotificationsPanel = (props: Props) => {
@@ -42,15 +44,27 @@ const NotificationsPanel = (props: Props) => {
 			<p>Title: {title}</p>
 			<p>Details: {details}</p>
 			<p>Header: {headerText}</p>
-			<p>Logo: {headerLogo}</p>
-			<p>Content Image: {contentLogo}</p>
-			{/* <p> {actions}</p> */}
+			<p>
+				Logo: <img src={headerLogo} width="30px"></img>
+			</p>
+			<p>
+				Content Image: <img src={contentLogo} width="30px"></img>
+			</p>
+			<p>
+				Actions:
+				{actions.map((action: IAction) => (
+					<>
+						<br />
+						<button key={action.buttonText} onClick={() => props.doAction(props.notification, action)}>
+							{action.buttonText}
+						</button>
+					</>
+				))}
+			</p>
 			<p>Time out after: {timeout}</p>
-			{/* <p>Meta: {meta}</p> */}
 			<p>Action has been performed: {isRead}</p>
 			<p>Notification is snoozed: {isSnoozed}</p>
-			{/* <p> {actionsHistory}</p> */}
-			{/* <p> {stateHistory}</p> */}
+			{/* TODO: add actionsHistory and stateHistory */}
 		</section>
 	);
 };

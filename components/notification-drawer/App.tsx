@@ -12,7 +12,7 @@ function App(): React.ReactElement {
 		<Drawer>
 			<div>
 				{notifications &&
-					[...notifications].reverse().map(
+					[...notifications].map(
 						(notification: INotification) =>
 							!notification.isSnoozed &&
 							!notification.isRead && (

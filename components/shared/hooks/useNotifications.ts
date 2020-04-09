@@ -1,3 +1,4 @@
+import { ToggleComponent } from "./../../../types/Notification-definitions/NotificationHookTypes.d";
 import { FSBL } from "./../../../types/FSBL-definitions/globals.d";
 /* eslint-disable @typescript-eslint/ban-ts-ignore */
 import * as react from "react";
@@ -10,8 +11,7 @@ import { SpawnParams } from "../../../types/FSBL-definitions/services/window/Lau
 import WindowConfig, { NotificationsConfig } from "../../../types/Notification-definitions/NotificationConfig";
 import IFilter from "../../../types/Notification-definitions/IFilter";
 import { NotificationGroupList } from "../../../types/Notification-definitions/NotificationHookTypes";
-
-const _get = require("lodash.get");
+import _get = require("lodash/get");
 
 const FSBL = window.FSBL;
 
@@ -46,7 +46,7 @@ function reducer(state: { notifications: INotification[] }, action: { type: stri
 				? state.notifications.map((notification: INotification) =>
 						notification.id === action.payload.id ? action.payload : notification
 				  )
-				: [...state.notifications, action.payload];
+				: [action.payload, ...state.notifications];
 
 			return { notifications };
 		case REMOVE:
@@ -86,7 +86,7 @@ export default function useNotifications() {
 			// Unsubscribe using the subscription ID
 			(async () => {
 				NOTIFICATION_CLIENT = new NotificationClient();
-				NOTIFICATION_CLIENT.unsubscribe(await subscribe);
+				await NOTIFICATION_CLIENT.unsubscribe(await subscribe);
 			})();
 		};
 	}, []); // eslint-disable-line
@@ -103,13 +103,12 @@ export default function useNotifications() {
 			NOTIFICATION_CLIENT.performAction([notification], action).then(() => {
 				// NOTE: The request to perform the action has be sent to the notifications service successfully
 				// The action itself has not necessarily been perform successfully
-				console.log("ACTION success");
-
 				// 1) alert user notification has been sent (action may not have completed)
 			});
 		} catch (e) {
 			// NOTE: The request to perform the action has failed
-			console.log("fail", e);
+			console.error("could not create a notification client", e);
+			FSBL.Clients.Logger.error("could not create a notification client", e);
 		}
 	}
 
@@ -174,16 +173,49 @@ export default function useNotifications() {
 	 * @param param0
 	 */
 	const setNotificationDrawerPosition = async (windowShowParams: SpawnParams) => {
-		const windowId: WindowIdentifier = await LauncherClient.getMyWindowIdentifier();
+		const windowId: WindowIdentifier = finsembleWindow.windowOptions.windowIdentifier;
 		await setWindowPosition(windowId, windowShowParams);
 	};
 
 	const minimizeWindow = () => {
-		WindowClient.minimize(console.log);
+		finsembleWindow.hide();
 	};
+
+	const activeNotifications = (notifications: INotification[]) =>
+		notifications.filter(notification => !notification.isSnoozed && !notification.isRead);
 
 	const getWindowSpawnData = () => {
 		return WindowClient.getSpawnData();
+	};
+
+	const toggleComponent = async ({
+		windowName,
+		componentType,
+		showAction,
+		hideAction
+	}: ToggleComponent): Promise<void> => {
+		//set window.name to make the it easier to wrap (as name will be fixed)
+		const { wrap: component } = await FSBL.FinsembleWindow.wrap({ windowName }, (err: Error, wrap: object) =>
+			err ? console.error : wrap
+		);
+
+		//toggle visibility (onto monitor its being called on!)
+		component.isShowing({}, (err: Error, isShowing: boolean) => {
+			try {
+				if (isShowing) {
+					// default action
+					!hideAction ? component.hide() : hideAction();
+				} else {
+					// default action
+					!showAction
+						? LauncherClient.showWindow({ windowName, componentType }, { spawnIfNotFound: true })
+						: showAction();
+				}
+			} catch (error) {
+				console.error(error);
+				FSBL.Clients.Logger.error(error);
+			}
+		});
 	};
 
 	/**
@@ -229,7 +261,7 @@ export default function useNotifications() {
 					console.log(data);
 				},
 				(error: any) => {
-					console.log(error);
+					console.error(error);
 				}
 			);
 		} catch (error) {
@@ -238,6 +270,7 @@ export default function useNotifications() {
 	}
 
 	return {
+		activeNotifications,
 		doAction,
 		getWindowSpawnData,
 		getNotificationHistory,
@@ -246,6 +279,7 @@ export default function useNotifications() {
 		notifications: state.notifications,
 		removeNotification,
 		setNotificationDrawerPosition,
-		getNotificationConfig
+		getNotificationConfig,
+		toggleComponent
 	};
 }

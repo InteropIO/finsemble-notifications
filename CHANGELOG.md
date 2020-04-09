@@ -8,6 +8,10 @@
   - `ISubscription.onNotification` is now of type `OnNotificationCallback`
   - `NotificationClient.subscribe` 2nd and third params are of type `OnSubscriptionSuccessCallback` and 
   `OnSubscriptionFaultCallback` respectively 
+  - Removed console.logs and updated errors to use the Central Logger too
+  - Invisible window caused by toasts fixed
+  - Toasts now ordered by newest at the bottom
+  - Toast no longer go beyond the height of the monitor
 
 ## [pre-phase-1-alpha] - 2020-03-02
 ### added

@@ -13,7 +13,7 @@ export default function SVGBase({
 	clipRule = "",
 	// eslint-disable-next-line @typescript-eslint/no-empty-function
 	onClick = () => {}
-}) {
+}: SVGProps) {
 	return (
 		<svg
 			onClick={onClick}
@@ -29,3 +29,5 @@ export default function SVGBase({
 		</svg>
 	);
 }
+
+export type SVGProps = React.SVGAttributes<SVGElement>;

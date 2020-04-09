@@ -8,7 +8,7 @@ import INotification from "../../types/Notification-definitions/INotification";
 import _get = require("lodash/get");
 
 function App(): React.ReactElement {
-	const { notifications, toggleComponent } = useNotifications();
+	const { notifications, toggleComponent, activeNotifications } = useNotifications();
 	const { FSBL } = window;
 
 	const hotkey = _get(FSBL.Clients.WindowClient.getSpawnData(), "notifications.hotkey", null);
@@ -19,8 +19,6 @@ function App(): React.ReactElement {
 		});
 	}
 
-	const activeNotifications = (notifications: INotification[]) =>
-		notifications.filter(notification => !notification.isSnoozed && !notification.isRead);
 	return (
 		<>
 			<DragHandleIcon className="drag-area" />

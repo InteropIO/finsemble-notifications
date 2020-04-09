@@ -8,8 +8,6 @@ import { SpawnParams } from "../../types/FSBL-definitions/services/window/Launch
 /* eslint-disable @typescript-eslint/no-var-requires */
 const _get = require("lodash.get");
 
-const { useEffect, useState } = React;
-
 function App(): React.ReactElement {
 	const { notifications, doAction, removeNotification, getNotificationConfig } = useNotifications();
 

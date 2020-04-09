@@ -38,7 +38,7 @@ const HeaderArea = (props: Props) => {
 			<div>
 				<img src={notification.headerLogo} />
 			</div>
-			<div className="detail-area_type">{notification.type}</div>
+			<div className="detail-area_type">{notification.headerText}</div>
 			{/* TODO: add a button to toggle actual time / date */}
 			<div className="detail-area_time">{time} ago</div>
 			{closeButton && <img src="../shared/assets/close.svg" id="close-icon" onClick={() => closeAction()} />}

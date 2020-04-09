@@ -13,7 +13,7 @@ interface Props {
 }
 
 function Drawer(props: Props): React.ReactElement {
-	const { setNotificationDrawerPosition, minimizeWindow: hideWindow } = useNotifications();
+	const { setNotificationDrawerPosition, minimizeWindow: hideWindow, activeNotifications } = useNotifications();
 	const inputEl = useRef(null);
 	const { notifications, windowShowParams } = props;
 	const [monitor, setMonitor] = useState(null);
@@ -30,7 +30,7 @@ function Drawer(props: Props): React.ReactElement {
 
 			const { width } = FSBL.Clients.WindowClient.options.customData.window;
 
-			windowShowParams.height = notificationHeight * notifications.length;
+			windowShowParams.height = notificationHeight * activeNotifications(notifications).length;
 			windowShowParams.width = width;
 
 			if (windowShowParams.height === 0) {

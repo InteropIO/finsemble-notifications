@@ -86,7 +86,7 @@ export default function useNotifications() {
 			// Unsubscribe using the subscription ID
 			(async () => {
 				NOTIFICATION_CLIENT = new NotificationClient();
-				NOTIFICATION_CLIENT.unsubscribe(await subscribe);
+				await NOTIFICATION_CLIENT.unsubscribe(await subscribe);
 			})();
 		};
 	}, []); // eslint-disable-line
@@ -181,6 +181,9 @@ export default function useNotifications() {
 		finsembleWindow.hide();
 	};
 
+	const activeNotifications = (notifications: INotification[]) =>
+		notifications.filter(notification => !notification.isSnoozed && !notification.isRead);
+
 	const getWindowSpawnData = () => {
 		return WindowClient.getSpawnData();
 	};
@@ -267,6 +270,7 @@ export default function useNotifications() {
 	}
 
 	return {
+		activeNotifications,
 		doAction,
 		getWindowSpawnData,
 		getNotificationHistory,

@@ -16,12 +16,6 @@ export interface NotificationsConfig {
 	notificationsHistory?: boolean;
 }
 
-// export interface WindowParams extends SpawnParamsWithoutData {
-// 	data?: {
-// 		notifications: NotificationsConfig;
-// 	};
-// }
-
 export default interface WindowConfig {
 	window: SpawnParams & NotificationsConfig;
 }

@@ -26,11 +26,11 @@ function Drawer(props: Props): React.ReactElement {
 				setMonitor(monitorInfo);
 			}
 			const { height: monitorHeight } = _get(monitor, "data.availableRect", 3000);
-			const notificationHeight = 162;
 
 			const { width } = FSBL.Clients.WindowClient.options.customData.window;
 
-			windowShowParams.height = notificationHeight * activeNotifications(notifications).length;
+			windowShowParams.height = document.getElementById("notifications-toasts").scrollHeight;
+
 			windowShowParams.width = width;
 
 			if (windowShowParams.height === 0) {

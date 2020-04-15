@@ -4,7 +4,6 @@ import DragHandleIcon from "../shared/components/icons/DragHandleIcon";
 import NotificationIcon from "../shared/components/icons/NotificationIcon";
 import CenterIcon from "../shared/components/icons/CenterIcon";
 import SettingsIcon from "../shared/components/icons/settings";
-import INotification from "../../types/Notification-definitions/INotification";
 import _get = require("lodash/get");
 
 function App(): React.ReactElement {

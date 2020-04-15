@@ -30,6 +30,8 @@
 
   - Notification drawer animation does not toggle in and out
   - Notification center not in memory by default
+  - Notifications toasts are missing an indicator that there are more notifications above the top of the screen
+  - Notification toaster support for multiple screens 
 
 ## [pre-phase-1-alpha] - 2020-03-02
 ### added

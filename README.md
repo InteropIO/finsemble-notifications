@@ -49,6 +49,7 @@ too.
 #### As a copy
 
 1. git clone this project into the directory of your choice.
+1. run `npm install` to install dependencies needed for the copy script.
 1. Copy `example.copy.config.json` to `copy.config.json`
 1. Edit `copy.config.json`: 
     1. Make sure  `source` path points to this project

@@ -37,8 +37,8 @@ function App(): React.ReactElement {
 				className="toaster-icons"
 				onClick={() => toggleComponent({ windowName: "notification-center", componentType: "notification-center" })}
 			/>
-			<div id="toaster-divider"></div>
-			<SettingsIcon className="toaster-icons" />
+			{/* <div id="toaster-divider"></div>
+			<SettingsIcon className="toaster-icons" /> */}
 		</>
 	);
 }

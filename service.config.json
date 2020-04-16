@@ -1,0 +1,22 @@
+{
+	"servicesConfig": {
+		"notifications": {
+			"defaultDismissButtonText": "Dismiss",
+			"maxNotificationsToRetain": 1000,
+			"maxNotificationRetentionPeriodHours": 24,
+			"proxyToWebAPiFilter": {
+				"include": [
+					{
+						"type": "web"
+					}
+				],
+				"exclude": []
+			},
+			"types": {
+				"web": {
+					"showDismissAction": true
+				}
+			}
+		}
+	}
+}

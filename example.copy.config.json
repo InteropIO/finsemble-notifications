@@ -1,4 +1,4 @@
 {
-    "source": "../finsemble-notifications",
-    "destination": "../finsemble-seed/src/components/finsemble-notifications"
+	"source": "../finsemble-notifications",
+	"destination": "../finsemble-seed/src/components/finsemble-notifications"
 }

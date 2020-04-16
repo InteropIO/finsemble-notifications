@@ -1,23 +1,75 @@
 {
-  "name": "finsemble-notifications",
-  "version": "0.0.1",
-  "description": "Notifications services and UI",
-  "scripts": {
-    "watch": "nodemon -e js,ts,txs,jsx,html,css,json copy.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ChartIQ/finsemble-notifications.git"
-  },
-  "author": "ChartIQ",
-  "bugs": {
-    "url": "https://github.com/ChartIQ/finsemble-notifications/issues"
-  },
-  "homepage": "https://github.com/ChartIQ/finsemble-notifications#readme",
-  "dependencies": {},
-  "devDependencies": {
-    "@types/node": "^12.12.5",
-    "fs-extra": "^8.1.0",
-    "nodemon": "^2.0.0"
-  }
+	"name": "finsemble-notifications",
+	"version": "0.1.0",
+	"description": "Notifications services and UI",
+	"scripts": {
+		"watch": "nodemon --delay 1000ms -e js,ts,tsx,jsx,html,css,json,exe,dll copy.js",
+		"copy-files": "node copy.js",
+		"lint": "eslint services/** components/** ",
+		"lint:fix": "eslint services/** components/** tests/** --fix --quiet",
+		"prettier:fix": "prettier services/** components/** --write",
+		"test": "mocha --color --bail",
+		"test:watch": "nodemon --delay 500ms -e ts --exec \"mocha --color --bail\""
+	},
+	"husky": {
+		"hooks": {
+			"pre-commit": "lint-staged"
+		}
+	},
+	"lint-staged": {
+		"*.{js,jsx,ts,tsx,html,css}": [
+			"eslint --fix --quiet",
+			"prettier --write"
+		]
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/ChartIQ/finsemble-notifications.git"
+	},
+	"author": "ChartIQ",
+	"bugs": {
+		"url": "https://github.com/ChartIQ/finsemble-notifications/issues"
+	},
+	"homepage": "https://github.com/ChartIQ/finsemble-notifications#readme",
+	"dependencies": {
+		"@types/react": "^16.9.11",
+		"date-fns": "^2.8.1",
+		"immutable": "^4.0.0-rc.12",
+		"lodash.get": "^4.4.2",
+		"searchjs": "^1.0.2",
+		"uuid": "^3.3.3"
+	},
+	"devDependencies": {
+		"@babel/register": "^7.8.3",
+		"@chartiq/finsemble": "^3.13.1",
+		"@testing-library/react": "^9.4.0",
+		"@types/chai": "^4.2.7",
+		"@types/lodash": "^4.14.149",
+		"@types/lodash.get": "^4.4.6",
+		"@types/mocha": "^5.2.7",
+		"@types/node": "^12.12.5",
+		"@types/react-dom": "^16.9.3",
+		"@types/uuid": "^3.4.7",
+		"@typescript-eslint/eslint-plugin": "^2.10.0",
+		"@typescript-eslint/parser": "^2.10.0",
+		"ansi-html": "0.0.7",
+		"chai": "^4.2.0",
+		"eslint": "^6.7.2",
+		"eslint-config-prettier": "^6.7.0",
+		"eslint-config-react": "^1.1.7",
+		"eslint-plugin-prettier": "^3.1.1",
+		"eslint-plugin-react-hooks": "^2.3.0",
+		"fs-extra": "^8.1.0",
+		"husky": "^4.2.3",
+		"jsdom": "^16.1.0",
+		"jsdom-global": "^3.0.2",
+		"lint-staged": "^10.0.7",
+		"mocha": "^7.0.0",
+		"nodemon": "^2.0.0",
+		"prettier": "^1.19.1",
+		"react": "16.8.4",
+		"react-dom": "16.8.4",
+		"ts-node": "^8.6.2",
+		"typescript": "^3.7.5"
+	}
 }

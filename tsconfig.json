@@ -1,0 +1,17 @@
+{
+	"compilerOptions": {
+		"target": "es2017",
+		"lib": ["ESNext", "DOM"],
+		"module": "commonjs",
+		"moduleResolution": "node",
+		"esModuleInterop": true,
+		"noImplicitAny": true,
+		"removeComments": true,
+		"preserveConstEnums": true,
+		"sourceMap": true,
+		"jsx": "react",
+		"types": ["@types/mocha", "@types/node", "@types/chai", "@testing-library/react"]
+	},
+	"include": ["**/*"],
+	"exclude": ["./node_modules/**", "**/*.spec.ts", "./types", "./docs", "./tests", "./preloads", "./services"]
+}

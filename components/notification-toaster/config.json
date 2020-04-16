@@ -1,0 +1,48 @@
+{
+	"components": {
+		"notification-toaster": {
+			"window": {
+				"name": "notification-toaster",
+				"url": "$applicationRoot/components/finsemble-notifications/components/notification-toaster/notification-toaster.html",
+				"forceOntoMonitor": true,
+				"bottom": 0,
+				"right": 0,
+				"height": 32,
+				"width": 120,
+				"position": "available",
+				"options": {
+					"resizable": false,
+					"transparent": true,
+					"alwaysOnTop": true,
+					"showTaskbarIcon": true,
+					"autoShow": true
+				},
+				"data": {
+					"notifications": {
+						"hotkey": ["ctrl", "alt", "shift", "t"]
+					}
+				}
+			},
+			"component": {
+				"preload": false,
+				"spawnOnStartup": true,
+				"singleton": true
+			},
+			"foreign": {
+				"components": {
+					"App Launcher": {
+						"launchableByUser": false
+					},
+					"Window Manager": {
+						"title": "notification-toaster",
+						"FSBLHeader": false,
+						"persistWindowState": true
+					},
+					"Toolbar": {
+						"iconClass": "notification-toaster"
+					}
+				}
+			}
+		}
+	}
+}

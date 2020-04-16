@@ -142,7 +142,7 @@ namespace NotifyComponent
 			Notification not3 = new Notification();
 			not3.issuedAt = DateTime.Now;
 			not3.source = "WPF NotifyComponent";
-			not3.headerText = "WPF minimal notification, no actions";
+			not3.headerText = "WPF minimal notification";
 			not3.title = "test notification 3";
 			not3.details = "Should create a new notification in UI every time it's sent (from WPF)";
 			not3.type = "email";

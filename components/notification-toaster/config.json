@@ -4,7 +4,6 @@
 			"window": {
 				"name": "notification-toaster",
 				"url": "$applicationRoot/components/finsemble-notifications/components/notification-toaster/notification-toaster.html",
-				"autoShow": true,
 				"forceOntoMonitor": true,
 				"bottom": 0,
 				"right": 0,
@@ -15,7 +14,8 @@
 					"resizable": false,
 					"transparent": true,
 					"alwaysOnTop": true,
-					"showTaskbarIcon": true
+					"showTaskbarIcon": true,
+					"autoShow": true
 				},
 				"data": {
 					"notifications": {
@@ -31,7 +31,7 @@
 			"foreign": {
 				"components": {
 					"App Launcher": {
-						"launchableByUser": true
+						"launchableByUser": false
 					},
 					"Window Manager": {
 						"title": "notification-toaster",

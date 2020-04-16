@@ -4,8 +4,6 @@
 			"window": {
 				"name": "notification-toasts",
 				"url": "$applicationRoot/components/finsemble-notifications/components/notification-toasts/notification-toasts.html",
-				"resizable": false,
-				"autoShow": true,
 				"forceOntoMonitor": true,
 				"bottom": 0,
 				"right": 0,
@@ -45,7 +43,7 @@
 			"foreign": {
 				"components": {
 					"App Launcher": {
-						"launchableByUser": true
+						"launchableByUser": false
 					},
 					"Window Manager": {
 						"title": "notification-toasts",

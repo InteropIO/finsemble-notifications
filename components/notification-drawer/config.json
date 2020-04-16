@@ -32,7 +32,7 @@
 			"foreign": {
 				"components": {
 					"App Launcher": {
-						"launchableByUser": true
+						"launchableByUser": false
 					},
 					"Window Manager": {
 						"title": "notification-drawer",

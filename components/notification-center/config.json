@@ -5,13 +5,15 @@
 				"name": "notification-center",
 				"url": "$applicationRoot/components/finsemble-notifications/components/notification-center/notification-center.html",
 				"frame": false,
-				"resizable": true,
-				"autoShow": true,
 				"top": "center",
 				"left": "center",
 				"width": 800,
 				"height": 800,
 				"monitor": "primary",
+				"options": {
+					"resizable": true,
+					"autoShow": false
+				},
 				"data": {
 					"notifications": {
 						"notificationsHistory": true
@@ -20,7 +22,7 @@
 			},
 			"component": {
 				"preload": false,
-				"spawnOnStartup": false,
+				"spawnOnStartup": true,
 				"singleton": true
 			},
 			"foreign": {
@@ -35,7 +37,7 @@
 				},
 				"components": {
 					"App Launcher": {
-						"launchableByUser": true
+						"launchableByUser": false
 					},
 					"Window Manager": {
 						"title": "notification-center",

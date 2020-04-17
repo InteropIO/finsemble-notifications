@@ -41,7 +41,9 @@
 					},
 					"Window Manager": {
 						"title": "notification-center",
-						"FSBLHeader": true,
+						"FSBLHeader": {
+							"hideMinimize": true
+						},
 						"persistWindowState": true
 					},
 					"Toolbar": {

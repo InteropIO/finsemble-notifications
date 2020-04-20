@@ -9,6 +9,8 @@ interface Props {
 	doAction: Function;
 	closeAction?: Function;
 	closeButton?: boolean;
+	onMouseLeave?: Function;
+	onMouseEnter?: Function;
 }
 
 const HeaderArea = (props: Props) => {
@@ -81,7 +83,11 @@ const Notification = (props: Props) => {
 	const { meta } = notification;
 
 	return (
-		<div className={`notification ${(meta && meta.cssClassName) || ""}`}>
+		<div
+			className={`notification ${(meta && meta.cssClassName) || ""}`}
+			onMouseEnter={props.onMouseEnter}
+			onMouseLeave={props.onMouseLeave}
+		>
 			<HeaderArea {...props} />
 			<ContentArea {...props} />
 			<hr />

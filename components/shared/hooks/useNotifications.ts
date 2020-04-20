@@ -15,7 +15,7 @@ import _get = require("lodash/get");
 
 const FSBL = window.FSBL;
 
-const { LauncherClient, WindowClient } = FSBL.Clients;
+const { LauncherClient, WindowClient, Logger } = FSBL.Clients;
 
 const initialState: any = { notifications: [] };
 
@@ -217,6 +217,15 @@ export default function useNotifications() {
 			}
 		});
 	};
+	/**
+	 * Exposes Electron ClickThrough
+	 * @param canClickThrough - This should be the visible section of a component
+	 */
+	function clickThrough(canClickThrough = false) {
+		const options = clickThrough ? { forward: true } : {};
+		WindowClient.setIgnoreMouseEvents(canClickThrough, options);
+		Logger.log(`clickThrough is: ${canClickThrough}`);
+	}
 
 	/**
 	 * Main init function to start the subscription
@@ -272,6 +281,7 @@ export default function useNotifications() {
 	return {
 		activeNotifications,
 		doAction,
+		clickThrough,
 		getWindowSpawnData,
 		getNotificationHistory,
 		groupNotificationsByType,

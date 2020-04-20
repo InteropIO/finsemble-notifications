@@ -7,9 +7,10 @@ import Animate from "../shared/components/Animate";
 import { SpawnParams } from "../../types/FSBL-definitions/services/window/Launcher/launcher";
 /* eslint-disable @typescript-eslint/no-var-requires */
 const _get = require("lodash.get");
+const { useEffect } = React;
 
 function App(): React.ReactElement {
-	const { notifications, doAction, removeNotification, getNotificationConfig } = useNotifications();
+	const { notifications, doAction, removeNotification, getNotificationConfig, clickThrough } = useNotifications();
 
 	const config = getNotificationConfig("notification-toasts");
 
@@ -20,7 +21,13 @@ function App(): React.ReactElement {
 	});
 
 	return (
-		<Drawer notifications={notifications} windowShowParams={windowShowParams}>
+		<Drawer
+			notifications={notifications}
+			windowShowParams={windowShowParams}
+			onMouseEnter={() => {
+				clickThrough(true);
+			}}
+		>
 			{config &&
 				notifications &&
 				notifications.map(
@@ -40,6 +47,12 @@ function App(): React.ReactElement {
 									doAction={doAction}
 									closeAction={() => removeNotification(notification)}
 									closeButton
+									onMouseEnter={() => {
+										clickThrough(false);
+									}}
+									onMouseLeave={() => {
+										clickThrough(true);
+									}}
 								></Notification>
 							</Animate>
 						)

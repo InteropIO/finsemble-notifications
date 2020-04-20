@@ -15,9 +15,7 @@ function Drawer(props: Props): React.ReactElement {
 		setAnimationClass("slide-in-right");
 	};
 	const animationComplete = () => {
-		animationClass === "slide-out-right" &&
-			// TODO: remove this and change for hide
-			FSBL.Clients.WindowClient.minimize();
+		animationClass === "slide-out-right";
 	};
 	return (
 		<div id="drawer" className={animationClass} onAnimationEnd={animationComplete}>
@@ -39,7 +37,9 @@ function Drawer(props: Props): React.ReactElement {
 				<img
 					src="../shared/assets/double_arrow.svg"
 					id="hide-icon"
-					onClick={() => setAnimationClass("slide-out-right")}
+					onClick={() => {
+						setAnimationClass("slide-out-right");
+					}}
 				/>
 			</div>
 			{props.children}

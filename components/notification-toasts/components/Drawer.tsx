@@ -10,11 +10,7 @@ interface Props {
 }
 
 function Drawer(props: Props): React.ReactElement {
-	return (
-		<div id="toasts-drawer" onMouseEnter={() => props.onMouseEnter}>
-			{props.children}
-		</div>
-	);
+	return <div id="toasts-drawer">{props.children}</div>;
 }
 
 export default Drawer;

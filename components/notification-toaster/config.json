@@ -6,7 +6,7 @@
 				"url": "$applicationRoot/components/finsemble-notifications/components/notification-toaster/notification-toaster.html",
 				"forceOntoMonitor": true,
 				"bottom": 0,
-				"right": 0,
+				"left": "50%",
 				"height": 32,
 				"width": 120,
 				"position": "available",

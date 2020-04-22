@@ -4,52 +4,68 @@ import Notification from "../shared/components/Notification";
 import useNotifications from "../shared/hooks/useNotifications";
 import INotification from "../../types/Notification-definitions/INotification";
 import Animate from "../shared/components/Animate";
+import { CSSTransition } from "react-transition-group";
 import CenterIcon from "../shared/components/icons/CenterIcon";
+import { usePubSub, clickThrough } from "../shared/hooks/finsemble-hooks";
 
-const { useState } = React;
+const { useState, useEffect } = React;
 
-const ActiveNotification = ({ notification, doAction }: { notification: INotification; doAction: Function }) =>
-	!notification.isSnoozed &&
-	!notification.isRead && (
-		<Animate
-			// TODO: this needs a better key to differentiate when notification is updated
-			animateIn="slide-in-fwd-bottom"
-			animateOut="slide-out-right"
-			// eslint-disable-next-line @typescript-eslint/no-empty-function
-			animateOutComplete={() => {}}
-		>
-			<Notification notification={notification} doAction={doAction}></Notification>
-		</Animate>
-	);
-const HideDrawer = ({ clickAction }: { clickAction: Function }) => (
-	<img src="../shared/assets/double_arrow.svg" id="hide-icon" onClick={clickAction()} />
+const HideDrawer = ({ onClick }: { onClick: Function }) => (
+	<img src="../shared/assets/double_arrow.svg" id="hide-icon" onClick={() => onClick()} />
 );
 
 function App(): React.ReactElement {
-	const { notifications, doAction, toggleComponent } = useNotifications();
-	const [showDrawer, setShowDrawer] = useState(false);
-	// "slide-in-right"
-	// "slide-out-right"
+	const { notifications, doAction } = useNotifications();
+	const pubSubTopic = "notification-ui";
+	const [notificationSubscribeMessage, notificationsPublish] = usePubSub(pubSubTopic);
+
+	const [showDrawer, setShowDrawer] = useState(true);
+
+	useEffect(() => {
+		console.log(notificationSubscribeMessage);
+		if ("showDrawer" in notificationSubscribeMessage) {
+			setShowDrawer(notificationSubscribeMessage.showDrawer);
+		}
+	}, [notificationSubscribeMessage, showDrawer]);
+
+	useEffect(() => {
+		showDrawer === false ? clickThrough(true) : clickThrough(false);
+	}, [showDrawer]);
+
+	const notificationIsActive = (notification: INotification) => !notification.isRead && !notification.isSnoozed;
 
 	return (
-		<Drawer>
-			<div id="notifications-drawer__menu">
-				<CenterIcon
-					id="notification-center-icon"
-					onClick={() => toggleComponent({ windowName: "notification-center", componentType: "notification-center" })}
-				/>
-				<HideDrawer clickAction={() => setShowDrawer(false)} />
-			</div>
-			<div>
-				{notifications ? (
-					[...notifications].map((notification: INotification) => (
-						<ActiveNotification notification={notification} key={notification.id} doAction={doAction} />
-					))
-				) : (
-					<p>no notifications</p>
-				)}
-			</div>
-		</Drawer>
+		<CSSTransition in={showDrawer} timeout={300} classNames="drawer" unmountOnExit>
+			<Drawer>
+				<div id="notifications-drawer__menu">
+					<CenterIcon
+						id="notification-center-icon"
+						onClick={() => {
+							"";
+						}}
+					/>
+					<HideDrawer
+						onClick={() => {
+							notificationsPublish({ message: "test from drawer", showDrawer: false });
+						}}
+					/>
+				</div>
+				<div>
+					{notifications.length ? (
+						[...notifications].map(
+							(notification: INotification) =>
+								notificationIsActive && (
+									<Animate animateIn="slide-in-fwd-bottom" animateOut="slide-out-right" key={notification.id}>
+										<Notification notification={notification} doAction={doAction}></Notification>
+									</Animate>
+								)
+						)
+					) : (
+						<p>no notifications</p>
+					)}
+				</div>
+			</Drawer>
+		</CSSTransition>
 	);
 }
 

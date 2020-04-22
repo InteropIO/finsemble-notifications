@@ -5,12 +5,13 @@ import useNotifications from "../shared/hooks/useNotifications";
 import INotification from "../../types/Notification-definitions/INotification";
 import Animate from "../shared/components/Animate";
 import { SpawnParams } from "../../types/FSBL-definitions/services/window/Launcher/launcher";
+import { clickThrough } from "../shared/hooks/finsemble-hooks";
 /* eslint-disable @typescript-eslint/no-var-requires */
 const _get = require("lodash.get");
 const { useEffect } = React;
 
 function App(): React.ReactElement {
-	const { notifications, doAction, removeNotification, getNotificationConfig, clickThrough } = useNotifications();
+	const { notifications, doAction, removeNotification, getNotificationConfig } = useNotifications();
 
 	const config = getNotificationConfig("notification-toasts");
 
@@ -20,6 +21,11 @@ function App(): React.ReactElement {
 		monitor: 0
 	});
 
+	const notificationIsActive = (notification: INotification) => !notification.isRead && !notification.isSnoozed;
+
+	// ensure the config and notifications have loaded before rendering the DOM
+	const ready = config && notifications;
+
 	return (
 		<Drawer
 			notifications={notifications}
@@ -28,12 +34,10 @@ function App(): React.ReactElement {
 				clickThrough(true);
 			}}
 		>
-			{config &&
-				notifications &&
+			{ready &&
 				notifications.map(
 					(notification: INotification) =>
-						!notification.isRead &&
-						!notification.isSnoozed && (
+						notificationIsActive(notification) && (
 							<Animate
 								key={notification.id}
 								displayDuration={notification.timeout || config.animation.displayDuration}

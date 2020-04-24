@@ -44,7 +44,10 @@ function App(): React.ReactElement {
 			{activeNotifications(notifications).length > 0 && (
 				<div id="notification-number">{activeNotifications(notifications).length}</div>
 			)}
-			<NotificationIcon className="toaster-icons" onClick={() => toggleDrawer()} />
+			<NotificationIcon
+				className={notificationSubscribeMessage.showDrawer ? "toaster-icons--active" : "toaster-icons"}
+				onClick={() => toggleDrawer()}
+			/>
 			<CenterIcon
 				className="toaster-icons"
 				// onClick={() => toggleComponent({ windowName: "notification-center", componentType: "notification-center" })}

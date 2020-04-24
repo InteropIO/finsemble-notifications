@@ -6,7 +6,7 @@ import INotification from "../../types/Notification-definitions/INotification";
 import Animate from "../shared/components/Animate";
 import { CSSTransition } from "react-transition-group";
 import CenterIcon from "../shared/components/icons/CenterIcon";
-import { usePubSub, clickThrough } from "../shared/hooks/finsemble-hooks";
+import { usePubSub, clickThrough, bringWindowToFront } from "../shared/hooks/finsemble-hooks";
 
 const { useState, useEffect } = React;
 
@@ -29,14 +29,20 @@ function App(): React.ReactElement {
 	}, [notificationSubscribeMessage, showDrawer]);
 
 	useEffect(() => {
-		showDrawer === false ? clickThrough(true) : clickThrough(false);
+		if (showDrawer) {
+			//only when the drawer is open do we want to disable clickthrough
+			bringWindowToFront();
+			clickThrough(false);
+		} else {
+			clickThrough(true);
+		}
 	}, [showDrawer]);
 
 	const notificationIsActive = (notification: INotification) => !notification.isRead && !notification.isSnoozed;
 
 	return (
 		<CSSTransition in={showDrawer} timeout={300} classNames="drawer" unmountOnExit>
-			<Drawer>
+			<Drawer onBlur={() => notificationsPublish({ message: "test from drawer", showDrawer: false })}>
 				<div id="notifications-drawer__menu">
 					<CenterIcon
 						id="notification-center-icon"

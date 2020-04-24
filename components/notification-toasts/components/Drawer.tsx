@@ -6,7 +6,7 @@ interface Props {
 	children: React.PropsWithChildren<any>;
 	notifications?: INotification[];
 	windowShowParams: SpawnParams;
-	onMouseEnter: Function;
+	onMouseEnter?: Function;
 }
 
 function Drawer(props: Props): React.ReactElement {

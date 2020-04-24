@@ -50,6 +50,8 @@ function clickThrough(canClickThrough = false) {
 	WindowClient.setIgnoreMouseEvents(canClickThrough, options);
 }
 
-export { clickThrough, toggleComponent, getWindowSpawnData, usePubSub };
+const bringWindowToFront: Function = () => WindowClient.bringWindowToFront();
 
-export default { clickThrough, toggleComponent, getWindowSpawnData, usePubSub };
+export { clickThrough, toggleComponent, getWindowSpawnData, usePubSub, bringWindowToFront };
+
+export default { clickThrough, toggleComponent, getWindowSpawnData, usePubSub, bringWindowToFront };

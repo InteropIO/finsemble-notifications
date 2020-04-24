@@ -3,7 +3,7 @@
 	"version": "0.1.0",
 	"description": "Notifications services and UI",
 	"scripts": {
-		"watch": "nodemon --delay 1000ms -e js,ts,tsx,jsx,html,css,json,exe,dll copy.js",
+		"watch": "nodemon --delay 1000ms -e js,ts,tsx,jsx,html,css,json,exe,dll copy.js --resource=components",
 		"copy-files": "node copy.js",
 		"lint": "eslint services/** components/** ",
 		"lint:fix": "eslint services/** components/** tests/** --fix --quiet",
@@ -36,6 +36,7 @@
 		"date-fns": "^2.8.1",
 		"immutable": "^4.0.0-rc.12",
 		"lodash.get": "^4.4.2",
+		"react-transition-group": "^4.3.0",
 		"searchjs": "^1.0.2",
 		"uuid": "^3.3.3"
 	},
@@ -49,6 +50,7 @@
 		"@types/mocha": "^5.2.7",
 		"@types/node": "^12.12.5",
 		"@types/react-dom": "^16.9.3",
+		"@types/react-transition-group": "^4.2.4",
 		"@types/uuid": "^3.4.7",
 		"@typescript-eslint/eslint-plugin": "^2.10.0",
 		"@typescript-eslint/parser": "^2.10.0",

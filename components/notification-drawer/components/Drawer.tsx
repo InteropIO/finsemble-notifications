@@ -7,7 +7,7 @@ interface Props {
 
 function Drawer(props: Props): React.ReactElement {
 	return (
-		<div id="drawer" onBlur={() => props.onBlur()}>
+		<div id="drawer" onBlur={() => props.onBlur && props.onBlur()}>
 			{props.children}
 		</div>
 	);

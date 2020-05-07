@@ -41,6 +41,7 @@ export default interface INotification {
 	meta?: Meta;
 	isRead: boolean;
 	isSnoozed: boolean;
+	isDeleted: boolean;
 
 	actionsHistory?: IPerformedAction[];
 	stateHistory: INotification[];

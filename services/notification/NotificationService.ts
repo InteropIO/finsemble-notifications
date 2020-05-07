@@ -15,6 +15,7 @@ import IFilter from "../../types/Notification-definitions/IFilter";
 import { v4 as uuidV4 } from "uuid";
 import { Map as ImmutableMap } from "immutable";
 import { CallbackError, StandardCallback } from "../../types/FSBL-definitions/globals";
+import StorageHelper from "../helpers/StorageHelper";
 
 // TODO: Add Ticket to allow importing Finsemble
 // eslint-disable-next-line
@@ -35,7 +36,6 @@ export default class NotificationService extends Finsemble.baseService implement
 	 * TODO: Implement storage - will need to modify all places storageAbstraction is referenced
 	 */
 	private storageAbstraction: {
-		subscriptions: Map<string, ISubscription>;
 		snoozeTimers: Map<string, ISnoozeTimer>;
 
 		/**
@@ -47,6 +47,8 @@ export default class NotificationService extends Finsemble.baseService implement
 		notifications: Map<string, INotification>;
 		lastIssued: Map<string, ILastIssued>;
 	};
+
+	subscriptions: Map<string, ISubscription>;
 
 	private proxyToWebApiFilter: IFilter | false;
 	private routerWrapper: RouterWrapper;
@@ -74,8 +76,9 @@ export default class NotificationService extends Finsemble.baseService implement
 		});
 
 		this.proxyToWebApiFilter = false;
+		this.subscriptions = new Map<string, ISubscription>();
+
 		this.storageAbstraction = {
-			subscriptions: new Map<string, ISubscription>(),
 			snoozeTimers: new Map<string, ISnoozeTimer>(),
 			notifications: new Map<string, INotification>(),
 			lastIssued: new Map<string, ILastIssued>()
@@ -89,6 +92,7 @@ export default class NotificationService extends Finsemble.baseService implement
 		this.performAction = this.performAction.bind(this);
 		this.fetchHistory = this.fetchHistory.bind(this);
 		this.unsubscribe = this.unsubscribe.bind(this);
+		this.deleteNotification = this.deleteNotification.bind(this);
 		this.applyConfigChange = this.applyConfigChange.bind(this);
 		this.onBaseServiceReady(this.readyHandler);
 	}
@@ -133,7 +137,7 @@ export default class NotificationService extends Finsemble.baseService implement
 	 */
 	broadcastNotification(notification: INotification): void {
 		Finsemble.Clients.Logger.log("Broadcasting Notification: ", notification.id);
-		this.storageAbstraction.subscriptions.forEach(subscription => {
+		this.subscriptions.forEach(subscription => {
 			// Check if this notification matches any filters
 			if (ServiceHelper.filterMatches(subscription.filter, notification)) {
 				// For each notification that matches, expect a response and send it out.
@@ -171,11 +175,10 @@ export default class NotificationService extends Finsemble.baseService implement
 	}
 
 	/**
-	 * Delete a notification as part of a purge.
+	 * Remove the notification from the storage map if it exists
 	 *
 	 * @param {string} id of a notification
 	 *
-	 * TODO: implement using appropriate storage
 	 */
 	deleteNotification(id: string): void {
 		if (this.storageAbstraction.notifications.has(id)) {
@@ -214,7 +217,7 @@ export default class NotificationService extends Finsemble.baseService implement
 	 * @param {INotification[]} notifications from external source to be created or updated in Finsemble.
 	 */
 	notify(notifications: INotification[]): void {
-		notifications.forEach(notification => {
+		notifications.forEach(async notification => {
 			let processedNotification = this.receiveNotification(notification);
 			this.saveLastIssuedAt(processedNotification.source, processedNotification.issuedAt);
 			processedNotification = ServiceHelper.setNotificationHistory(
@@ -222,8 +225,15 @@ export default class NotificationService extends Finsemble.baseService implement
 				this.storageAbstraction.notifications,
 				notification
 			);
-			this.storeNotifications(processedNotification);
+
+			const notificationsToPurge = await this.storeNotifications(processedNotification);
 			this.broadcastNotification(processedNotification);
+
+			notificationsToPurge.forEach(deleted => {
+				// Delete from the persisted storage and broadcast to the UI that this should be deleted
+				StorageHelper.deleteValue(deleted.id);
+				this.broadcastNotification(deleted);
+			});
 		});
 	}
 
@@ -325,8 +335,8 @@ export default class NotificationService extends Finsemble.baseService implement
 
 	public unsubscribe(subscriptionId: string) {
 		Finsemble.Clients.Logger.log(`Removing notification subscription: ${subscriptionId}`);
-		if (this.storageAbstraction.subscriptions.has(subscriptionId)) {
-			this.storageAbstraction.subscriptions.delete(subscriptionId);
+		if (this.subscriptions.has(subscriptionId)) {
+			this.subscriptions.delete(subscriptionId);
 		}
 		return;
 	}
@@ -426,8 +436,25 @@ export default class NotificationService extends Finsemble.baseService implement
 	 *
 	 * @param notification {INotification}
 	 */
-	private storeNotifications(notification: INotification) {
+	private async storeNotifications(notification: INotification): Promise<INotification[]> {
+		/**
+		 * We will purge notifications that are oldest - Maps store the order of entry so remove the key and add
+		 * it again to place updated entries on the end to make clean up easier
+		 */
+		this.deleteNotification(notification.id);
+
 		this.storageAbstraction.notifications.set(notification.id, notification);
+
+		// TODO: Set purge config correctly
+		const notificationsToDelete = ServiceHelper.getItemsToPurge(this.storageAbstraction.notifications, {});
+		notificationsToDelete.forEach(toBeDeleted => {
+			this.deleteNotification(toBeDeleted.id);
+			toBeDeleted.isDeleted = true;
+		});
+
+		await StorageHelper.persistNotification(this.storageAbstraction.notifications, notification);
+
+		return notificationsToDelete;
 	}
 
 	/**
@@ -515,7 +542,7 @@ export default class NotificationService extends Finsemble.baseService implement
 	 * @param subscription
 	 */
 	private addToSubscription(subscription: ISubscription) {
-		this.storageAbstraction.subscriptions.set(subscription.id, subscription);
+		this.subscriptions.set(subscription.id, subscription);
 	}
 
 	private forwardAsQuery(notification: INotification, action: IAction): INotification {

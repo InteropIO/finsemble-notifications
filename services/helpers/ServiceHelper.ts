@@ -6,6 +6,8 @@ import { Map as ImmutableMap, mergeDeepWith } from "immutable";
 import IAction from "../../types/Notification-definitions/IAction";
 import PerformedAction from "../../types/Notification-definitions/PerformedAction";
 import IPerformedAction from "../../types/Notification-definitions/IPerformedAction";
+import StorageHelper from "./StorageHelper";
+import { PurgeConfig } from "../../types/Notification-definitions/NotificationConfig";
 
 // eslint-disable-next-line
 const searchJS = require("searchjs");
@@ -23,7 +25,6 @@ export default class ServiceHelper {
 	 * Isolates the notification types from a specific part of the config tree
 	 * @param config
 	 */
-
 	public static normaliseConfig(config: Record<string, object>): Record<string, object> {
 		// TODO: Input validation
 		return {
@@ -242,5 +243,11 @@ export default class ServiceHelper {
 		currentHistory.push(currentlyStoredNotification);
 
 		return map.set("stateHistory", currentHistory).toObject();
+	}
+
+	public static getItemsToPurge(notifications: Map<string, INotification>, purgeConfig: PurgeConfig): INotification[] {
+		const items: INotification[] = [];
+
+		return items;
 	}
 }

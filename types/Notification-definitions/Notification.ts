@@ -21,6 +21,7 @@ export default class Notification implements INotification {
 
 	isRead: boolean;
 	isSnoozed: boolean;
+	isDeleted: boolean;
 
 	actions?: IAction[];
 	meta?: Meta;
@@ -31,6 +32,7 @@ export default class Notification implements INotification {
 		this.actions = [];
 		this.isRead = false;
 		this.isSnoozed = false;
+		this.isDeleted = false;
 		this.actionsHistory = [];
 		this.meta = new Meta();
 		this.stateHistory = [];

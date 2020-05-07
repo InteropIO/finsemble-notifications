@@ -1,6 +1,10 @@
 # Changelog
 
 ## [Unreleased]
+
+
+
+## [V0.1 - Prototype Phase 1]
 ### Added
  - New callback type definitions specify params expected on client responses
 

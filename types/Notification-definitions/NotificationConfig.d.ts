@@ -16,6 +16,11 @@ export interface NotificationsConfig {
 	notificationsHistory?: boolean;
 }
 
+export interface PurgeConfig {
+	maxNotificationsToRetain: number;
+	maxNotificationRetentionPeriodSeconds: number;
+}
+
 export default interface WindowConfig {
 	window: SpawnParams & NotificationsConfig;
 }

@@ -67,11 +67,11 @@ export default class NotificationService extends Finsemble.baseService implement
 			startupDependencies: {
 				// If the service is using another service directly via an event listener or a responder, that service
 				// should be listed as a service start up dependency.
-				services: [],
+				services: ["storageService", "routerService"],
 				// When ever you use a client API with in the service, it should be listed as a client startup
 				// dependency. Any clients listed as a dependency must be initialized at the top of this file for your
 				// service to startup.
-				clients: []
+				clients: ["storageClient"]
 			}
 		});
 
@@ -104,6 +104,7 @@ export default class NotificationService extends Finsemble.baseService implement
 	readyHandler(callback: Function) {
 		this.routerWrapper = new RouterWrapper(Finsemble.Clients.RouterClient, Finsemble.Clients.Logger);
 		this.createRouterEndpoints();
+		this.fetchNotificationsFromStorage();
 		Finsemble.Clients.Logger.log("notification Service ready");
 		Finsemble.Clients.ConfigClient.addListener(
 			{ field: "finsemble.servicesConfig.notifications" },
@@ -126,6 +127,10 @@ export default class NotificationService extends Finsemble.baseService implement
 		this.setupAction();
 		this.setupFetchHistory();
 		this.setupUnsubscribe();
+	}
+
+	async fetchNotificationsFromStorage() {
+		this.storageAbstraction.notifications = await StorageHelper.fetchNotifications();
 	}
 
 	/**

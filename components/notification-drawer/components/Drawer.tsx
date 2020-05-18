@@ -11,13 +11,29 @@ function Drawer(props: Props): React.ReactElement {
 	const [animationClass, setAnimationClass] = useState("slide-in-right");
 
 	window.onfocus = () => {
-		setAnimationClass("");
-		setAnimationClass("slide-in-right");
+		FSBL.Clients.WindowClient.getMonitorInfo(
+			{ windowIdentifier: finsembleWindow.identifier },
+			(e: any, monitor: any) => {
+				finsembleWindow.setBounds(
+					{
+						top: monitor.availableRect.top,
+						left: monitor.availableRect.right - 320,
+						height: monitor.availableRect.height,
+						width: 320
+					},
+					(err: any) => {
+						console.log(err);
+					}
+				);
+				setAnimationClass("");
+				setAnimationClass("slide-in-right");
+			}
+		);
 	};
 	const animationComplete = () => {
 		animationClass === "slide-out-right" &&
 			// TODO: remove this and change for hide
-			FSBL.Clients.WindowClient.minimize();
+			finsembleWindow.hide();
 	};
 	return (
 		<div id="drawer" className={animationClass} onAnimationEnd={animationComplete}>

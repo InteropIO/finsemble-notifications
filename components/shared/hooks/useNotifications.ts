@@ -11,7 +11,7 @@ import { SpawnParams } from "../../../types/FSBL-definitions/services/window/Lau
 import WindowConfig, { NotificationsConfig } from "../../../types/Notification-definitions/NotificationConfig";
 import IFilter from "../../../types/Notification-definitions/IFilter";
 import { NotificationGroupList } from "../../../types/Notification-definitions/NotificationHookTypes";
-import _get = require("lodash/get");
+import _get = require("lodash.get");
 
 const FSBL = window.FSBL;
 
@@ -193,7 +193,7 @@ export default function useNotifications() {
 		componentType,
 		showAction,
 		hideAction
-	}: ToggleComponent): Promise<void> => {
+	}: ToggleComponent): Promise<any> => {
 		//set window.name to make the it easier to wrap (as name will be fixed)
 		const { wrap: component } = await FSBL.FinsembleWindow.wrap({ windowName }, (err: Error, wrap: object) =>
 			err ? console.error : wrap
@@ -216,6 +216,7 @@ export default function useNotifications() {
 				FSBL.Clients.Logger.error(error);
 			}
 		});
+		return component;
 	};
 
 	/**

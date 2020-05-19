@@ -30,7 +30,7 @@ function Drawer(props: Props): React.ReactElement {
 
 		return () => {
 			finsembleWindow.removeEventListener("shown", showListener);
-			FSBL.Clients.RouterClient.addListener("finsemble.hideNotificationsDrawer", hideListener);
+			FSBL.Clients.RouterClient.removeListener("finsemble.hideNotificationsDrawer", hideListener);
 		};
 	});
 

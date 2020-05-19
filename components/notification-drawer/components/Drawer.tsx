@@ -8,29 +8,34 @@ const { useState } = React;
 const { FSBL } = window;
 
 function Drawer(props: Props): React.ReactElement {
+	// TODO: All this code executes every time the component needs to render causing a lot of useless listeners to get added that never get removed. This is problematic.
+	console.log("did I get here");
 	const [animationClass, setAnimationClass] = useState("slide-in-right");
 
-	window.onfocus = () => {
-		FSBL.Clients.WindowClient.getMonitorInfo(
-			{ windowIdentifier: finsembleWindow.identifier },
-			(e: any, monitor: any) => {
-				finsembleWindow.setBounds(
-					{
-						top: monitor.availableRect.top,
-						left: monitor.availableRect.right - 320,
-						height: monitor.availableRect.height,
-						width: 320
-					},
-					(err: any) => {
-						console.log(err);
-					}
-				);
-				setAnimationClass("");
-				setAnimationClass("slide-in-right");
-			}
-		);
-	};
+	React.useEffect(() => {
+		const showListener = () => {
+			setAnimationClass("");
+			setAnimationClass("slide-in-right");
+			finsembleWindow.focus();
+		};
+
+		const hideListener = () => {
+			console.log("hidden slide out");
+			setAnimationClass("slide-out-right");
+		};
+
+		finsembleWindow.addEventListener("shown", showListener);
+
+		FSBL.Clients.RouterClient.addListener("finsemble.hideNotificationsDrawer", hideListener);
+
+		return () => {
+			finsembleWindow.removeEventListener("shown", showListener);
+			FSBL.Clients.RouterClient.addListener("finsemble.hideNotificationsDrawer", hideListener);
+		};
+	});
+
 	const animationComplete = () => {
+		console.log("click slide out");
 		animationClass === "slide-out-right" &&
 			// TODO: remove this and change for hide
 			finsembleWindow.hide();

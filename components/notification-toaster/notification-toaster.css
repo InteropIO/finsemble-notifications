@@ -29,7 +29,6 @@ body {
 }
 
 .drag-area {
-	-webkit-app-region: drag;
 	cursor: pointer;
 	width: 15px;
 	height: 17px;

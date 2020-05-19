@@ -29,14 +29,22 @@
 				"singleton": true
 			},
 			"foreign": {
+				"services": {
+					"windowService": {
+						"manageWindowMovement": true,
+						"allowSnapping": false,
+						"allowGrouping": false,
+						"allowAutoArrange": false,
+						"allowMinimize": false
+					}
+				},
 				"components": {
 					"App Launcher": {
 						"launchableByUser": false
 					},
 					"Window Manager": {
 						"title": "notification-toaster",
-						"FSBLHeader": false,
-						"persistWindowState": true
+						"FSBLHeader": false
 					},
 					"Toolbar": {
 						"iconClass": "notification-toaster"

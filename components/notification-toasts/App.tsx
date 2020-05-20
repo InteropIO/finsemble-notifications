@@ -5,7 +5,7 @@ import useNotifications from "../shared/hooks/useNotifications";
 import INotification from "../../types/Notification-definitions/INotification";
 import Animate from "../shared/components/Animate";
 import { SpawnParams } from "../../types/FSBL-definitions/services/window/Launcher/launcher";
-import { clickThrough } from "../shared/hooks/finsemble-hooks";
+import { enableClickThrough } from "../shared/hooks/finsemble-hooks";
 /* eslint-disable @typescript-eslint/no-var-requires */
 const _get = require("lodash.get");
 const { useEffect } = React;
@@ -26,13 +26,16 @@ function App(): React.ReactElement {
 	// ensure the config and notifications have loaded before rendering the DOM
 	const ready = config && notifications;
 
+	useEffect(() => {
+		if (notifications.length === 0) enableClickThrough(true);
+	}, [notifications.length]);
+
 	return (
 		<Drawer
 			notifications={notifications}
 			windowShowParams={windowShowParams}
-			onMouseEnter={() => {
-				clickThrough(true);
-			}}
+			onMouseEnter={() => enableClickThrough(true)}
+			onMouseLeave={() => enableClickThrough(true)}
 		>
 			{ready &&
 				notifications.map(
@@ -52,10 +55,10 @@ function App(): React.ReactElement {
 									closeAction={() => removeNotification(notification)}
 									closeButton
 									onMouseEnter={() => {
-										clickThrough(false);
+										enableClickThrough(false);
 									}}
 									onMouseLeave={() => {
-										clickThrough(true);
+										enableClickThrough(true);
 									}}
 								></Notification>
 							</Animate>

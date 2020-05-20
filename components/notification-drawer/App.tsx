@@ -6,7 +6,7 @@ import INotification from "../../types/Notification-definitions/INotification";
 import Animate from "../shared/components/Animate";
 import { CSSTransition } from "react-transition-group";
 import CenterIcon from "../shared/components/icons/CenterIcon";
-import { usePubSub, clickThrough, bringWindowToFront } from "../shared/hooks/finsemble-hooks";
+import { usePubSub, enableClickThrough, bringWindowToFront } from "../shared/hooks/finsemble-hooks";
 
 const { useState, useEffect } = React;
 
@@ -30,11 +30,11 @@ function App(): React.ReactElement {
 
 	useEffect(() => {
 		if (showDrawer) {
-			//only when the drawer is open do we want to disable clickthrough
+			//only when the drawer is open do we want to disable enableClickThrough
 			bringWindowToFront();
-			clickThrough(false);
+			enableClickThrough(false);
 		} else {
-			clickThrough(true);
+			enableClickThrough(true);
 		}
 	}, [showDrawer]);
 

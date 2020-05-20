@@ -120,7 +120,6 @@ export default function useNotifications() {
 			arr
 				.map(
 					(notification: INotification): INotification["type"] =>
-						//TODO: this does not work as expected without the ignore
 						//@ts-ignore
 						notification[type]
 				)

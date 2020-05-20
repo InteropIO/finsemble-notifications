@@ -7,10 +7,15 @@ interface Props {
 	notifications?: INotification[];
 	windowShowParams: SpawnParams;
 	onMouseEnter?: Function;
+	onMouseLeave?: Function;
 }
 
 function Drawer(props: Props): React.ReactElement {
-	return <div id="toasts-drawer">{props.children}</div>;
+	return (
+		<div onMouseEnter={() => props.onMouseEnter()} onMouseLeave={() => props.onMouseLeave()} id="toasts-drawer">
+			{props.children}
+		</div>
+	);
 }
 
 export default Drawer;

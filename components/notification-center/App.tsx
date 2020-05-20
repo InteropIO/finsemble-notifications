@@ -14,8 +14,7 @@ const App = (): React.ReactElement => {
 			<NotificationCenter title="Notification Center">
 				<div id="main-content">
 					{notifications.length === 0 ? (
-						// TODO:Add animated no notification component
-						<p>Good news no notifications!</p>
+						<p>You do not have any notifications!</p>
 					) : (
 						<>
 							<NotificationsPanel notifications={notifications} setActiveNotification={setActiveNotification} />

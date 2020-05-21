@@ -21,7 +21,7 @@ function App(): React.ReactElement {
 	useEffect(() => {
 		const hotkey = _get(FSBL.Clients.WindowClient.getSpawnData(), "notifications.hotkey", null);
 		console.log(hotkey);
-
+		// TODO: Pull this out of the component into a hook
 		if (hotkey) {
 			FSBL.Clients.HotkeyClient.addGlobalHotkey(hotkey, () => {
 				FSBL.Clients.WindowClient.showAtMousePosition();
@@ -32,58 +32,50 @@ function App(): React.ReactElement {
 		};
 	}, []); // eslint-disable-line
 
+	// show or hide the notifcation-drawer
 	const toggleDrawer = () => {
 		const { showDrawer } = notificationSubscribeMessage;
 		const publishValue = { ...notificationSubscribeMessage };
 		publishValue.showDrawer = !showDrawer;
+		// send a message over the router like "{...,showDrawer:true}"
 		notificationsPublish(publishValue);
 	};
 
+	// Show or hide the notification-center
+	// use this to use the buttons to either be highlighted
 	const toggleCenter = async () => {
 		const { showCenter = true } = notificationSubscribeMessage;
 		const publishValue = { ...notificationSubscribeMessage };
 		publishValue["showCenter"] = !showCenter;
+
+		// check if the center has been launched if not then launch it
 		const { data: windows } = await FSBL.Clients.LauncherClient.getActiveDescriptors();
 		if ("notification-center" in windows) {
+			// send a message over the router like "{...,showCenter:true}"
 			notificationsPublish(publishValue);
 		} else {
 			FSBL.Clients.LauncherClient.spawn("notification-center", {});
 		}
-
-		// { windowName: "notification-center", componentType: "notification-center" }
-		/*
-		Two options:
-		1) use showWindow to show and spawn if not found and then continue to use wrap to show or hide
-		2) get active descriptors to make sure it's spawned, if not spawn it. Next use the router to pass messages to make it show or hide itself. Need to keep a state somewhere OR just rely on the router?
-		*/
-	};
-
-	const toasterDrag = () => {
-		/*
-when the toaster is dragged do:
-- get the monitor it is on, if it is the same as the monitor in state  do nothing else:
-	move both the drawer and toasts to the new monitor.
-
-	Implementation ideas: close the components and spawn them on the correct monitor. The issue may be reloading the component and redrawing the DOM / calls to get all the notifications
-
-	Blockers: Show window does not like to move components to another monitor unless it is top 0 left 0
-	*/
 	};
 
 	const moveComponentsToToasterMonitor = () => {
 		// get the monitor if it has changed then send a command to change the window of both the drawer and the toasts.
-		const toasterMonitor = FSBL.Clients.WindowClient.getMonitorInfo(
+		const { whichMonitor: toasterMonitor } = FSBL.Clients.WindowClient.getMonitorInfo(
 			{
-				windowIdentifier: FSBL.Clients.WindowClient.getWindowIdentifier
+				monitor: "mine"
 			},
 			console.log
 		);
+
 		if (currentMonitor !== toasterMonitor) {
+			// if the toaster has moved monitors send the message to the drawer and toast to move to new monitor.
+			console.log(toasterMonitor);
 			const publishValue = { ...notificationSubscribeMessage };
 			publishValue["monitor"] = toasterMonitor;
 			notificationsPublish(publishValue);
 		}
-
+		// TODO: finish the function that moves the drawer and toasts to the same monitor as the toaster
+		//! This is Sidd's example - feel free to finish :D
 		// (e: any, monitor: any) => {
 		// 	component.setBounds(
 		// 		{
@@ -112,9 +104,8 @@ when the toaster is dragged do:
 
 	return (
 		<>
-			<div onMouseDown={onmousedown} onMouseUp={onmouseup}>
-				<DragHandleIcon className="drag-area" />
-			</div>
+			<DragHandleIcon className="drag-area" onMouseDown={onmousedown} onMouseUp={onmouseup} />
+
 			{activeNotifications(notifications).length > 0 && (
 				<div id="notification-number">{activeNotifications(notifications).length}</div>
 			)}

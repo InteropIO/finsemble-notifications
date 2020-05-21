@@ -41,6 +41,7 @@ function App(): React.ReactElement {
 				notifications.map(
 					(notification: INotification) =>
 						notificationIsActive(notification) && (
+							// TODO: Recommend to change this to react transition group
 							<Animate
 								key={notification.id}
 								displayDuration={notification.timeout || config.animation.displayDuration}

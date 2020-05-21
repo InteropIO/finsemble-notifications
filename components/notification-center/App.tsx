@@ -6,7 +6,6 @@ import NotificationDetailPanel from "./components/NotificationDetailPanel";
 import { usePubSub } from "../shared/hooks/finsemble-hooks";
 
 import { useState, useEffect } from "react";
-import { FinsembleWindow } from "../../types/FSBL-definitions/common/window/FinsembleWindow";
 
 const App = (): React.ReactElement => {
 	const { notifications, doAction } = useNotifications();
@@ -15,16 +14,8 @@ const App = (): React.ReactElement => {
 	const [notificationSubscribeMessage, notificationsPublish] = usePubSub(pubSubTopic);
 
 	useEffect(() => {
-		console.log(notificationSubscribeMessage);
 		if ("showCenter" in notificationSubscribeMessage) {
-			if (notificationSubscribeMessage.showCenter) {
-				// show this window
-				finsembleWindow.show();
-			}
-			if (!notificationSubscribeMessage.showCenter) {
-				// hide this window
-				finsembleWindow.hide();
-			}
+			notificationSubscribeMessage.showCenter ? finsembleWindow.show() : finsembleWindow.hide();
 		}
 	}, [notificationSubscribeMessage]);
 

@@ -22,7 +22,6 @@ function App(): React.ReactElement {
 	const [showDrawer, setShowDrawer] = useState(true);
 
 	useEffect(() => {
-		console.log(notificationSubscribeMessage);
 		if ("showDrawer" in notificationSubscribeMessage) {
 			setShowDrawer(notificationSubscribeMessage.showDrawer);
 		}

@@ -15,6 +15,7 @@ function App(): React.ReactElement {
 	const [notificationSubscribeMessage, notificationsPublish] = usePubSub(pubSubTopic);
 
 	const { FSBL } = window;
+	const currentWindow = fin.desktop.Window.getCurrent();
 
 	useEffect(() => {
 		const hotkey = _get(FSBL.Clients.WindowClient.getSpawnData(), "notifications.hotkey", null);
@@ -37,7 +38,17 @@ function App(): React.ReactElement {
 		notificationsPublish(publishValue);
 	};
 
-	const toggleCenter = () => {
+	const toggleCenter = async () => {
+		const { showCenter = true } = notificationSubscribeMessage;
+		const publishValue = { ...notificationSubscribeMessage };
+		publishValue["showCenter"] = !showCenter;
+		const { data: windows } = await FSBL.Clients.LauncherClient.getActiveDescriptors();
+		if ("notification-center" in windows) {
+			notificationsPublish(publishValue);
+		} else {
+			FSBL.Clients.LauncherClient.spawn("notification-center", {});
+		}
+
 		// { windowName: "notification-center", componentType: "notification-center" }
 		/*
 		Two options:
@@ -58,9 +69,40 @@ when the toaster is dragged do:
 	*/
 	};
 
+	const onmousedown = (e: any) => {
+		console.log("startmoving", e.nativeEvent);
+		currentWindow.startMovingWindow(e.nativeEvent);
+	};
+	const onmouseup = () => {
+		console.log("stopmoving");
+		currentWindow.stopMovingWindow();
+	};
+
+	const showAction = () => {
+		FSBL.Clients.WindowClient.getMonitorInfo(
+			{ windowIdentifier: FSBL.Clients.WindowClient.getWindowIdentifier() },
+			(e: any, monitor: any) => {
+				component.setBounds(
+					{
+						top: monitor.availableRect.top,
+						left: monitor.availableRect.right - 320,
+						height: monitor.availableRect.height,
+						width: 320
+					},
+					(err: any) => {
+						console.log(err);
+					}
+				);
+				component.show();
+			}
+		);
+	};
+
 	return (
 		<>
-			<DragHandleIcon className="drag-area" />
+			<div onMouseDown={onmousedown} onMouseUp={onmouseup}>
+				<DragHandleIcon className="drag-area" />
+			</div>
 			{activeNotifications(notifications).length > 0 && (
 				<div id="notification-number">{activeNotifications(notifications).length}</div>
 			)}

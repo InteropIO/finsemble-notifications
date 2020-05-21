@@ -40,9 +40,11 @@ function App(): React.ReactElement {
 
 	const notificationIsActive = (notification: INotification) => !notification.isRead && !notification.isSnoozed;
 
+	const hideDrawer = () => notificationsPublish({ ...notificationSubscribeMessage, showDrawer: false });
+
 	return (
 		<CSSTransition in={showDrawer} timeout={300} classNames="drawer" unmountOnExit>
-			<Drawer onBlur={() => notificationsPublish({ message: "test from drawer", showDrawer: false })}>
+			<Drawer onBlur={hideDrawer}>
 				<div id="notifications-drawer__menu">
 					<CenterIcon
 						id="notification-center-icon"
@@ -50,11 +52,7 @@ function App(): React.ReactElement {
 							"";
 						}}
 					/>
-					<HideDrawer
-						onClick={() => {
-							notificationsPublish({ message: "test from drawer", showDrawer: false });
-						}}
-					/>
+					<HideDrawer onClick={hideDrawer} />
 				</div>
 				<div>
 					{notifications.length ? (

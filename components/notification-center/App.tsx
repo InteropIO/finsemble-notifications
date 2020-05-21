@@ -3,11 +3,30 @@ import useNotifications from "../shared/hooks/useNotifications";
 import NotificationCenter from "./components/NotificationCenter";
 import NotificationsPanel from "./components/NotificationsPanel";
 import NotificationDetailPanel from "./components/NotificationDetailPanel";
-import { useState } from "react";
+import { usePubSub } from "../shared/hooks/finsemble-hooks";
+
+import { useState, useEffect } from "react";
+import { FinsembleWindow } from "../../types/FSBL-definitions/common/window/FinsembleWindow";
 
 const App = (): React.ReactElement => {
 	const { notifications, doAction } = useNotifications();
 	const [activeNotification, setActiveNotification] = useState();
+	const pubSubTopic = "notification-ui";
+	const [notificationSubscribeMessage, notificationsPublish] = usePubSub(pubSubTopic);
+
+	useEffect(() => {
+		console.log(notificationSubscribeMessage);
+		if ("showCenter" in notificationSubscribeMessage) {
+			if (notificationSubscribeMessage.showCenter) {
+				// show this window
+				finsembleWindow.show();
+			}
+			if (!notificationSubscribeMessage.showCenter) {
+				// hide this window
+				finsembleWindow.hide();
+			}
+		}
+	}, [notificationSubscribeMessage]);
 
 	return (
 		<div id="app">

@@ -7,12 +7,13 @@ import SettingsIcon from "../shared/components/icons/settings";
 import _get = require("lodash/get");
 import { usePubSub } from "../shared/hooks/finsemble-hooks";
 
-const { useEffect } = React;
+const { useEffect, useState } = React;
 
 function App(): React.ReactElement {
 	const { notifications, activeNotifications } = useNotifications();
 	const pubSubTopic = "notification-ui";
 	const [notificationSubscribeMessage, notificationsPublish] = usePubSub(pubSubTopic);
+	const [currentMonitor, setCurrentMonitor] = useState(null);
 
 	const { FSBL } = window;
 	const currentWindow = fin.desktop.Window.getCurrent();
@@ -69,6 +70,36 @@ when the toaster is dragged do:
 	*/
 	};
 
+	const moveComponentsToToasterMonitor = () => {
+		// get the monitor if it has changed then send a command to change the window of both the drawer and the toasts.
+		const toasterMonitor = FSBL.Clients.WindowClient.getMonitorInfo(
+			{
+				windowIdentifier: FSBL.Clients.WindowClient.getWindowIdentifier
+			},
+			console.log
+		);
+		if (currentMonitor !== toasterMonitor) {
+			const publishValue = { ...notificationSubscribeMessage };
+			publishValue["monitor"] = toasterMonitor;
+			notificationsPublish(publishValue);
+		}
+
+		// (e: any, monitor: any) => {
+		// 	component.setBounds(
+		// 		{
+		// 			top: monitor.availableRect.top,
+		// 			left: monitor.availableRect.right - 320,
+		// 			height: monitor.availableRect.height,
+		// 			width: 320
+		// 		},
+		// 		(err: any) => {
+		// 			console.log(err);
+		// 		}
+		// 	);
+		// 	component.show();
+		// }
+	};
+
 	const onmousedown = (e: any) => {
 		console.log("startmoving", e.nativeEvent);
 		currentWindow.startMovingWindow(e.nativeEvent);
@@ -76,26 +107,7 @@ when the toaster is dragged do:
 	const onmouseup = () => {
 		console.log("stopmoving");
 		currentWindow.stopMovingWindow();
-	};
-
-	const showAction = () => {
-		FSBL.Clients.WindowClient.getMonitorInfo(
-			{ windowIdentifier: FSBL.Clients.WindowClient.getWindowIdentifier() },
-			(e: any, monitor: any) => {
-				component.setBounds(
-					{
-						top: monitor.availableRect.top,
-						left: monitor.availableRect.right - 320,
-						height: monitor.availableRect.height,
-						width: 320
-					},
-					(err: any) => {
-						console.log(err);
-					}
-				);
-				component.show();
-			}
-		);
+		moveComponentsToToasterMonitor();
 	};
 
 	return (

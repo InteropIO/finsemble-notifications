@@ -37,8 +37,21 @@ export default class ServiceHelper {
 		return Object.assign({}, config && config.hasOwnProperty("types") ? config["types"] : null);
 	}
 
+	public static getPurgeConfig(config: Record<string, object>): PurgeConfig {
+		const defaults: PurgeConfig = {
+			maxNotificationsToRetain: 1000,
+			maxNotificationRetentionPeriodSeconds: false
+		};
+
+		return Object.assign(defaults, config && config.hasOwnProperty("types") ? config["types"] : null);
+	}
+
 	public static getServiceDefaults(config: Record<string, object>): Record<string, object> {
-		const defaults = Object.assign({}, config);
+		const defaultValues: PurgeConfig = {
+			maxNotificationsToRetain: 1000,
+			maxNotificationRetentionPeriodSeconds: false
+		};
+		const defaults = Object.assign(defaultValues, config);
 		if (defaults.hasOwnProperty("types")) {
 			delete defaults["types"];
 		}
@@ -247,6 +260,41 @@ export default class ServiceHelper {
 
 	public static getItemsToPurge(notifications: Map<string, INotification>, purgeConfig: PurgeConfig): INotification[] {
 		const items: INotification[] = [];
+
+		// If it's not set we have all collected all the old ones already
+		let gotAllExpired = purgeConfig.maxNotificationRetentionPeriodSeconds === false;
+		let count = 0;
+		const iterable = notifications.entries();
+
+		do {
+			const next = iterable.next();
+			if (next.done) {
+				break;
+			}
+			if (purgeConfig.maxNotificationRetentionPeriodSeconds) {
+				const actionsHistory = next.value[1].actionsHistory;
+				if (actionsHistory && actionsHistory.length) {
+					const lastUpdatedDate = Date.parse(actionsHistory[actionsHistory.length - 1].datePerformed);
+
+					if (Date.now() - purgeConfig.maxNotificationRetentionPeriodSeconds > lastUpdatedDate) {
+						count++;
+						items.push(next.value[1]);
+						continue;
+					} else {
+						/**
+						 * Notifications are stored is oldest first in the data structure
+						 * if the statement does not match we can stop all checks
+						 */
+						gotAllExpired = true;
+					}
+				}
+			}
+
+			if (notifications.size - count > purgeConfig.maxNotificationsToRetain) {
+				count++;
+				items.push(next.value[1]);
+			}
+		} while (!gotAllExpired || notifications.size - count > purgeConfig.maxNotificationsToRetain);
 
 		return items;
 	}

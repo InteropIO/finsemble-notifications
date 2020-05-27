@@ -18,7 +18,7 @@ export interface NotificationsConfig {
 
 export interface PurgeConfig {
 	maxNotificationsToRetain: number;
-	maxNotificationRetentionPeriodSeconds: number;
+	maxNotificationRetentionPeriodSeconds: number | false;
 }
 
 export default interface WindowConfig {

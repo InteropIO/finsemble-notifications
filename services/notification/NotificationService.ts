@@ -478,7 +478,10 @@ export default class NotificationService extends Finsemble.baseService implement
 		this.storageAbstraction.notifications.set(notification.id, notification);
 
 		// TODO: Set purge config correctly
-		const notificationsToDelete = ServiceHelper.getItemsToPurge(this.storageAbstraction.notifications, {});
+		const notificationsToDelete = ServiceHelper.getItemsToPurge(this.storageAbstraction.notifications, {
+			maxNotificationRetentionPeriodSeconds: this.config.service.maxNotificationRetentionPeriodSeconds,
+			maxNotificationsToRetain: this.config.service.maxNotificationsToRetain
+		});
 		notificationsToDelete.forEach(toBeDeleted => {
 			this.deleteNotification(toBeDeleted.id);
 			toBeDeleted.isDeleted = true;

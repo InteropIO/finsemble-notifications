@@ -15,7 +15,7 @@ import IFilter from "../../types/Notification-definitions/IFilter";
 import { v4 as uuidV4 } from "uuid";
 import { Map as ImmutableMap } from "immutable";
 import { CallbackError, StandardCallback } from "../../types/FSBL-definitions/globals";
-import StorageHelper from "../helpers/StorageHelper";
+import StorageHelper, { STORAGE_KEY_NOTIFICATION_PREFIX } from "../helpers/StorageHelper";
 
 // TODO: Add Ticket to allow importing Finsemble
 // eslint-disable-next-line
@@ -24,7 +24,10 @@ const Finsemble = require("@chartiq/finsemble");
 Finsemble.Clients.Logger.start();
 Finsemble.Clients.Logger.log("notification Service starting up");
 
+Finsemble.Clients.StorageClient.initialize();
+
 const NO_SOURCE = "NO_SOURCE_DEFINED";
+const SNOOZE_BOOT_WAIT = 10000;
 
 /**
  * A service used to transport notification data across the system
@@ -67,7 +70,7 @@ export default class NotificationService extends Finsemble.baseService implement
 			startupDependencies: {
 				// If the service is using another service directly via an event listener or a responder, that service
 				// should be listed as a service start up dependency.
-				services: ["storageService", "routerService"],
+				services: ["storageService"],
 				// When ever you use a client API with in the service, it should be listed as a client startup
 				// dependency. Any clients listed as a dependency must be initialized at the top of this file for your
 				// service to startup.
@@ -101,10 +104,9 @@ export default class NotificationService extends Finsemble.baseService implement
 	 *
 	 * @param {Function} callback
 	 */
-	readyHandler(callback: Function) {
+	async readyHandler(callback: Function) {
 		this.routerWrapper = new RouterWrapper(Finsemble.Clients.RouterClient, Finsemble.Clients.Logger);
 		this.createRouterEndpoints();
-		this.fetchNotificationsFromStorage();
 		Finsemble.Clients.Logger.log("notification Service ready");
 		Finsemble.Clients.ConfigClient.addListener(
 			{ field: "finsemble.servicesConfig.notifications" },
@@ -114,6 +116,9 @@ export default class NotificationService extends Finsemble.baseService implement
 			{ field: "finsemble.servicesConfig.notifications" },
 			this.applyConfigChange
 		).then();
+
+		await this.fetchStateFromStorage();
+		this.wakeSnoozeFromLoad();
 		callback();
 	}
 
@@ -129,8 +134,10 @@ export default class NotificationService extends Finsemble.baseService implement
 		this.setupUnsubscribe();
 	}
 
-	async fetchNotificationsFromStorage() {
+	async fetchStateFromStorage() {
 		this.storageAbstraction.notifications = await StorageHelper.fetchNotifications();
+		this.storageAbstraction.lastIssued = await StorageHelper.fetchLastIssued();
+		this.storageAbstraction.snoozeTimers = await StorageHelper.fetchSnoozeTimers();
 	}
 
 	/**
@@ -186,6 +193,9 @@ export default class NotificationService extends Finsemble.baseService implement
 	 *
 	 */
 	deleteNotification(id: string): void {
+		if (this.storageAbstraction.snoozeTimers.has(id)) {
+			this.storageAbstraction.snoozeTimers.delete(id);
+		}
 		if (this.storageAbstraction.notifications.has(id)) {
 			this.storageAbstraction.notifications.delete(id);
 		}
@@ -236,7 +246,7 @@ export default class NotificationService extends Finsemble.baseService implement
 
 			notificationsToPurge.forEach(deleted => {
 				// Delete from the persisted storage and broadcast to the UI that this should be deleted
-				StorageHelper.deleteValue(deleted.id);
+				StorageHelper.deleteValue(STORAGE_KEY_NOTIFICATION_PREFIX + deleted.id);
 				this.broadcastNotification(deleted);
 			});
 		});
@@ -278,9 +288,11 @@ export default class NotificationService extends Finsemble.baseService implement
 			// Update only if the new date is newer
 			if (d1 > d2) {
 				this.storageAbstraction.lastIssued.set(source, new LastIssued(source, issuedAt));
+				StorageHelper.storeLastIssued(this.storageAbstraction.lastIssued);
 			}
 		} else {
 			this.storageAbstraction.lastIssued.set(source, new LastIssued(source, issuedAt));
+			StorageHelper.storeLastIssued(this.storageAbstraction.lastIssued);
 		}
 	}
 
@@ -296,29 +308,44 @@ export default class NotificationService extends Finsemble.baseService implement
 	/**
 	 * Snoozes a notification
 	 *
-	 * @param notification {INotification}
-	 * @param action {IAction}
-	 *
-	 * TODO: notification wake on finsemble restart
+	 * @param notification
+	 * @param action
+	 * @param sleepFromBoot
+	 * @param timeoutOverride
 	 */
-	snooze(notification: INotification, action: IAction): INotification {
+	snooze(notification: INotification, action: IAction, timeoutOverride?: number): INotification {
+		this.removeFromSnoozeQueue(notification);
+
 		const defaultTimeout = 10000; // TODO: get from config
-		const timeout = action.milliseconds ? action.milliseconds : defaultTimeout;
+
+		const timeout = timeoutOverride ? timeoutOverride : action.milliseconds ? action.milliseconds : defaultTimeout;
 
 		const snoozeTimer = new SnoozeTimer();
 		snoozeTimer.notificationId = notification.id;
 		snoozeTimer.snoozeInterval = timeout;
 		snoozeTimer.timeoutId = setTimeout(() => {
-			const action = new Action();
-			action.id = this.getUuid();
-			action.type = "FINSEMBLE:WAKE";
-			notification = ServiceHelper.addPerformedAction(notification, action);
-			notification.isSnoozed = false;
-			this.notify([notification]);
+			this.wake(notification);
 		}, timeout);
+
+		Finsemble.Clients.Logger.log(`Timing Snoozing Date ${Date.now()}`);
+		Finsemble.Clients.Logger.log(`Timing Snoozing Seconds ${timeout}`);
+		snoozeTimer.wakeEpochMilliseconds = Date.now() + timeout;
+		Finsemble.Clients.Logger.log(`Timing Snoozing for ${snoozeTimer.wakeEpochMilliseconds}`);
+
 		this.storageAbstraction.snoozeTimers.set(notification.id, snoozeTimer);
+		StorageHelper.storeSnoozeTimers(this.storageAbstraction.snoozeTimers);
 		notification.isSnoozed = true;
 		return notification;
+	}
+
+	private wake(notification: INotification) {
+		const action = new Action();
+		action.id = this.getUuid();
+		action.type = "FINSEMBLE:WAKE";
+		notification = ServiceHelper.addPerformedAction(notification, action);
+		notification.isSnoozed = false;
+		this.removeFromSnoozeQueue(notification);
+		this.notify([notification]);
 	}
 
 	dismiss(notification: INotification): INotification {
@@ -458,6 +485,7 @@ export default class NotificationService extends Finsemble.baseService implement
 		});
 
 		await StorageHelper.persistNotification(this.storageAbstraction.notifications, notification);
+		await StorageHelper.storeSnoozeTimers(this.storageAbstraction.snoozeTimers);
 
 		return notificationsToDelete;
 	}
@@ -683,6 +711,42 @@ export default class NotificationService extends Finsemble.baseService implement
 	private removeFromSnoozeQueue(notification: INotification) {
 		if (this.storageAbstraction.snoozeTimers.has(notification.id)) {
 			clearTimeout(this.storageAbstraction.snoozeTimers.get(notification.id).timeoutId);
+			this.storageAbstraction.snoozeTimers.delete(notification.id);
+			StorageHelper.storeSnoozeTimers(this.storageAbstraction.snoozeTimers);
 		}
+	}
+
+	private wakeSnoozeFromLoad() {
+		const toSnooze: INotification[] = [];
+		const toWake: INotification[] = [];
+
+		this.storageAbstraction.snoozeTimers.forEach((timer, id) => {
+			let notification: INotification = null;
+			if (this.storageAbstraction.notifications.has(id)) {
+				notification = this.storageAbstraction.notifications.get(id);
+			}
+
+			if (notification) {
+				if (Date.now() >= timer.wakeEpochMilliseconds) {
+					toWake.push(notification);
+				} else {
+					toSnooze.push(notification);
+				}
+			}
+		});
+
+		toSnooze.forEach(notification => {
+			const timer = this.storageAbstraction.snoozeTimers.get(notification.id);
+			Finsemble.Clients.Logger.log(`Timing Timestamp ${timer.wakeEpochMilliseconds}`);
+			Finsemble.Clients.Logger.log(`Timing Now Timestamp ${Date.now()}`);
+			Finsemble.Clients.Logger.log("Timing: " + `${timer.wakeEpochMilliseconds - Date.now()}`);
+			this.snooze(notification, new Action(), Math.max(SNOOZE_BOOT_WAIT, timer.wakeEpochMilliseconds - Date.now()));
+		});
+
+		toWake.forEach(notification => {
+			setTimeout(() => {
+				this.wake(notification);
+			}, SNOOZE_BOOT_WAIT);
+		});
 	}
 }

@@ -89,7 +89,7 @@ const Notification = (props: Props) => {
 
 	return (
 		<div
-			className={`notification ${(meta && meta.cssClassName) || ""}`}
+			className={`notification ${notification.cssClassName || ""}`}
 			onMouseEnter={() => props.onMouseEnter && props.onMouseEnter()}
 			onMouseLeave={() => props.onMouseLeave && props.onMouseLeave()}
 		>

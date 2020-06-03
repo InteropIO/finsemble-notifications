@@ -3,7 +3,7 @@
 	"version": "0.1.0",
 	"description": "Notifications services and UI",
 	"scripts": {
-		"watch": "nodemon --delay 1000ms -e js,ts,tsx,jsx,html,css,json,exe,dll copy.js --resource=components",
+		"watch": "nodemon --delay 1000ms -e js,ts,tsx,jsx,html,css,json,exe,dll copy.js",
 		"copy-files": "node copy.js",
 		"lint": "eslint services/** components/** ",
 		"lint:fix": "eslint services/** components/** tests/** --fix --quiet",

@@ -27,16 +27,6 @@ function App(): React.ReactElement {
 		}
 	}, [notificationSubscribeMessage, showDrawer]);
 
-	useEffect(() => {
-		if (showDrawer) {
-			//only when the drawer is open do we want to disable enableClickThrough
-			bringWindowToFront();
-			enableClickThrough(false);
-		} else {
-			enableClickThrough(true);
-		}
-	}, [showDrawer]);
-
 	const notificationIsActive = (notification: INotification) => !notification.isRead && !notification.isSnoozed;
 
 	const hideDrawer = () => notificationsPublish({ ...notificationSubscribeMessage, showDrawer: false });

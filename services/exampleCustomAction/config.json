@@ -1,6 +1,6 @@
 {
 	"services": {
-		"exampleCustomActionsService": {
+		"exampleCustomActionService": {
 			"useWindow": true,
 			"active": true,
 			"name": "exampleCustomActionService",

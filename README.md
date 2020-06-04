@@ -58,7 +58,7 @@ too.
 1. You're now setup to copy. Running `npm run copy-files` should now have copied all the required files in your 
 seed project.
 1. Your seed will likely be missing some of the required packages for this to run. 
-`npm install uuid date-fns immutable searchjs lodash.get` (we also suggest install `@types/react` if you have not 
+`npm install uuid date-fns immutable searchjs lodash.get react-transition-group` (we also suggest install `@types/react` if you have not 
 already)
 1. Make sure your seed can transpile tsx by adding `"jsx": "react"` to your seed's `compilerOptions` in the `tsconfig.json`
 1. In the seed, edit _./build/webpack/defaultWebpackConfig.js_ in the section for the `ts-loader`, set `"test": /\.ts(x)?$/` if it's not already.

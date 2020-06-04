@@ -4,8 +4,13 @@
 		"jsx": true,
 		"useJSXTextNode": true
 	},
-	"extends": ["plugin:@typescript-eslint/recommended", "plugin:prettier/recommended", "prettier/@typescript-eslint"],
-	"plugins": ["@typescript-eslint", "react-hooks", "prettier"],
+	"extends": [
+		"plugin:@typescript-eslint/recommended",
+		"plugin:prettier/recommended",
+		"prettier/@typescript-eslint",
+		"plugin:react/recommended"
+	],
+	"plugins": ["@typescript-eslint", "react-hooks", "prettier", "react"],
 	"rules": {
 		"@typescript-eslint/explicit-function-return-type": "off",
 		"@typescript-eslint/ban-ts-ignore": "off",

@@ -3,7 +3,7 @@
 @import "../shared/styles/animations.css";
 
 :root {
-	--notification-primary-color: #262d38;
+	--notification-primary-color: #039cff;
 	--notification-secondary-color: black;
 	--notification-contrast-color: white;
 
@@ -29,7 +29,6 @@ body {
 }
 
 .drag-area {
-	-webkit-app-region: drag;
 	cursor: pointer;
 	width: 15px;
 	height: 17px;
@@ -50,8 +49,13 @@ body {
 .toaster-icons {
 	cursor: pointer;
 }
-.toaster-icons:hover > path {
-	fill: rgb(145, 62, 240);
+.toaster-icons:hover {
+	background-color: var(--notification-primary-color);
+	border-radius: 12px;
+}
+.toaster-icons--active > path {
+	cursor: pointer;
+	fill: var(--notification-primary-color);
 }
 
 #toaster-divider {

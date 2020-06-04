@@ -132,6 +132,7 @@ export default class NotificationService extends Finsemble.baseService implement
 		this.setupAction();
 		this.setupFetchHistory();
 		this.setupUnsubscribe();
+		this.setupUIPubSub();
 	}
 
 	async fetchStateFromStorage() {
@@ -533,6 +534,13 @@ export default class NotificationService extends Finsemble.baseService implement
 	 */
 	private setupAction() {
 		this.routerWrapper.addResponder(ROUTER_ENDPOINTS.PERFORM_ACTION, this.performAction);
+	}
+
+	/**
+	 * Setup UI PubSub Channel
+	 */
+	private setupUIPubSub() {
+		Finsemble.Clients.RouterClient.addPubSubResponder("notification-ui", {});
 	}
 
 	/* eslint-disable */

@@ -9,6 +9,8 @@ interface Props {
 	doAction: Function;
 	closeAction?: Function;
 	closeButton?: boolean;
+	onMouseLeave?: Function;
+	onMouseEnter?: Function;
 }
 
 const HeaderArea = (props: Props) => {
@@ -39,7 +41,6 @@ const HeaderArea = (props: Props) => {
 				<img src={notification.headerLogo} />
 			</div>
 			<div className="detail-area_type">{notification.headerText}</div>
-			{/* TODO: add a button to toggle actual time / date */}
 			<div className="detail-area_time">{time} ago</div>
 			{closeButton && <img src="../shared/assets/close.svg" id="close-icon" onClick={() => closeAction()} />}
 		</div>
@@ -68,7 +69,13 @@ const ActionArea = (props: Props) => {
 	return (
 		<div className="action-area">
 			{notification.actions.map((action: IAction) => (
-				<button key={action.buttonText} onClick={() => doAction(notification, action)}>
+				<button
+					key={action.buttonText}
+					onClick={e => {
+						e.preventDefault();
+						doAction(notification, action);
+					}}
+				>
 					{action.buttonText}
 				</button>
 			))}
@@ -81,7 +88,11 @@ const Notification = (props: Props) => {
 	const { meta } = notification;
 
 	return (
-		<div className={`notification ${(meta && meta.cssClassName) || ""}`}>
+		<div
+			className={`notification ${notification.cssClassName || ""}`}
+			onMouseEnter={() => props.onMouseEnter && props.onMouseEnter()}
+			onMouseLeave={() => props.onMouseLeave && props.onMouseLeave()}
+		>
 			<HeaderArea {...props} />
 			<ContentArea {...props} />
 			<hr />

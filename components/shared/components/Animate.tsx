@@ -6,7 +6,7 @@ interface Props {
 	displayDuration?: number;
 	animateIn?: string;
 	animateOut?: string;
-	animateOutComplete: Function;
+	animateOutComplete?: Function;
 }
 /**
  * Animate the child component
@@ -15,7 +15,14 @@ interface Props {
  */
 export default function Animate(props: Props) {
 	// provide some defaults to ensure it still works even though it is blank
-	const { animateIn, animateOut, displayDuration, animateOutComplete } = props;
+	const {
+		animateIn,
+		animateOut,
+		displayDuration,
+		animateOutComplete = () => {
+			"";
+		}
+	} = props;
 	const [css, setCSS] = useState(animateIn || "");
 
 	useEffect(

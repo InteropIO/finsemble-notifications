@@ -50,7 +50,7 @@ function toggleComponent() {
  */
 function enableClickThrough(canClickThrough = false) {
 	const options = canClickThrough && { forward: true };
-	WindowClient.setIgnoreMouseEvents(canClickThrough, options);
+	// WindowClient.setIgnoreMouseEvents(canClickThrough, options);
 }
 
 const bringWindowToFront: Function = () => WindowClient.bringWindowToFront();

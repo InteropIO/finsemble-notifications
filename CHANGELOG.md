@@ -1,7 +1,10 @@
 # Changelog
 
 ## [Unreleased]
-
+### Added
+  - Notifications have their own storage topic 
+  - Notifications can now be purged based on values in the config
+  - Updated documentation to explain types better
 
 
 ## [V0.1 - Prototype Phase 1]

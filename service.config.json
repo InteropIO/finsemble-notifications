@@ -3,8 +3,8 @@
 		"notifications": {
 			"defaultDismissButtonText": "Dismiss",
 			"maxNotificationsToRetain": 1000,
-			"maxNotificationRetentionPeriodHours": 24,
-			"proxyToWebAPiFilter": {
+			"maxNotificationRetentionPeriodSeconds": 86400,
+			"proxyToWebApiFilter": {
 				"include": [
 					{
 						"type": "web"

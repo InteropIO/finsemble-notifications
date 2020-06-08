@@ -183,7 +183,7 @@ export default class NotificationService extends Finsemble.baseService implement
 		}
 
 		const options = convertNotificationToWebApi(notification);
-		// TODO: WebAPI Actions are only possible by implementing ServiceWorkerRegistration.showNotification()
+		// TODO: WebApi Actions are only possible by implementing ServiceWorkerRegistration.showNotification()
 		new Notification(title.join(" - "), options);
 	}
 

@@ -7,7 +7,7 @@ This is an example service used to listen to custom action requests being sent i
 An action can have one of three types that tell Finsemble to delegate the action to a different part of the system.
 The types are `ActionTypes.TRANSMIT`, `ActionTypes.QUERY` and `ActionTypes.PUBLISH`.
 
-Specify the `action.type` of set the `action.channel` and `action.payload`. _(See [sending notifications](./components/notify) for details on the notification client setup and sending.)_
+Specify the `action.type` of set the `action.channel` and `action.payload`. _(See [sending notifications](/components/notify) for details on the notification client setup and sending.)_
 
 ```typescript
 action.type = ActionTypes.TRANSMIT;

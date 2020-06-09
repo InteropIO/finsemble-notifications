@@ -18,12 +18,11 @@ const FSBLReady = () => {
 		notifications["actionTypes"] = ActionTypes;
 
 		// SHOULD NOW BE ABLE TO RUN
-		const notification = new FSBLNotifications.Notification();
-		const action = new FSBLNotifications.Action();
-		const sub = new FSBLNotifications.Subscription();
-		const filter = new FSBLNotifications.Filter();
-
-		FSBLNotifications.client.notify([notification]);
+		// const notification = new FSBLNotifications.Notification();
+		// const action = new FSBLNotifications.Action();
+		// const sub = new FSBLNotifications.Subscription();
+		// const filter = new FSBLNotifications.Filter();
+		// FSBLNotifications.client.notify([notification]);
 	} catch (e) {
 		FSBL.Clients.Logger.error(e);
 	}

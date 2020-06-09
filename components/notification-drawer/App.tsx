@@ -6,7 +6,7 @@ import INotification from "../../types/Notification-definitions/INotification";
 import Animate from "../shared/components/Animate";
 import { CSSTransition } from "react-transition-group";
 import CenterIcon from "../shared/components/icons/CenterIcon";
-import { usePubSub, enableClickThrough, bringWindowToFront } from "../shared/hooks/finsemble-hooks";
+import { usePubSub } from "../shared/hooks/finsemble-hooks";
 
 const { useState, useEffect } = React;
 
@@ -15,19 +15,17 @@ const HideDrawer = ({ onClick }: { onClick: Function }) => (
 );
 
 function App(): React.ReactElement {
-	const { notifications, doAction } = useNotifications();
+	const { notifications, doAction, notificationIsActive } = useNotifications();
 	const pubSubTopic = "notification-ui";
 	const [notificationSubscribeMessage, notificationsPublish] = usePubSub(pubSubTopic);
 
-	const [showDrawer, setShowDrawer] = useState(true);
+	const [showDrawer, setShowDrawer] = useState(false);
 
 	useEffect(() => {
 		if ("showDrawer" in notificationSubscribeMessage) {
 			setShowDrawer(notificationSubscribeMessage.showDrawer);
 		}
 	}, [notificationSubscribeMessage, showDrawer]);
-
-	const notificationIsActive = (notification: INotification) => !notification.isRead && !notification.isSnoozed;
 
 	const hideDrawer = () => notificationsPublish({ ...notificationSubscribeMessage, showDrawer: false });
 

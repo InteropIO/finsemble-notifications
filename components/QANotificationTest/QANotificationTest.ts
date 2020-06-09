@@ -6,7 +6,7 @@ import Filter from "../../types/Notification-definitions/Filter";
 
 const notifications: any = {};
 
-window.FSBLNotifications = notifications;
+(window as any).FSBLNotifications = notifications;
 
 const FSBLReady = () => {
 	try {
@@ -28,8 +28,8 @@ const FSBLReady = () => {
 	}
 };
 
-if (window.FSBL && FSBL.addEventListener) {
-	FSBL.addEventListener("onReady", FSBLReady);
+if (window.FSBL && (FSBL as any).addEventListener) {
+	(FSBL as any).addEventListener("onReady", FSBLReady);
 } else {
 	window.addEventListener("FSBLReady", FSBLReady);
 }

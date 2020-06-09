@@ -65,7 +65,7 @@ function App(): React.ReactElement {
 				monitor: "mine"
 			},
 			console.log
-		);
+		) as any;
 
 		if (currentMonitor !== toasterMonitor) {
 			// if the toaster has moved monitors send the message to the drawer and toast to move to new monitor.

@@ -15,7 +15,7 @@ const App = (): React.ReactElement => {
 
 	useEffect(() => {
 		if ("showCenter" in notificationSubscribeMessage) {
-			notificationSubscribeMessage.showCenter ? finsembleWindow.show() : finsembleWindow.hide();
+			notificationSubscribeMessage.showCenter ? finsembleWindow.show(null) : finsembleWindow.hide();
 		}
 	}, [notificationSubscribeMessage]);
 

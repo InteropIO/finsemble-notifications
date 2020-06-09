@@ -81,6 +81,93 @@ body {
 	margin-right: 3em;
 }
 
+.notification_card {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-evenly;
+	width: 100%;
+	height: 150px;
+}
+
+.notification_card .card_header {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.notification_card .card_header .notification_logo {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+}
+
+.notification_card .details {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+.notification_card .details .title {
+	font-size: 16px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.notification_card .details .type {
+	font-size: 12px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.notification_card .details .notification_content {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+}
+
+.notification_card .details .timeout {
+	font-size: 12px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+/* .notification_card .card_header {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-evenly;
+}
+
+.notification_card .card_header img {
+	width: 20px;
+} */
+
+/* .notification_card .notification_content {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+} */
+
+.notification_card .details_footer {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+.notification_card .details_footer hr {
+	width: 100%;
+}
+
+.notification_card .details_footer .notification_actions {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-evenly;
+	margin: -5px 0 -10px 0;
+}
+
+.notification_card .notification_actions div {
+	cursor: pointer;
+}
+
 #notification-center__notification-detail {
 	border-top: 1px solid white;
 	border-bottom: 1px solid white;

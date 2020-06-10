@@ -10,17 +10,28 @@ import { usePubSub } from "../shared/hooks/finsemble-hooks";
 const { useEffect, useState } = React;
 
 function App(): React.ReactElement {
-	const { notifications, activeNotifications } = useNotifications();
+	const params = {
+		config: {
+			notificationsHistory: true
+		}
+	};
+	const { notifications, activeNotifications } = useNotifications(params);
 	const pubSubTopic = "notification-ui";
 	const [notificationSubscribeMessage, notificationsPublish] = usePubSub(pubSubTopic);
 	const [currentMonitor, setCurrentMonitor] = useState(null);
+	const [count, setCount] = useState(activeNotifications(notifications).length);
+
+	useEffect(() => {
+		console.log(activeNotifications(notifications).length, "asdfasdfasfd");
+		setCount(activeNotifications(notifications).length);
+	}, [notifications]);
 
 	const { FSBL } = window;
+	//@ts-ignore
 	const currentWindow = fin.desktop.Window.getCurrent();
 
 	useEffect(() => {
 		const hotkey = _get(FSBL.Clients.WindowClient.getSpawnData(), "notifications.hotkey", null);
-		console.log(hotkey);
 		// TODO: Pull this out of the component into a hook
 		if (hotkey) {
 			FSBL.Clients.HotkeyClient.addGlobalHotkey(hotkey, () => {
@@ -32,7 +43,7 @@ function App(): React.ReactElement {
 		};
 	}, []); // eslint-disable-line
 
-	// show or hide the notifcation-drawer
+	// show or hide the notification-drawer
 	const toggleDrawer = () => {
 		const { showDrawer } = notificationSubscribeMessage;
 		const publishValue = { ...notificationSubscribeMessage };
@@ -99,7 +110,7 @@ function App(): React.ReactElement {
 	const onmouseup = () => {
 		console.log("stopmoving");
 		currentWindow.stopMovingWindow();
-		moveComponentsToToasterMonitor();
+		// moveComponentsToToasterMonitor();
 	};
 
 	return (
@@ -107,9 +118,7 @@ function App(): React.ReactElement {
 			<div onMouseDown={onmousedown} onMouseUp={onmouseup}>
 				<DragHandleIcon id="drag-area" className="drag-area" />
 			</div>
-			{activeNotifications(notifications).length > 0 && (
-				<div id="notification-number">{activeNotifications(notifications).length}</div>
-			)}
+			{count > 0 && <div id="notification-number">{count}</div>}
 			<NotificationIcon
 				className={notificationSubscribeMessage.showDrawer ? "toaster-icons--active" : "toaster-icons"}
 				onClick={() => toggleDrawer()}

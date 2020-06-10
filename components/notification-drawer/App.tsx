@@ -47,7 +47,7 @@ function App(): React.ReactElement {
 					{notifications.length ? (
 						[...notifications].map(
 							(notification: INotification) =>
-								notificationIsActive && (
+								notificationIsActive(notification) && (
 									<Animate animateIn="slide-in-fwd-bottom" animateOut="slide-out-right" key={notification.id}>
 										<Notification notification={notification} doAction={doAction}></Notification>
 									</Animate>

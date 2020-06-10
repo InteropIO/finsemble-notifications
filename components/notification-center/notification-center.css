@@ -86,66 +86,110 @@ body {
 	flex-direction: column;
 	justify-content: space-evenly;
 	width: 100%;
-	height: 150px;
 }
 
 .notification_card .card_header {
 	display: flex;
 	flex-direction: column;
-	justify-content: space-between;
+	align-items: center;
 }
 
 .notification_card .card_header .notification_logo {
 	display: flex;
 	flex-direction: row;
-	justify-content: center;
+	justify-content: space-around;
+}
+
+.notification_card .card_header .notification_logo img {
+	margin-right: 20px;
 }
 
 .notification_card .details {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
+	padding: 5px;
 }
 
 .notification_card .details .title {
 	font-size: 16px;
 	overflow: hidden;
 	text-overflow: ellipsis;
-}
-
-.notification_card .details .type {
-	font-size: 12px;
-	overflow: hidden;
-	text-overflow: ellipsis;
+	display: flex;
+	justify-content: center;
+	font-weight: 700;
 }
 
 .notification_card .details .notification_content {
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
+	padding-top: 10px;
+	padding-bottom: 10px;
 }
 
-.notification_card .details .timeout {
+.notification_card .details .notification_content img {
+	width: 30px;
+	margin-right: 20px;
+}
+
+.notification_card .details .meta-details {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+.notification_card .details .meta-details .meta-info {
+	align-self: center;
+	text-decoration: underline;
+	margin-bottom: -10px;
+}
+
+.notification_card .details .meta-details .type {
 	font-size: 12px;
 	overflow: hidden;
 	text-overflow: ellipsis;
-}
-
-/* .notification_card .card_header {
 	display: flex;
-	flex-direction: row;
-	justify-content: space-evenly;
 }
 
-.notification_card .card_header img {
-	width: 20px;
-} */
+.notification_card .details .meta-details .type span {
+	font-weight: 700;
+}
 
-/* .notification_card .notification_content {
+.notification_card .details .meta-details .source {
+	font-size: 12px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: flex;
+}
+
+.notification_card .details .meta-details .source span {
+	font-weight: 700;
+}
+
+.notification_card .details .meta-details .flags {
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
-} */
+	align-items: center;
+	padding: 10px;
+}
+
+.notification_card .details .meta-details .flags span {
+	color: green;
+}
+
+.notification_card .details .meta-details .timeout {
+	font-size: 12px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: flex;
+	justify-content: center;
+}
+
+.notification_card .details .meta-details .timeout span {
+	font-weight: 700;
+}
 
 .notification_card .details_footer {
 	display: flex;
@@ -157,14 +201,14 @@ body {
 	width: 100%;
 }
 
-.notification_card .details_footer .notification_actions {
+.notification_card .details_footer .actions {
 	display: flex;
-	flex-direction: row;
 	justify-content: space-evenly;
-	margin: -5px 0 -10px 0;
+	align-content: center;
+	margin-top: -5px;
 }
 
-.notification_card .notification_actions div {
+.notification_card .details_footer .actions button {
 	cursor: pointer;
 }
 

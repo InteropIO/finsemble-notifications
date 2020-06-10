@@ -17,6 +17,7 @@ interface NotificationContentProps {
 	contentLogo?: string;
 	details?: string;
 	timeout?: number;
+	source?: string;
 	meta?: Meta;
 	isRead?: boolean;
 	isSnoozed?: boolean;
@@ -72,30 +73,75 @@ const HeaderArea = (props: NotificationHeaderProps) => {
 				<img src={headerLogo} />
 				<div>{headerText}</div>
 			</div>
-			<div className="issued_at">Issued: {issuedTime}</div>
-			<div className="received_at">Recieved: {receivedTime}</div>
+			<br />
+			<div className="issued_at">Issued: {issuedTime} ago</div>
+			<div className="received_at">Received: {receivedTime} ago</div>
 		</div>
 	);
 };
 
 const ContentArea = (props: NotificationContentProps) => {
-	const { title, type, contentLogo, details, timeout, meta, isRead, isSnoozed } = props;
+	const { title, type, contentLogo, details, timeout, source, meta, isRead, isSnoozed } = props;
 
 	return (
 		<div className="details">
 			<h4 className="title">{title}</h4>
-			<div className="type">Notification Type: {type}</div>
 			<div className="notification_content">
 				<img src={contentLogo} />
 				<div>{details}</div>
 			</div>
 			<div className="meta-details">
-				{/* <div>{meta}</div> */}
-				<div className="timeout">Notification Timeout: {timeout}</div>
-				<div className="flags">
-					<div>Viewed: {isRead}</div>
-					<div>Snoozed: {isSnoozed}</div>
-				</div>
+				<h5 className="meta-info">Info</h5>
+				<ul>
+					<li>
+						<div className="type">
+							Notification Type:&nbsp;&nbsp;<span>{type}</span>
+						</div>
+					</li>
+					{source && (
+						<li>
+							<div className="source">
+								Notification Source:&nbsp;&nbsp;<span>{source}</span>
+							</div>
+						</li>
+					)}
+					{timeout && (
+						<li>
+							<div className="timeout">
+								Notification Timeout:&nbsp;&nbsp;<span>{timeout} ms</span>
+							</div>
+						</li>
+					)}
+					{Object.keys(meta).length > 0 && (
+						<>
+							{Object.keys(meta).map((metaKey, i) => {
+								return (
+									<li key={i}>
+										<span>
+											{metaKey} : {meta[metaKey]}
+										</span>
+									</li>
+								);
+							})}
+						</>
+					)}
+					{(isRead || isSnoozed) && (
+						<li>
+							<div className="flags">
+								{isRead && (
+									<div>
+										Viewed: <span>✓</span>
+									</div>
+								)}
+								{isSnoozed && (
+									<div>
+										Snoozed: <span>✓</span>
+									</div>
+								)}
+							</div>
+						</li>
+					)}
+				</ul>
 			</div>
 		</div>
 	);
@@ -105,39 +151,24 @@ const ActionsArea = (props: NotificationActionsProps) => {
 	const { actions } = props;
 
 	return (
-		<div className="actions">
-			{actions.map((action: IAction, i: number) => {
-				return (
-					<div key={i} onClick={() => props.doAction(props, action)}>
-						{action.buttonText}
-					</div>
-				);
-			})}
+		<div className="details_footer">
+			<hr />
+			<div className="actions">
+				{actions.map((action: IAction, i: number) => {
+					return (
+						<button key={i} onClick={() => props.doAction(props, action)}>
+							{action.buttonText}
+						</button>
+					);
+				})}
+			</div>
 		</div>
 	);
 };
 
 const NotificationsPanel = (props: NotificationPanelProps) => {
 	const { notification } = props;
-	const {
-		id,
-		issuedAt,
-		receivedAt,
-		type,
-		source,
-		title,
-		details,
-		headerText,
-		headerLogo,
-		contentLogo,
-		actions,
-		timeout,
-		meta,
-		isRead,
-		isSnoozed,
-		actionsHistory,
-		stateHistory
-	} = notification;
+	const { id } = notification;
 
 	return (
 		<section id="notification-center__notification-detail">
@@ -148,7 +179,7 @@ const NotificationsPanel = (props: NotificationPanelProps) => {
 			<div className="notification_card" title={id}>
 				<HeaderArea {...notification} />
 				<ContentArea {...notification} />
-				<ActionsArea {...notification} />
+				<ActionsArea {...notification} doAction={props.doAction} />
 			</div>
 		</section>
 	);

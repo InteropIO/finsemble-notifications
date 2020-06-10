@@ -7,16 +7,16 @@ interface Props {
 }
 
 const NotificationCenter = (props: Props) => {
-	const { title } = props;
+	// const { title } = props;
 	return (
 		<div id="notification-center">
-			<header id="notification-center__header">
+			{/* <header id="notification-center__header">
 				<h1>{title}</h1>
 				<div id="notification-center__search">
 					<SearchIcon />
 					<input />
 				</div>
-			</header>
+			</header> */}
 			<main>{props.children}</main>
 		</div>
 	);

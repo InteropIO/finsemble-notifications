@@ -1,5 +1,3 @@
-import { FSBL } from "./../../../types/FSBL-definitions/globals.d";
-/* eslint-disable @typescript-eslint/ban-ts-ignore */
 import * as React from "react";
 import INotification from "../../../types/Notification-definitions/INotification";
 import Subscription from "../../../types/Notification-definitions/Subscription";
@@ -11,8 +9,6 @@ import { NotificationGroupList } from "../../../types/Notification-definitions/N
 import _get from "lodash.get";
 
 const { useReducer, useEffect } = React;
-
-const FSBL = window.FSBL;
 
 const { WindowClient } = FSBL.Clients;
 

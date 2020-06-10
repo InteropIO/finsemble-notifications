@@ -15,9 +15,6 @@ function App(): React.ReactElement {
 	const [notificationSubscribeMessage, notificationsPublish] = usePubSub(pubSubTopic);
 	const [currentMonitor, setCurrentMonitor] = useState(null);
 
-	const { FSBL } = window;
-	const currentWindow = fin.desktop.Window.getCurrent();
-
 	useEffect(() => {
 		const hotkey = _get(FSBL.Clients.WindowClient.getSpawnData(), "notifications.hotkey", null);
 		console.log(hotkey);
@@ -49,7 +46,7 @@ function App(): React.ReactElement {
 		publishValue["showCenter"] = !showCenter;
 
 		// check if the center has been launched if not then launch it
-		const { data: windows } = await FSBL.Clients.LauncherClient.getActiveDescriptors();
+		const { data: windows }: any = await FSBL.Clients.LauncherClient.getActiveDescriptors();
 		if ("notification-center" in windows) {
 			// send a message over the router like "{...,showCenter:true}"
 			notificationsPublish(publishValue);
@@ -94,11 +91,11 @@ function App(): React.ReactElement {
 
 	const onmousedown = (e: any) => {
 		console.log("startmoving", e.nativeEvent);
-		currentWindow.startMovingWindow(e.nativeEvent);
+		(FSBL.Clients.WindowClient as any).startMovingWindow(e.nativeEvent);
 	};
 	const onmouseup = () => {
 		console.log("stopmoving");
-		currentWindow.stopMovingWindow();
+		(FSBL.Clients.WindowClient as any).stopMovingWindow();
 		moveComponentsToToasterMonitor();
 	};
 

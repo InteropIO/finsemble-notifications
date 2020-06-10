@@ -1,10 +1,6 @@
 import * as React from "react";
 
-import { FSBL } from "../../../types/FSBL-definitions/globals";
-
 const { useState, useEffect } = React;
-
-const FSBL = window.FSBL;
 
 const { LauncherClient, WindowClient, Logger, RouterClient } = FSBL.Clients;
 

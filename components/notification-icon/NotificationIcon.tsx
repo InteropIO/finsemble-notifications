@@ -23,7 +23,7 @@ function App(props: Props): React.ReactElement {
 	}, [notifications]);
 
 	const iconAction = () => {
-		window.FSBL.Clients.LauncherClient.showWindow({ windowName: "", componentType: "notification-drawer" }, {});
+		FSBL.Clients.LauncherClient.showWindow({ windowName: "", componentType: "notification-drawer" }, {});
 	};
 
 	return (

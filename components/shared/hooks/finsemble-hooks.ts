@@ -2,9 +2,9 @@ import * as React from "react";
 
 const { useState, useEffect } = React;
 
-const { LauncherClient, WindowClient, Logger, RouterClient } = FSBL.Clients;
+const { WindowClient, RouterClient } = FSBL.Clients;
 
-const { addPubSubResponder, publish, subscribe, unsubscribe } = RouterClient;
+const { publish, subscribe, unsubscribe } = RouterClient;
 
 function usePubSub(topic: string, initialMessage: object = {}): [{ [key: string]: any }, Function] {
 	const [message, setMessage] = useState(initialMessage);
@@ -20,7 +20,7 @@ function usePubSub(topic: string, initialMessage: object = {}): [{ [key: string]
 		return () => {
 			unsubscribe(subscribeId);
 		};
-	}, []); // eslint-disable-line
+	}, []);
 
 	return [message, pub];
 }
@@ -37,20 +37,8 @@ function toggleComponent() {
 	const { windowName, uuid, componentType } = WindowClient.getWindowIdentifier();
 }
 
-/**
- * Exposes Electron ClickThrough
- * @param canClickThrough - This should be the visible section of a component
- * @example
- * //clickthrough is enabled and the window will ignore mouse click events
- * enableClickThrough(true)
- */
-function enableClickThrough(canClickThrough = false) {
-	const options = canClickThrough && { forward: true };
-	// WindowClient.setIgnoreMouseEvents(canClickThrough, options);
-}
-
 const bringWindowToFront: Function = () => WindowClient.bringWindowToFront();
 
-export { enableClickThrough, toggleComponent, getWindowSpawnData, usePubSub, bringWindowToFront };
+export { getWindowSpawnData, usePubSub, bringWindowToFront };
 
-export default { enableClickThrough, toggleComponent, getWindowSpawnData, usePubSub, bringWindowToFront };
+export default { getWindowSpawnData, usePubSub, bringWindowToFront };

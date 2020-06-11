@@ -574,7 +574,11 @@ export default class NotificationService extends Finsemble.baseService implement
 	 * Setup UI PubSub Channel
 	 */
 	private setupUIPubSub() {
-		Finsemble.Clients.RouterClient.addPubSubResponder("notification-ui", {});
+		Finsemble.Clients.RouterClient.addPubSubResponder("notification-ui", {
+			showDrawer: false,
+			showCenter: false,
+			toasterMonitor: "primary"
+		});
 	}
 
 	/* eslint-disable */

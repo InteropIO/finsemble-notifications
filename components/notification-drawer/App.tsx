@@ -6,8 +6,7 @@ import INotification from "../../types/Notification-definitions/INotification";
 import Animate from "../shared/components/Animate";
 import { CSSTransition } from "react-transition-group";
 import CenterIcon from "../shared/components/icons/CenterIcon";
-import { usePubSub, enableClickThrough, bringWindowToFront } from "../shared/hooks/finsemble-hooks";
-import { FinsembleWindow } from "../../types/FSBL-definitions/common/window/FinsembleWindow";
+import { usePubSub } from "../shared/hooks/finsemble-hooks";
 
 const { useState, useEffect } = React;
 

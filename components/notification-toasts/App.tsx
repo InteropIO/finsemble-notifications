@@ -5,13 +5,24 @@ import useNotifications from "../shared/hooks/useNotifications";
 import INotification from "../../types/Notification-definitions/INotification";
 import Animate from "../shared/components/Animate";
 import { SpawnParams } from "../../types/FSBL-definitions/services/window/Launcher/launcher";
-import { enableClickThrough } from "../shared/hooks/finsemble-hooks";
+import { usePubSub } from "../shared/hooks/finsemble-hooks";
+import { useState } from "react";
 /* eslint-disable @typescript-eslint/no-var-requires */
 const _get = require("lodash.get");
 const { useEffect } = React;
 
 function App(): React.ReactElement {
-	const { notifications, doAction, removeNotification, getNotificationConfig } = useNotifications();
+	const [currentMonitor, setCurrentMonitor] = useState("primary");
+	const {
+		notifications,
+		doAction,
+		removeNotification,
+		getNotificationConfig,
+		activeNotifications
+	} = useNotifications();
+
+	const pubSubTopic = "notification-ui";
+	const [notificationSubscribeMessage, notificationsPublish] = usePubSub(pubSubTopic);
 
 	const config = getNotificationConfig("notification-toasts");
 
@@ -27,6 +38,37 @@ function App(): React.ReactElement {
 	const ready = config && notifications;
 
 	useEffect(() => {
+		if (currentMonitor !== notificationSubscribeMessage.toasterMonitor && !activeNotifications(notifications).length) {
+			FSBL.Clients.LauncherClient.getMonitorInfo(
+				{
+					monitor:
+						notificationSubscribeMessage.toasterMonitor === 0
+							? notificationSubscribeMessage.toasterMonitor + 1
+							: notificationSubscribeMessage.toasterMonitor
+				},
+				async (err: any, monitorInfo: any) => {
+					if (!err) {
+						const bounds = (await finsembleWindow.getBounds({})) as any;
+						const width = bounds.data.right - bounds.data.left;
+
+						finsembleWindow.setBounds(
+							{
+								top: monitorInfo.availableRect.top,
+								left: monitorInfo.availableRect.right - width,
+								height: monitorInfo.availableRect.height,
+								width: width
+							},
+							(err: any) => {
+								finsembleWindow.show(null);
+								console.log(err);
+							}
+						);
+					}
+				}
+			);
+			setCurrentMonitor(notificationSubscribeMessage.toasterMonitor);
+		}
+
 		if (notifications.length === 0) {
 			finsembleWindow.hide();
 		} else {
@@ -41,15 +83,10 @@ function App(): React.ReactElement {
 			};
 			FSBL.Clients.WindowClient.setShape([roundedRect]);
 		}
-	}, [notifications.length]);
+	}, [notifications, notificationSubscribeMessage]);
 
 	return (
-		<Drawer
-			notifications={notifications}
-			windowShowParams={windowShowParams}
-			onMouseEnter={() => enableClickThrough(true)}
-			onMouseLeave={() => enableClickThrough(true)}
-		>
+		<Drawer notifications={notifications} windowShowParams={windowShowParams}>
 			{ready &&
 				notifications.map(
 					(notification: INotification) =>
@@ -68,13 +105,7 @@ function App(): React.ReactElement {
 									doAction={doAction}
 									closeAction={() => removeNotification(notification)}
 									closeButton
-									onMouseEnter={() => {
-										enableClickThrough(false);
-									}}
-									onMouseLeave={() => {
-										enableClickThrough(true);
-									}}
-								></Notification>
+								/>
 							</Animate>
 						)
 				)}

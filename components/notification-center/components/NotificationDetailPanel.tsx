@@ -2,7 +2,9 @@ import * as React from "react";
 import INotification from "../../../types/Notification-definitions/INotification";
 import IAction from "../../../types/Notification-definitions/IAction";
 import Meta from "../../../types/Notification-definitions/Meta";
+import IPerformedAction from "../../../types/Notification-definitions/IPerformedAction";
 import { formatDistanceToNow } from "date-fns";
+import { stat } from "fs";
 
 interface NotificationHeaderProps {
 	issuedAt?: string;
@@ -33,6 +35,11 @@ interface NotificationPanelProps {
 	notification?: INotification;
 	clearActiveNotification?: Function;
 	doAction?: Function;
+}
+
+interface NotificationHistoryProps {
+	actionsHistory?: IPerformedAction[];
+	stateHistory?: INotification[];
 }
 
 const HeaderArea = (props: NotificationHeaderProps) => {
@@ -166,6 +173,30 @@ const ActionsArea = (props: NotificationActionsProps) => {
 	);
 };
 
+const HistoryArea = (props: NotificationHistoryProps) => {
+	const { actionsHistory } = props;
+
+	return (
+		<div className="history">
+			<hr />
+			<div className="history_header">History:</div>
+			<ul>
+				{actionsHistory.map((history, i) => {
+					if (history.type) {
+						return (
+							<li key={i}>
+								{history.datePerformed} : {history.type}
+							</li>
+						);
+					} else {
+						return null;
+					}
+				})}
+			</ul>
+		</div>
+	);
+};
+
 const NotificationsPanel = (props: NotificationPanelProps) => {
 	const { notification } = props;
 	const { id } = notification;
@@ -180,6 +211,7 @@ const NotificationsPanel = (props: NotificationPanelProps) => {
 				<HeaderArea {...notification} />
 				<ContentArea {...notification} />
 				<ActionsArea {...notification} doAction={props.doAction} />
+				<HistoryArea {...notification} />
 			</div>
 		</section>
 	);

@@ -36,17 +36,10 @@ export default class NotificationService extends Finsemble.baseService implement
 	/**
 	 * Abstracting all internal state into a single point as a way to keep track of what
 	 * needs to change when implementing a solution for storage
-	 * TODO: Implement storage - will need to modify all places storageAbstraction is referenced
 	 */
 	private storageAbstraction: {
 		snoozeTimers: Map<string, ISnoozeTimer>;
 
-		/**
-		 * TODO: Think about the best representation of notification as oldest ones will need to drop off the list
-		 * Theoretically Map should work https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map
-		 * as it remembers the original insertion order of the keys. Need to test if the order is preserved when
-		 * retrieving it from storage.
-		 */
 		notifications: Map<string, INotification>;
 		lastIssued: Map<string, ILastIssued>;
 	};
@@ -135,6 +128,9 @@ export default class NotificationService extends Finsemble.baseService implement
 		this.setupUIPubSub();
 	}
 
+	/**
+	 * Fetches all previously stored state from storage
+	 */
 	async fetchStateFromStorage() {
 		this.storageAbstraction.notifications = await StorageHelper.fetchNotifications();
 		this.storageAbstraction.lastIssued = await StorageHelper.fetchLastIssued();
@@ -170,6 +166,11 @@ export default class NotificationService extends Finsemble.baseService implement
 		}
 	}
 
+	/**
+	 * Sends a notification use the Web API
+	 *
+	 * @param notification
+	 */
 	webApiNotify(notification: INotification): void {
 		const title = [];
 		notification.title ? title.push(notification.title) : null;
@@ -339,6 +340,11 @@ export default class NotificationService extends Finsemble.baseService implement
 		return notification;
 	}
 
+	/**
+	 * Wakes a snoozed notification
+	 *
+	 * @param notification
+	 */
 	private wake(notification: INotification) {
 		const action = new Action();
 		action.id = this.getUuid();
@@ -349,23 +355,44 @@ export default class NotificationService extends Finsemble.baseService implement
 		this.notify([notification]);
 	}
 
+	/**
+	 * Process a dismiss action request
+	 *
+	 * @param notification
+	 */
 	dismiss(notification: INotification): INotification {
 		notification.isRead = true;
 		return notification;
 	}
 
+	/**
+	 * Process a spawn action request
+	 *
+	 * @param notification
+	 * @param action
+	 */
 	spawn(notification: INotification, action: IAction): INotification {
 		notification.isRead = true;
 		Finsemble.Clients.LauncherClient.spawn(action.component, action.spawnParams).then();
 		return notification;
 	}
 
+	/**
+	 * Validation for router based actions
+	 *
+	 * @param action
+	 */
 	validateForwardParams(action: IAction) {
 		if (!action.channel) {
 			throw new Error(`No channel set when trying to perform '${action.type}'`);
 		}
 	}
 
+	/**
+	 * Processes an unsubscribe request from the client
+	 *
+	 * @param subscriptionId
+	 */
 	public unsubscribe(subscriptionId: string) {
 		Finsemble.Clients.Logger.log(`Removing notification subscription: ${subscriptionId}`);
 		if (this.subscriptions.has(subscriptionId)) {
@@ -374,6 +401,12 @@ export default class NotificationService extends Finsemble.baseService implement
 		return;
 	}
 
+	/**
+	 * Config change callback
+	 *
+	 * @param err
+	 * @param config
+	 */
 	applyConfigChange: StandardCallback = (err, config) => {
 		if (err) {
 			Finsemble.Clients.Logger.error(`Unable to get config err: ${err}`);
@@ -435,6 +468,8 @@ export default class NotificationService extends Finsemble.baseService implement
 	}
 
 	/**
+	 * Initial processing done on a notification when it comes into the system
+	 *
 	 * TODO: Move this function into the Helper and add testing
 	 * @param notification
 	 */
@@ -478,7 +513,6 @@ export default class NotificationService extends Finsemble.baseService implement
 
 		this.storageAbstraction.notifications.set(notification.id, notification);
 
-		// TODO: Set purge config correctly
 		const notificationsToDelete = ServiceHelper.getItemsToPurge(this.storageAbstraction.notifications, {
 			maxNotificationRetentionPeriodSeconds: this.config.service.maxNotificationRetentionPeriodSeconds,
 			maxNotificationsToRetain: this.config.service.maxNotificationsToRetain
@@ -589,6 +623,11 @@ export default class NotificationService extends Finsemble.baseService implement
 		this.subscriptions.set(subscription.id, subscription);
 	}
 
+	/**
+	 * Process the request for the query action type
+	 * @param notification
+	 * @param action
+	 */
 	private forwardAsQuery(notification: INotification, action: IAction): INotification {
 		this.validateForwardParams(action);
 		try {
@@ -611,6 +650,12 @@ export default class NotificationService extends Finsemble.baseService implement
 		return notification;
 	}
 
+	/**
+	 * Process the request for the transmit action type
+	 *
+	 * @param notification
+	 * @param action
+	 */
 	private forwardAsTransmit(notification: INotification, action: IAction): INotification {
 		this.validateForwardParams(action);
 		this.routerWrapper.transmit(
@@ -626,6 +671,12 @@ export default class NotificationService extends Finsemble.baseService implement
 		return notification;
 	}
 
+	/**
+	 * Process the request for the publish action type
+	 *
+	 * @param notification
+	 * @param action
+	 */
 	private forwardAsPublish(notification: INotification, action: IAction): INotification {
 		this.validateForwardParams(action);
 		this.routerWrapper.publish(
@@ -727,15 +778,17 @@ export default class NotificationService extends Finsemble.baseService implement
 		}
 	}
 
+	/**
+	 * On FSBL Boot it checks if any notification's sleep timers have exipired.
+	 * Wakes and broadcasts them if they have or puts them back to sleep if they haven't
+	 */
 	private wakeSnoozeFromLoad() {
 		const toSnooze: INotification[] = [];
 		const toWake: INotification[] = [];
 
 		this.storageAbstraction.snoozeTimers.forEach((timer, id) => {
 			let notification: INotification = null;
-			if (this.storageAbstraction.notifications.has(id)) {
-				notification = this.storageAbstraction.notifications.get(id);
-			}
+			notification = this.storageAbstraction.notifications.get(id);
 
 			if (notification) {
 				if (Date.now() >= timer.wakeEpochMilliseconds) {

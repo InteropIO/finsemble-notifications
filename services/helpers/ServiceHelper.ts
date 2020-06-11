@@ -33,19 +33,20 @@ export default class ServiceHelper {
 		};
 	}
 
+	/**
+	 * Gets the types from the config
+	 *
+	 * @param config
+	 */
 	public static getTypes(config: Record<string, object>): Record<string, object> {
 		return Object.assign({}, config && config.hasOwnProperty("types") ? config["types"] : null);
 	}
 
-	public static getPurgeConfig(config: Record<string, object>): PurgeConfig {
-		const defaults: PurgeConfig = {
-			maxNotificationsToRetain: 1000,
-			maxNotificationRetentionPeriodSeconds: false
-		};
-
-		return Object.assign(defaults, config && config.hasOwnProperty("types") ? config["types"] : null);
-	}
-
+	/**
+	 * Sets defaults for any missing config
+	 *
+	 * @param config
+	 */
 	public static getServiceDefaults(config: Record<string, object>): Record<string, object> {
 		const defaultValues: PurgeConfig = {
 			maxNotificationsToRetain: 1000,
@@ -258,6 +259,12 @@ export default class ServiceHelper {
 		return map.set("stateHistory", currentHistory).toObject();
 	}
 
+	/**
+	 * Get a list of notifications that qualify the for the  purge from storage requirements
+	 *
+	 * @param notifications
+	 * @param purgeConfig
+	 */
 	public static getItemsToPurge(notifications: Map<string, INotification>, purgeConfig: PurgeConfig): INotification[] {
 		const items: INotification[] = [];
 

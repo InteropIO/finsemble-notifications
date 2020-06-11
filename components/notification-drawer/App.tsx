@@ -7,6 +7,7 @@ import Animate from "../shared/components/Animate";
 import { CSSTransition } from "react-transition-group";
 import CenterIcon from "../shared/components/icons/CenterIcon";
 import { usePubSub, enableClickThrough, bringWindowToFront } from "../shared/hooks/finsemble-hooks";
+import { FinsembleWindow } from "../../types/FSBL-definitions/common/window/FinsembleWindow";
 
 const { useState, useEffect } = React;
 
@@ -22,14 +23,30 @@ function App(): React.ReactElement {
 	const [showDrawer, setShowDrawer] = useState(true);
 
 	useEffect(() => {
-		if ("showDrawer" in notificationSubscribeMessage) {
-			setShowDrawer(notificationSubscribeMessage.showDrawer);
+		if (notificationSubscribeMessage.showDrawer) {
+			finsembleWindow.setOpacity({ opacity: 0 });
+			finsembleWindow.show();
+			const shownListener = () => {
+				finsembleWindow.setOpacity({ opacity: 1 });
+				setShowDrawer(true);
+			};
+
+			finsembleWindow.addEventListener("shown", shownListener);
+
+			return () => {
+				finsembleWindow.removeEventListener("shown", shownListener);
+			};
+		} else if (notificationSubscribeMessage.showDrawer === false) {
+			setShowDrawer(false);
+			finsembleWindow.hide();
 		}
 	}, [notificationSubscribeMessage, showDrawer]);
 
 	const notificationIsActive = (notification: INotification) => !notification.isRead && !notification.isSnoozed;
 
-	const hideDrawer = () => notificationsPublish({ ...notificationSubscribeMessage, showDrawer: false });
+	const hideDrawer = () => {
+		setTimeout(() => notificationsPublish({ ...notificationSubscribeMessage, showDrawer: false }), 300);
+	};
 
 	return (
 		<CSSTransition in={showDrawer} timeout={300} classNames="drawer" unmountOnExit>

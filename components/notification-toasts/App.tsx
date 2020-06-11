@@ -27,7 +27,20 @@ function App(): React.ReactElement {
 	const ready = config && notifications;
 
 	useEffect(() => {
-		if (notifications.length === 0) enableClickThrough(true);
+		if (notifications.length === 0) {
+			finsembleWindow.hide();
+		} else {
+			finsembleWindow.show(null);
+			finsembleWindow.bringToFront();
+			const rect = document.getElementById("toasts-drawer").getBoundingClientRect();
+			const roundedRect = {
+				x: Math.round(rect.x),
+				y: Math.round(rect.y),
+				width: Math.round(rect.width),
+				height: Math.round(rect.height)
+			};
+			FSBL.Clients.WindowClient.setShape([roundedRect]);
+		}
 	}, [notifications.length]);
 
 	return (

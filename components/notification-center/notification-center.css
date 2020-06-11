@@ -81,6 +81,20 @@ body {
 	margin-right: 3em;
 }
 
+#notification-center__notification-detail {
+	border-top: 1px solid white;
+	border-bottom: 1px solid white;
+	position: sticky;
+	top: 0;
+	align-self: flex-start;
+	width: 350px;
+}
+
+#notification-center__notification-detail > h3 {
+	background-color: #366791;
+	padding: 10px;
+}
+
 .notification_card {
 	display: flex;
 	flex-direction: column;
@@ -212,14 +226,6 @@ body {
 	cursor: pointer;
 }
 
-#notification-center__notification-detail {
-	border-top: 1px solid white;
-	border-bottom: 1px solid white;
-	position: sticky;
-	top: 0;
-	align-self: flex-start;
-}
-
 #notification-center__search {
 	justify-self: end;
 }
@@ -265,6 +271,12 @@ body {
 	cursor: pointer;
 }
 
+.notification-center__notifications__rows .id {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
 #main-content {
 	display: flex;
 	margin: 15px;
@@ -280,11 +292,6 @@ body {
 	align-self: flex-start;
 	position: sticky;
 	top: 0;
-}
-
-#notification-center__notification-detail > h3 {
-	background-color: #366791;
-	padding: 10px;
 }
 
 .notification-center__notifications__rows:nth-child(even) {

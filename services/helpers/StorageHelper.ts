@@ -13,6 +13,7 @@ export const STORAGE_KEY_NOTIFICATION_PREFIX = "id.";
 
 export default class StorageHelper {
 	/**
+	 * Persists a notification to storage
 	 *
 	 * @param notifications
 	 * @param notification
@@ -27,6 +28,9 @@ export default class StorageHelper {
 		await StorageHelper.storeValue(STORAGE_KEY_NOTIFICATION_PREFIX + notification.id, notification);
 	}
 
+	/**
+	 * Fetches notifications from storage
+	 */
 	public static async fetchNotifications(): Promise<Map<string, INotification>> {
 		return new Promise<Map<string, INotification>>(async (resolve, reject) => {
 			const returnValue = new Map<string, INotification>();
@@ -50,10 +54,18 @@ export default class StorageHelper {
 		});
 	}
 
+	/**
+	 * Persists the lastIssued data to storage
+	 *
+	 * @param lastIssued
+	 */
 	public static storeLastIssued(lastIssued: Map<string, ILastIssued>): Promise<void> {
 		return StorageHelper.storeValue(STORAGE_KEY_LAST_ISSUED, lastIssued);
 	}
 
+	/**
+	 * Fetches the lastIssued data from storage
+	 */
 	public static async fetchLastIssued(): Promise<Map<string, ILastIssued>> {
 		return new Promise<Map<string, ILastIssued>>(async resolve => {
 			let lastIssued = await StorageHelper.getValue(STORAGE_KEY_LAST_ISSUED);
@@ -64,10 +76,18 @@ export default class StorageHelper {
 		});
 	}
 
+	/**
+	 * Persists the snooze timers to storage
+	 *
+	 * @param snoozeTimers
+	 */
 	public static storeSnoozeTimers(snoozeTimers: Map<string, ISnoozeTimer>): Promise<void> {
 		return StorageHelper.storeValue(STORAGE_KEY_SNOOZE_TIMERS, snoozeTimers);
 	}
 
+	/**
+	 * Fetches the snooze timers from storage
+	 */
 	public static async fetchSnoozeTimers(): Promise<Map<string, ISnoozeTimer>> {
 		return new Promise<Map<string, ISnoozeTimer>>(async resolve => {
 			let snoozeTimers = await StorageHelper.getValue(STORAGE_KEY_SNOOZE_TIMERS);
@@ -78,23 +98,45 @@ export default class StorageHelper {
 		});
 	}
 
+	/**
+	 * Persists the list of Notifications Ids to storage
+	 * @param notifications
+	 */
 	private static async storeListIds(notifications: Map<string, INotification>): Promise<void> {
 		const keys = [...notifications.keys()];
 		await StorageClient.save({ topic: STORAGE_TOPIC, key: STORAGE_KEY_LIST, value: keys });
 	}
 
+	/**
+	 * Fetches a single notification from storage
+	 *
+	 * @param key
+	 */
 	private static async getNotification(key: string): Promise<INotification> {
 		return await StorageHelper.getValue(STORAGE_KEY_NOTIFICATION_PREFIX + key);
 	}
 
+	/**
+	 * Deletes from the store
+	 * @param key
+	 */
 	public static async deleteValue(key: string): Promise<void> {
 		await StorageClient.remove({ topic: STORAGE_TOPIC, key: key });
 	}
 
+	/**
+	 * Persists to the store
+	 * @param key
+	 * @param value
+	 */
 	private static async storeValue(key: string, value: Record<string, any>): Promise<void> {
 		await StorageClient.save({ topic: STORAGE_TOPIC, key: key, value: value });
 	}
 
+	/**
+	 * Gets a value from the store
+	 * @param key
+	 */
 	private static async getValue(key: string) {
 		return await StorageClient.get({ topic: STORAGE_TOPIC, key: key });
 	}

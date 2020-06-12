@@ -16,7 +16,7 @@ const HideDrawer = ({ onClick }: { onClick: Function }) => (
 );
 
 function App(): React.ReactElement {
-	const { notifications, doAction } = useNotifications();
+	const { notifications, doAction, notificationIsActive } = useNotifications();
 	const pubSubTopic = "notification-ui";
 	const [notificationSubscribeMessage, notificationsPublish] = usePubSub(pubSubTopic);
 
@@ -42,8 +42,6 @@ function App(): React.ReactElement {
 		}
 	}, [notificationSubscribeMessage, showDrawer]);
 
-	const notificationIsActive = (notification: INotification) => !notification.isRead && !notification.isSnoozed;
-
 	const hideDrawer = () => {
 		setTimeout(() => notificationsPublish({ ...notificationSubscribeMessage, showDrawer: false }), 300);
 	};
@@ -64,7 +62,7 @@ function App(): React.ReactElement {
 					{notifications.length ? (
 						[...notifications].map(
 							(notification: INotification) =>
-								notificationIsActive && (
+								notificationIsActive(notification) && (
 									<Animate animateIn="slide-in-fwd-bottom" animateOut="slide-out-right" key={notification.id}>
 										<Notification notification={notification} doAction={doAction}></Notification>
 									</Animate>

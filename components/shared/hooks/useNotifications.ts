@@ -150,8 +150,11 @@ export default function useNotifications() {
 		return _get(config, "window.data.notifications", null);
 	};
 
+	const notificationIsActive = (notification: INotification) =>
+		!notification.isSnoozed && !notification.isRead && !notification.isDeleted;
+
 	const activeNotifications = (notifications: INotification[]) =>
-		notifications.filter(notification => !notification.isSnoozed && !notification.isRead);
+		notifications.filter(notification => notificationIsActive(notification));
 
 	/**
 	 * Main init function to start the subscription
@@ -187,7 +190,11 @@ export default function useNotifications() {
 			}
 			subscription.onNotification = function(notification: INotification) {
 				// This function will be called when a notification arrives
-				addNotification(notification);
+				if (notification.isDeleted) {
+					removeNotification(notification);
+				} else {
+					addNotification(notification);
+				}
 			};
 
 			return NOTIFICATION_CLIENT.subscribe(
@@ -206,6 +213,7 @@ export default function useNotifications() {
 
 	return {
 		activeNotifications,
+		notificationIsActive,
 		doAction,
 		getNotificationHistory,
 		groupNotificationsByType,

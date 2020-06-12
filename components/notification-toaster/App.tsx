@@ -41,7 +41,7 @@ function App(): React.ReactElement {
 	// Show or hide the notification-center
 	// use this to use the buttons to either be highlighted
 	const toggleCenter = async () => {
-		const { showCenter = true } = notificationSubscribeMessage;
+		const { showCenter = false } = notificationSubscribeMessage;
 		const publishValue = { ...notificationSubscribeMessage };
 		publishValue["showCenter"] = !showCenter;
 

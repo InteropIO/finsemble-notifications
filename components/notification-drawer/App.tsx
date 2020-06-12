@@ -6,13 +6,12 @@ import INotification from "../../types/Notification-definitions/INotification";
 import Animate from "../shared/components/Animate";
 import { CSSTransition } from "react-transition-group";
 import CenterIcon from "../shared/components/icons/CenterIcon";
-import { usePubSub, enableClickThrough, bringWindowToFront } from "../shared/hooks/finsemble-hooks";
-import { FinsembleWindow } from "../../types/FSBL-definitions/common/window/FinsembleWindow";
+import { usePubSub } from "../shared/hooks/finsemble-hooks";
 
 const { useState, useEffect } = React;
 
 const HideDrawer = ({ onClick }: { onClick: Function }) => (
-	<img src="../shared/assets/double_arrow.svg" id="hide-icon" onClick={() => onClick()} />
+	<img src="../shared/assets/double_arrow.svg" id="hide-icon" alt="Hide drawer Icon" onClick={() => onClick()} />
 );
 
 function App(): React.ReactElement {
@@ -20,45 +19,56 @@ function App(): React.ReactElement {
 	const pubSubTopic = "notification-ui";
 	const [notificationSubscribeMessage, notificationsPublish] = usePubSub(pubSubTopic);
 
-	const [showDrawer, setShowDrawer] = useState(true);
+	const [showDrawer, setShowDrawer] = useState(false);
 
 	useEffect(() => {
+		setShowDrawer(notificationSubscribeMessage.showDrawer);
+		const rect = document.getElementById("notifications-drawer").getBoundingClientRect();
 		if (notificationSubscribeMessage.showDrawer) {
-			finsembleWindow.setOpacity({ opacity: 0 });
-			finsembleWindow.show();
-			const shownListener = () => {
-				finsembleWindow.setOpacity({ opacity: 1 });
-				setShowDrawer(true);
+			const roundedRect = {
+				x: Math.round(rect.x),
+				y: Math.round(rect.y),
+				width: Math.round(rect.width),
+				height: Math.round(rect.height)
 			};
-
-			finsembleWindow.addEventListener("shown", shownListener);
-
-			return () => {
-				finsembleWindow.removeEventListener("shown", shownListener);
+			console.log(rect);
+			console.log(roundedRect);
+			FSBL.Clients.WindowClient.setShape([roundedRect]);
+		} else {
+			const roundedRect = {
+				x: 0,
+				y: 0,
+				width: 0,
+				height: 0
 			};
-		} else if (notificationSubscribeMessage.showDrawer === false) {
-			setShowDrawer(false);
-			finsembleWindow.hide();
+			setTimeout(() => {
+				console.log("allin");
+				FSBL.Clients.WindowClient.setShape([roundedRect]);
+			}, 500);
 		}
-	}, [notificationSubscribeMessage, showDrawer]);
+	}, [notificationSubscribeMessage.showDrawer]);
 
 	const notificationIsActive = (notification: INotification) => !notification.isRead && !notification.isSnoozed;
 
-	const hideDrawer = () => {
-		setTimeout(() => notificationsPublish({ ...notificationSubscribeMessage, showDrawer: false }), 300);
+	const closeDrawerClick = () => {
+		const publishValue = { ...notificationSubscribeMessage };
+		publishValue["showDrawer"] = false;
+		notificationsPublish(publishValue);
+	};
+
+	const toggleCenter = () => {
+		console.log("clicking");
+		const publishValue = { ...notificationSubscribeMessage };
+		publishValue["showCenter"] = !publishValue["showCenter"];
+		notificationsPublish(publishValue);
 	};
 
 	return (
-		<CSSTransition in={showDrawer} timeout={300} classNames="drawer" unmountOnExit>
-			<Drawer onBlur={hideDrawer}>
+		<CSSTransition in={showDrawer} timeout={500} classNames="drawer" unmountOnExit>
+			<Drawer>
 				<div id="notifications-drawer__menu">
-					<CenterIcon
-						id="notification-center-icon"
-						onClick={() => {
-							"";
-						}}
-					/>
-					<HideDrawer onClick={hideDrawer} />
+					<CenterIcon id="notification-center-icon" className="notification-center-icon" onClick={toggleCenter} />
+					<HideDrawer onClick={closeDrawerClick} />
 				</div>
 				<div>
 					{notifications.length ? (
@@ -66,12 +76,12 @@ function App(): React.ReactElement {
 							(notification: INotification) =>
 								notificationIsActive && (
 									<Animate animateIn="slide-in-fwd-bottom" animateOut="slide-out-right" key={notification.id}>
-										<Notification notification={notification} doAction={doAction}></Notification>
+										<Notification notification={notification} doAction={doAction} />
 									</Animate>
 								)
 						)
 					) : (
-						<p>no notifications</p>
+						<p className="empty-notifications">You do not have any notifications!</p>
 					)}
 				</div>
 			</Drawer>

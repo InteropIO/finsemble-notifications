@@ -31,8 +31,6 @@ function App(): React.ReactElement {
 				width: Math.round(rect.width),
 				height: Math.round(rect.height)
 			};
-			console.log(rect);
-			console.log(roundedRect);
 			FSBL.Clients.WindowClient.setShape([roundedRect]);
 		} else {
 			const roundedRect = {
@@ -42,7 +40,6 @@ function App(): React.ReactElement {
 				height: 0
 			};
 			setTimeout(() => {
-				console.log("allin");
 				FSBL.Clients.WindowClient.setShape([roundedRect]);
 			}, 500);
 		}
@@ -57,7 +54,6 @@ function App(): React.ReactElement {
 	};
 
 	const toggleCenter = () => {
-		console.log("clicking");
 		const publishValue = { ...notificationSubscribeMessage };
 		publishValue["showCenter"] = !publishValue["showCenter"];
 		notificationsPublish(publishValue);

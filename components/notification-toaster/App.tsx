@@ -101,7 +101,7 @@ function App(): React.ReactElement {
 
 	return (
 		<>
-			<div onMouseDown={onmousedown} onMouseUp={onmouseup}>
+			<div onMouseDown={onmousedown} onMouseUp={onmouseup} className="drag-container">
 				<DragHandleIcon id="drag-area" className="drag-area" />
 			</div>
 			{activeNotifications(notifications).length > 0 && (

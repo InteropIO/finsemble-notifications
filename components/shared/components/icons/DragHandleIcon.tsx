@@ -5,8 +5,8 @@ export default function DragHandleIcon(props: SVGProps) {
 	return (
 		<SVGBase
 			{...props}
-			width="8"
-			height="15"
+			width="5"
+			height="11"
 			viewBox="0 0 5 11"
 			opacity="0.408315"
 			fillRule="evenodd"

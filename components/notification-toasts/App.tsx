@@ -12,7 +12,7 @@ const _get = require("lodash.get");
 const { useEffect } = React;
 
 function App(): React.ReactElement {
-	const [currentMonitor, setCurrentMonitor] = useState("primary");
+	const [currentMonitor, setCurrentMonitor] = useState("0");
 	const {
 		notifications,
 		doAction,
@@ -37,36 +37,43 @@ function App(): React.ReactElement {
 	// ensure the config and notifications have loaded before rendering the DOM
 	const ready = config && notifications;
 
-	useEffect(() => {
-		if (currentMonitor !== notificationSubscribeMessage.toasterMonitor && !activeNotifications(notifications).length) {
-			FSBL.Clients.LauncherClient.getMonitorInfo(
-				{
-					monitor:
-						notificationSubscribeMessage.toasterMonitor === 0
-							? notificationSubscribeMessage.toasterMonitor + 1
-							: notificationSubscribeMessage.toasterMonitor
-				},
-				async (err: any, monitorInfo: any) => {
-					if (!err) {
-						const bounds = (await finsembleWindow.getBounds({})) as any;
-						const width = bounds.data.right - bounds.data.left;
+	const moveToMonitor = async (monitorPosition: number) => {
+		const { err, data } = (await FSBL.Clients.LauncherClient.getMonitorInfoAll()) as any;
+		let monitorInfo = null;
+		for (let k = 0; k < data.length; k++) {
+			if (data[k]["position"] == monitorPosition) {
+				monitorInfo = data[k];
+				break;
+			}
+		}
 
-						finsembleWindow.setBounds(
-							{
-								top: monitorInfo.availableRect.top,
-								left: monitorInfo.availableRect.right - width,
-								height: monitorInfo.availableRect.height,
-								width: width
-							},
-							(err: any) => {
-								finsembleWindow.show(null);
-								console.log(err);
-							}
-						);
-					}
+		if (monitorInfo) {
+			const bounds = (await finsembleWindow.getBounds({})) as any;
+			const width = bounds.data.right - bounds.data.left;
+
+			finsembleWindow.setBounds(
+				{
+					top: monitorInfo["availableRect"]["top"],
+					left: monitorInfo["availableRect"]["right"] - width,
+					height: monitorInfo["availableRect"]["height"],
+					width: width
+				},
+				(err: any) => {
+					finsembleWindow.show(null);
+					console.log(err);
 				}
 			);
-			setCurrentMonitor(notificationSubscribeMessage.toasterMonitor);
+		}
+	};
+
+	useEffect(() => {
+		if (
+			currentMonitor !== notificationSubscribeMessage.toasterMonitorPosition &&
+			!activeNotifications(notifications).length
+		) {
+			moveToMonitor(notificationSubscribeMessage.toasterMonitorPosition).then(() => {
+				setCurrentMonitor(notificationSubscribeMessage.toasterMonitorPosition);
+			});
 		}
 
 		if (notifications.length === 0) {

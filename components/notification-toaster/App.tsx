@@ -10,7 +10,7 @@ import { usePubSub } from "../shared/hooks/finsemble-hooks";
 const { useEffect, useState } = React;
 
 function App(): React.ReactElement {
-	const [toasterMonitor, setToasterMonitor] = useState("primary");
+	const [toasterMonitorPosition, settoasterMonitorPosition] = useState("0");
 	const { notifications, activeNotifications } = useNotifications();
 	const pubSubTopic = "notification-ui";
 	const [notificationSubscribeMessage, notificationsPublish] = usePubSub(pubSubTopic);
@@ -59,10 +59,10 @@ function App(): React.ReactElement {
 		const monitorCallBack: StandardCallback = (err, monitorInfo) => {
 			if (!err) {
 				//  if monitor changed, publish the new monitor
-				if (toasterMonitor !== monitorInfo.whichMonitor) {
+				if (toasterMonitorPosition !== monitorInfo.position) {
 					const publishValue = { ...notificationSubscribeMessage };
-					publishValue["toasterMonitor"] = monitorInfo.whichMonitor;
-					setToasterMonitor(monitorInfo.whichMonitor);
+					publishValue["toasterMonitorPosition"] = monitorInfo.position;
+					settoasterMonitorPosition(monitorInfo.position);
 					notificationsPublish(publishValue);
 				}
 			}

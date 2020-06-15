@@ -577,7 +577,7 @@ export default class NotificationService extends Finsemble.baseService implement
 		Finsemble.Clients.RouterClient.addPubSubResponder("notification-ui", {
 			showDrawer: false,
 			showCenter: false,
-			toasterMonitor: "primary"
+			toasterMonitor: "0"
 		});
 	}
 

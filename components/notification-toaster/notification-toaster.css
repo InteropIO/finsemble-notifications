@@ -13,7 +13,7 @@
 }
 
 body {
-	margin: 0px;
+	margin: 0;
 }
 #notifications-toaster {
 	display: flex;
@@ -23,16 +23,21 @@ body {
 	padding: 0;
 	overflow: hidden;
 	width: 100vw;
-	height: 32px;
+	height: 100vh;
 	background: #22262f;
 	border-radius: 13px;
 }
 
+.drag-container {
+	padding: 30vh 0 0;
+	height: 100%;
+	align-items: center;
+}
+
 .drag-area {
-	cursor: pointer;
-	width: 15px;
-	height: 17px;
-	padding: 3px 0;
+	cursor: grab;
+	width: auto;
+	height: 65%;
 }
 
 .drag-box {
@@ -48,6 +53,8 @@ body {
 
 .toaster-icons {
 	cursor: pointer;
+	height: 70%;
+	width: auto;
 }
 .toaster-icons:hover {
 	background-color: var(--notification-primary-color);

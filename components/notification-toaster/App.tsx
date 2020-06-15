@@ -11,13 +11,18 @@ const { useEffect, useState } = React;
 
 function App(): React.ReactElement {
 	const [toasterMonitorPosition, settoasterMonitorPosition] = useState("0");
-	const { notifications, activeNotifications } = useNotifications();
+	const { notifications, activeNotifications } = useNotifications({ config: { notificationsHistory: true } });
 	const pubSubTopic = "notification-ui";
 	const [notificationSubscribeMessage, notificationsPublish] = usePubSub(pubSubTopic);
+	const [currentMonitor] = useState(null);
+	const [count, setCount] = useState(activeNotifications(notifications).length);
+
+	useEffect(() => {
+		setCount(activeNotifications(notifications).length);
+	}, [notifications]);
 
 	useEffect(() => {
 		const hotkey = _get(FSBL.Clients.WindowClient.getSpawnData(), "notifications.hotkey", null);
-		console.log(hotkey);
 		// TODO: Pull this out of the component into a hook
 		if (hotkey) {
 			FSBL.Clients.HotkeyClient.addGlobalHotkey(hotkey, () => {
@@ -41,7 +46,7 @@ function App(): React.ReactElement {
 	// Show or hide the notification-center
 	// use this to use the buttons to either be highlighted
 	const toggleCenter = async () => {
-		const { showCenter = true } = notificationSubscribeMessage;
+		const { showCenter = false } = notificationSubscribeMessage;
 		const publishValue = { ...notificationSubscribeMessage };
 		publishValue["showCenter"] = !showCenter;
 
@@ -82,12 +87,10 @@ function App(): React.ReactElement {
 
 	return (
 		<>
-			<div onMouseDown={onmousedown} onMouseUp={onmouseup}>
+			<div onMouseDown={onmousedown} onMouseUp={onmouseup} className="drag-container">
 				<DragHandleIcon id="drag-area" className="drag-area" />
 			</div>
-			{activeNotifications(notifications).length > 0 && (
-				<div id="notification-number">{activeNotifications(notifications).length}</div>
-			)}
+			{count > 0 && <div id="notification-number">{count}</div>}
 			<NotificationIcon
 				className={notificationSubscribeMessage.showDrawer ? "toaster-icons--active" : "toaster-icons"}
 				onClick={() => toggleDrawer()}

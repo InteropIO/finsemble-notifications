@@ -5,7 +5,6 @@ import useNotifications from "../shared/hooks/useNotifications";
 import INotification from "../../types/Notification-definitions/INotification";
 import Animate from "../shared/components/Animate";
 import { SpawnParams } from "../../types/FSBL-definitions/services/window/Launcher/launcher";
-import { enableClickThrough } from "../shared/hooks/finsemble-hooks";
 /* eslint-disable @typescript-eslint/no-var-requires */
 const _get = require("lodash.get");
 const { useEffect } = React;
@@ -44,12 +43,7 @@ function App(): React.ReactElement {
 	}, [notifications.length]);
 
 	return (
-		<Drawer
-			notifications={notifications}
-			windowShowParams={windowShowParams}
-			onMouseEnter={() => enableClickThrough(true)}
-			onMouseLeave={() => enableClickThrough(true)}
-		>
+		<Drawer notifications={notifications} windowShowParams={windowShowParams}>
 			{ready &&
 				notifications.map(
 					(notification: INotification) =>
@@ -68,13 +62,8 @@ function App(): React.ReactElement {
 									doAction={doAction}
 									closeAction={() => removeNotification(notification)}
 									closeButton
-									onMouseEnter={() => {
-										enableClickThrough(false);
-									}}
-									onMouseLeave={() => {
-										enableClickThrough(true);
-									}}
-								></Notification>
+									overflowCount={3}
+								/>
 							</Animate>
 						)
 				)}

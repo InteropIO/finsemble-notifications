@@ -14,7 +14,6 @@ function App(): React.ReactElement {
 	const { notifications, activeNotifications } = useNotifications({ config: { notificationsHistory: true } });
 	const pubSubTopic = "notification-ui";
 	const [notificationSubscribeMessage, notificationsPublish] = usePubSub(pubSubTopic);
-	const [currentMonitor] = useState(null);
 	const [count, setCount] = useState(activeNotifications(notifications).length);
 
 	useEffect(() => {
@@ -49,15 +48,7 @@ function App(): React.ReactElement {
 		const { showCenter = false } = notificationSubscribeMessage;
 		const publishValue = { ...notificationSubscribeMessage };
 		publishValue["showCenter"] = !showCenter;
-
-		// check if the center has been launched if not then launch it
-		const { data: windows }: any = await FSBL.Clients.LauncherClient.getActiveDescriptors();
-		if ("notification-center" in windows) {
-			// send a message over the router like "{...,showCenter:true}"
-			notificationsPublish(publishValue);
-		} else {
-			await FSBL.Clients.LauncherClient.spawn("notification-center", {});
-		}
+		notificationsPublish(publishValue);
 	};
 
 	const setCurrentMonitor = () => {

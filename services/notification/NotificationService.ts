@@ -574,10 +574,28 @@ export default class NotificationService extends Finsemble.baseService implement
 	 * Setup UI PubSub Channel
 	 */
 	private setupUIPubSub() {
-		Finsemble.Clients.RouterClient.addPubSubResponder("notification-ui", {
+		let pubSubState = {
 			showDrawer: false,
 			showCenter: false,
 			toasterMonitor: "0"
+		};
+		const spawnIfClosed: StandardCallback = (error, publish) => {
+			if (!error) {
+				if (publish.data.showCenter && publish.data.showCenter != pubSubState.showCenter) {
+					Finsemble.Clients.LauncherClient.showWindow(
+						{
+							windowName: "notification-center",
+							componentType: "notification-center"
+						},
+						{ spawnIfNotFound: true }
+					);
+				}
+				pubSubState = publish.data;
+				publish.sendNotifyToAllSubscribers(null, publish.data);
+			}
+		};
+		Finsemble.Clients.RouterClient.addPubSubResponder("notification-ui", pubSubState, {
+			publishCallback: spawnIfClosed
 		});
 	}
 

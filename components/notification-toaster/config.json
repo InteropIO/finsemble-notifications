@@ -14,7 +14,7 @@
 					"resizable": false,
 					"transparent": true,
 					"alwaysOnTop": true,
-					"showTaskbarIcon": true,
+					"showTaskbarIcon": false,
 					"autoShow": true
 				},
 				"data": {

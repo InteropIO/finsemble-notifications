@@ -147,7 +147,8 @@ export default function useNotifications() {
 	const getNotificationConfig = (componentType: string): NotificationsConfig => {
 		const config: WindowConfig = WindowClient.options.customData;
 
-		return _get(config, "window.data.notifications", null);
+		// return _get(config, "window.data.notifications", null);
+		return {};
 	};
 
 	const activeNotifications = (notifications: INotification[]) =>

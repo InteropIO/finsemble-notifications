@@ -3,6 +3,7 @@ import INotification from "../../../types/Notification-definitions/INotification
 import IAction from "../../../types/Notification-definitions/IAction";
 import Meta from "../../../types/Notification-definitions/Meta";
 import IPerformedAction from "../../../types/Notification-definitions/IPerformedAction";
+import { ActionTypes } from "../../../types/Notification-definitions/ActionTypes";
 import { formatDistanceToNow } from "date-fns";
 import { stat } from "fs";
 
@@ -27,6 +28,7 @@ interface NotificationContentProps {
 
 interface NotificationActionsProps {
 	actions?: IAction[];
+	notification: INotification;
 	doAction?: Function;
 }
 
@@ -161,15 +163,23 @@ const ContentArea = (props: NotificationContentProps) => {
 };
 
 const ActionsArea = (props: NotificationActionsProps) => {
-	const { actions } = props;
+	const { actions, doAction } = props;
 
 	return (
 		<div className="details_footer">
 			<hr />
 			<div className="actions">
 				{actions.map((action: IAction, i: number) => {
+					const isDisabled = action.type === ActionTypes.DISMISS || action.type === ActionTypes.SNOOZE;
+					const className = isDisabled ? "disabled" : null;
+
 					return (
-						<button key={i} onClick={() => props.doAction(props, action)}>
+						<button
+							className={className}
+							key={i}
+							onClick={() => doAction(props.notification, action)}
+							disabled={isDisabled}
+						>
 							{action.buttonText}
 						</button>
 					);
@@ -204,7 +214,8 @@ const HistoryArea = (props: NotificationHistoryProps) => {
 };
 
 const NotificationsPanel = (props: NotificationPanelProps) => {
-	const { notification } = props;
+	const { notification, doAction } = props;
+	const { actions } = notification;
 	const { id } = notification;
 
 	return (
@@ -216,7 +227,9 @@ const NotificationsPanel = (props: NotificationPanelProps) => {
 			<div className="notification_card" title={id}>
 				<HeaderArea {...notification} />
 				<ContentArea {...notification} />
-				{notification.actions.length > 0 && <ActionsArea {...notification} doAction={props.doAction} />}
+				{notification.actions.length > 0 && (
+					<ActionsArea notification={notification} doAction={doAction} actions={actions} />
+				)}
 				<HistoryArea {...notification} />
 			</div>
 		</section>

@@ -226,6 +226,10 @@ body {
 	cursor: pointer;
 }
 
+.notification_card .details_footer .actions button.disabled {
+	cursor: not-allowed;
+}
+
 #notification-center__search {
 	justify-self: end;
 }

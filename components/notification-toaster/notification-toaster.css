@@ -51,7 +51,8 @@ body {
 	height: 80%;
 }
 
-.toaster-icons {
+.toaster-icons,
+.toaster-icons--active {
 	cursor: pointer;
 	height: 70%;
 	width: auto;
@@ -61,7 +62,6 @@ body {
 	border-radius: 12px;
 }
 .toaster-icons--active > path {
-	cursor: pointer;
 	fill: var(--notification-primary-color);
 }
 

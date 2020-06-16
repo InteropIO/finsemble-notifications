@@ -37,20 +37,8 @@ function toggleComponent() {
 	const { windowName, uuid, componentType } = WindowClient.getWindowIdentifier();
 }
 
-/**
- * Exposes Electron ClickThrough
- * @param canClickThrough - This should be the visible section of a component
- * @example
- * //clickthrough is enabled and the window will ignore mouse click events
- * enableClickThrough(true)
- */
-function enableClickThrough(canClickThrough = false) {
-	const options = canClickThrough && { forward: true };
-	// WindowClient.setIgnoreMouseEvents(canClickThrough, options);
-}
-
 const bringWindowToFront: Function = () => WindowClient.bringWindowToFront();
 
-export { enableClickThrough, toggleComponent, getWindowSpawnData, usePubSub, bringWindowToFront };
+export { toggleComponent, getWindowSpawnData, usePubSub, bringWindowToFront };
 
-export default { enableClickThrough, toggleComponent, getWindowSpawnData, usePubSub, bringWindowToFront };
+export default { toggleComponent, getWindowSpawnData, usePubSub, bringWindowToFront };

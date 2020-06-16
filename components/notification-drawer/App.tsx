@@ -36,8 +36,8 @@ function App(): React.ReactElement {
 			const roundedRect = {
 				x: 0,
 				y: 0,
-				width: 0,
-				height: 0
+				width: 1,
+				height: 1
 			};
 			setTimeout(() => {
 				FSBL.Clients.WindowClient.setShape([roundedRect]);
@@ -70,7 +70,7 @@ function App(): React.ReactElement {
 							(notification: INotification) =>
 								notificationIsActive(notification) && (
 									<Animate animateIn="slide-in-fwd-bottom" animateOut="slide-out-right" key={notification.id}>
-										<Notification notification={notification} doAction={doAction} />
+										<Notification notification={notification} doAction={doAction} overflowCount={3} />
 									</Animate>
 								)
 						)

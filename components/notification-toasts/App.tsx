@@ -20,7 +20,8 @@ function App(): React.ReactElement {
 		doAction,
 		removeNotification,
 		getNotificationConfig,
-		activeNotifications
+		activeNotifications,
+		notificationIsActive
 	} = useNotifications();
 
 	const pubSubTopic = "notification-ui";
@@ -33,8 +34,6 @@ function App(): React.ReactElement {
 		right: 0,
 		monitor: 0
 	});
-
-	const notificationIsActive = (notification: INotification) => !notification.isRead && !notification.isSnoozed;
 
 	// ensure the config and notifications have loaded before rendering the DOM
 	const ready = config && notifications;

@@ -1,6 +1,5 @@
-import { IRouterClient } from "../../types/FSBL-definitions/clients/IRouterClient";
-import { ILogger } from "../../types/FSBL-definitions/clients/ILogger";
-import { StandardCallback } from "../../types/FSBL-definitions/globals";
+import { IRouterClient } from "@chartiq/finsemble/dist/types/clients/IRouterClient";
+import { ILogger } from "@chartiq/finsemble/dist/types/clients/ILogger";
 
 const { RouterClient, Logger } = require("@chartiq/finsemble").Clients;
 const FSBL = window.FSBL;

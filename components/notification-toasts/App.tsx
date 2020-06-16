@@ -4,7 +4,7 @@ import Notification from "../shared/components/Notification";
 import useNotifications from "../shared/hooks/useNotifications";
 import INotification from "../../types/Notification-definitions/INotification";
 import Animate from "../shared/components/Animate";
-import { SpawnParams } from "../../types/FSBL-definitions/services/window/Launcher/launcher";
+import { SpawnParams } from "@chartiq/finsemble/dist/types/services/window/Launcher/launcher";
 /* eslint-disable @typescript-eslint/no-var-requires */
 const _get = require("lodash.get");
 const { useEffect } = React;

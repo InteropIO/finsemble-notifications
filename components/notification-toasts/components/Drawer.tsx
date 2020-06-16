@@ -1,6 +1,6 @@
 import * as React from "react";
 import INotification from "../../../types/Notification-definitions/INotification";
-import { SpawnParams } from "../../../types/FSBL-definitions/services/window/Launcher/launcher";
+import { SpawnParams } from "@chartiq/finsemble/dist/types/services/window/Launcher/launcher";
 
 interface Props {
 	children: React.PropsWithChildren<any>;

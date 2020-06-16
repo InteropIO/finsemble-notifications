@@ -1,5 +1,4 @@
 import INotification from "../../types/Notification-definitions/INotification";
-import { PurgeConfig } from "../../types/Notification-definitions/NotificationConfig";
 import ILastIssued from "../../types/Notification-definitions/ILastIssued";
 import ISnoozeTimer from "../../types/Notification-definitions/ISnoozeTimer";
 
@@ -32,7 +31,7 @@ export default class StorageHelper {
 	 * Fetches notifications from storage
 	 */
 	public static async fetchNotifications(): Promise<Map<string, INotification>> {
-		return new Promise<Map<string, INotification>>(async (resolve, reject) => {
+		return new Promise<Map<string, INotification>>(async resolve => {
 			const returnValue = new Map<string, INotification>();
 			const keys = await StorageHelper.getValue(STORAGE_KEY_LIST);
 

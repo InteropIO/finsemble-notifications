@@ -42,7 +42,7 @@
 	},
 	"devDependencies": {
 		"@babel/register": "^7.8.3",
-		"@chartiq/finsemble": "^3.13.1",
+		"@chartiq/finsemble": "^4.3.0",
 		"@testing-library/react": "^9.4.0",
 		"@types/chai": "^4.2.7",
 		"@types/lodash": "^4.14.149",
@@ -73,6 +73,6 @@
 		"react": "16.8.4",
 		"react-dom": "16.8.4",
 		"ts-node": "^8.6.2",
-		"typescript": "^3.7.5"
+		"typescript": "^3.9.3"
 	}
 }

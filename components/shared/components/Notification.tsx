@@ -17,7 +17,6 @@ interface Props {
 }
 
 const HeaderArea = (props: Props) => {
-	const { useEffect, useState } = React;
 	const { closeAction, closeButton = false, notification } = props;
 	const { issuedAt = new Date() } = notification;
 
@@ -133,7 +132,6 @@ const UIAction = (props: ActionUIProps) => {
 
 const Notification = (props: Props) => {
 	const { notification } = props;
-	const { meta } = notification;
 
 	return (
 		<div

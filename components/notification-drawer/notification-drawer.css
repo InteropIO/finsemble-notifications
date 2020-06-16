@@ -12,11 +12,20 @@
 	--notification-font-color: var(--notification-contrast-color);
 }
 
+html,
 body {
-	margin: 0px;
+	height: 100%;
+}
+
+body {
+	margin: 0;
 	background-color: rgba(0, 0, 0, 0);
 	bottom: 0;
 	overflow-x: hidden;
+}
+
+#notifications-drawer {
+	height: 100%;
 }
 
 #drawer {
@@ -34,7 +43,7 @@ body {
 	grid-auto-rows: auto;
 	padding: 7px;
 	font-size: 12px;
-	box-shadow: 3px 3px 2px 0px #00000030;
+	box-shadow: 3px 3px 2px 0 #00000030;
 }
 .notification hr {
 	width: 100%;
@@ -78,7 +87,7 @@ body {
 .action-area > button {
 	margin-right: 10px;
 	background-color: rgba(255, 255, 255, 0);
-	border: 0px;
+	border: 0;
 	color: #b0e8a6;
 	cursor: pointer;
 }
@@ -127,13 +136,18 @@ body {
 	justify-content: space-between;
 }
 
-img#notification-center-icon {
-	filter: invert(27%) sepia(51%) saturate(2878%) hue-rotate(163deg) brightness(104%) contrast(97%);
-	margin-top: 0px;
-	height: 28px;
+.empty-notifications {
+	font-size: 12px;
+	padding: 10px 20px;
+	font-family: var(--notification-font-family);
+	color: var(--notification-font-color);
+}
+
+.notification-center-icon {
 	padding: 5px;
 	cursor: pointer;
 }
+
 img#hide-icon {
 	filter: invert(1);
 	margin-right: 5px;

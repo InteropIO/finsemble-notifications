@@ -53,7 +53,7 @@ function reducer(state: { notifications: INotification[] }, action: { type: stri
 	}
 }
 
-export default function useNotifications() {
+export default function useNotifications(params: any = {}) {
 	const [state, dispatch] = useReducer(reducer, initialState);
 
 	let NOTIFICATION_CLIENT: NotificationClient = null;
@@ -183,7 +183,10 @@ export default function useNotifications() {
 
 			subscription.filter = filter;
 
-			if (notificationConfig && notificationConfig.notificationsHistory) {
+			if (
+				(notificationConfig && notificationConfig.notificationsHistory) ||
+				_get(params, "config.notificationsHistory")
+			) {
 				// const { since, filter } = notificationConfig.notificationsHistory;
 				const pastNotifications = await getNotificationHistory();
 				addMultipleNotifications(pastNotifications);

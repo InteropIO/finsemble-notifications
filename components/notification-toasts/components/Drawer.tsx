@@ -12,7 +12,11 @@ interface Props {
 
 function Drawer(props: Props): React.ReactElement {
 	return (
-		<div onMouseEnter={() => props.onMouseEnter()} onMouseLeave={() => props.onMouseLeave()} id="toasts-drawer">
+		<div
+			onMouseEnter={() => props.onMouseEnter && props.onMouseEnter()}
+			onMouseLeave={() => props.onMouseLeave && props.onMouseLeave()}
+			id="toasts-drawer"
+		>
 			{props.children}
 		</div>
 	);

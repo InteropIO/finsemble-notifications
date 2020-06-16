@@ -2,9 +2,9 @@ import * as React from "react";
 
 const { useState, useEffect } = React;
 
-const { LauncherClient, WindowClient, Logger, RouterClient } = FSBL.Clients;
+const { WindowClient, RouterClient } = FSBL.Clients;
 
-const { addPubSubResponder, publish, subscribe, unsubscribe } = RouterClient;
+const { publish, subscribe, unsubscribe } = RouterClient;
 
 function usePubSub(topic: string, initialMessage: object = {}): [{ [key: string]: any }, Function] {
 	const [message, setMessage] = useState(initialMessage);
@@ -20,7 +20,7 @@ function usePubSub(topic: string, initialMessage: object = {}): [{ [key: string]
 		return () => {
 			unsubscribe(subscribeId);
 		};
-	}, []); // eslint-disable-line
+	}, []);
 
 	return [message, pub];
 }

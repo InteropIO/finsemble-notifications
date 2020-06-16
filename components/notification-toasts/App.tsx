@@ -39,7 +39,7 @@ function App(): React.ReactElement {
 	// ensure the config and notifications have loaded before rendering the DOM
 	const ready = config && notifications;
 
-	const moveToMonitor = async (monitorPosition: number) => {
+	const moveToMonitor = async () => {
 		const { err, data } = (await FSBL.Clients.LauncherClient.getMonitorInfo({
 			windowIdentifier: { windowName: WINDOW_NAME_TOASTER }
 		})) as any;
@@ -71,7 +71,7 @@ function App(): React.ReactElement {
 			currentMonitor !== notificationSubscribeMessage.toasterMonitorPosition &&
 			!activeNotifications(notifications).length
 		) {
-			moveToMonitor(notificationSubscribeMessage.toasterMonitorPosition).then(() => {
+			moveToMonitor().then(() => {
 				setCurrentMonitor(notificationSubscribeMessage.toasterMonitorPosition);
 			});
 		}

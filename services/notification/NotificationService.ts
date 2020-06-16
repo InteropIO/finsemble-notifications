@@ -70,6 +70,8 @@ export default class NotificationService extends Finsemble.baseService implement
 			}
 		});
 
+		StorageHelper.logger = Finsemble.Clients.Logger;
+
 		this.proxyToWebApiFilter = false;
 		this.subscriptions = new Map<string, ISubscription>();
 

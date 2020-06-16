@@ -14,7 +14,6 @@ import IFilter from "../../types/Notification-definitions/IFilter";
 // @ts-ignore
 import { v4 as uuidV4 } from "uuid";
 import { Map as ImmutableMap } from "immutable";
-import { CallbackError, StandardCallback } from "../../types/FSBL-definitions/globals";
 import StorageHelper, { STORAGE_KEY_NOTIFICATION_PREFIX } from "../helpers/StorageHelper";
 
 // TODO: Add Ticket to allow importing Finsemble
@@ -70,6 +69,8 @@ export default class NotificationService extends Finsemble.baseService implement
 				clients: ["storageClient"]
 			}
 		});
+
+		StorageHelper.logger = Finsemble.Clients.Logger;
 
 		this.proxyToWebApiFilter = false;
 		this.subscriptions = new Map<string, ISubscription>();
@@ -349,7 +350,7 @@ export default class NotificationService extends Finsemble.baseService implement
 		const action = new Action();
 		action.id = this.getUuid();
 		action.type = "FINSEMBLE:WAKE";
-		notification = ServiceHelper.addPerformedAction(notification, action);
+		notification = ServiceHelper.addPerformedAction(notification, action) as INotification;
 		notification.isSnoozed = false;
 		this.removeFromSnoozeQueue(notification);
 		this.notify([notification]);
@@ -429,7 +430,7 @@ export default class NotificationService extends Finsemble.baseService implement
 		 * ie. (the request for action has been received)
 		 * Discussion here https://chartiq.slack.com/archives/CPYQ16K7H/p1574357206003200
 		 */
-		notification = ServiceHelper.addPerformedAction(notification, action);
+		notification = ServiceHelper.addPerformedAction(notification, action) as INotification;
 
 		/**
 		 * If an action is performed on a notification, it should not be snoozed anymore.
@@ -492,11 +493,12 @@ export default class NotificationService extends Finsemble.baseService implement
 			const action = new Action();
 			action.id = this.getUuid();
 			action.type = "FINSEMBLE:RECEIVED";
+			// @ts-ignore
 			map = ServiceHelper.addPerformedAction(map, action);
 			map = map.set("receivedAt", new Date().toISOString());
 		}
 		Finsemble.Clients.Logger.info("Applied state", map);
-		return map.toObject();
+		return (map.toObject() as unknown) as INotification;
 	}
 
 	/**
@@ -574,10 +576,28 @@ export default class NotificationService extends Finsemble.baseService implement
 	 * Setup UI PubSub Channel
 	 */
 	private setupUIPubSub() {
-		Finsemble.Clients.RouterClient.addPubSubResponder("notification-ui", {
+		let pubSubState = {
 			showDrawer: false,
 			showCenter: false,
 			toasterMonitor: "0"
+		};
+		const spawnIfClosed: StandardCallback = (error, publish) => {
+			if (!error) {
+				if (publish.data.showCenter && publish.data.showCenter != pubSubState.showCenter) {
+					Finsemble.Clients.LauncherClient.showWindow(
+						{
+							windowName: "notification-center",
+							componentType: "notification-center"
+						},
+						{ spawnIfNotFound: true }
+					);
+				}
+				pubSubState = publish.data;
+				publish.sendNotifyToAllSubscribers(null, publish.data);
+			}
+		};
+		Finsemble.Clients.RouterClient.addPubSubResponder("notification-ui", pubSubState, {
+			publishCallback: spawnIfClosed
 		});
 	}
 

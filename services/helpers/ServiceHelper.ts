@@ -6,7 +6,6 @@ import { Map as ImmutableMap, mergeDeepWith } from "immutable";
 import IAction from "../../types/Notification-definitions/IAction";
 import PerformedAction from "../../types/Notification-definitions/PerformedAction";
 import IPerformedAction from "../../types/Notification-definitions/IPerformedAction";
-import StorageHelper from "./StorageHelper";
 import { PurgeConfig } from "../../types/Notification-definitions/NotificationConfig";
 
 // eslint-disable-next-line
@@ -99,7 +98,7 @@ export default class ServiceHelper {
 				// @ts-ignore
 				let map = ImmutableMap(notification);
 				map = mergeDeepWith(ServiceHelper.merge, map, configToApply[KEY_NAME_DEFAULT_FIELDS]);
-				returnValue = map.toObject();
+				returnValue = (map.toObject() as unknown) as INotification;
 			}
 
 			const showDismissAction = configToApply.hasOwnProperty(KEY_NAME_SHOW_DISMISS_ACTION)
@@ -204,7 +203,10 @@ export default class ServiceHelper {
 	 * @note JavaScript is pass by reference for objects but prefer to be specific by returning a value
 	 * not sure if putting a return in is confusing and hinting at it being pass by reference.
 	 */
-	public static addPerformedAction(notification: INotification, action: IAction): INotification {
+	public static addPerformedAction(
+		notification: INotification,
+		action: IAction
+	): INotification | ImmutableMap<unknown, unknown> {
 		let map;
 		if (ImmutableMap.isMap(notification)) {
 			map = notification;
@@ -218,11 +220,11 @@ export default class ServiceHelper {
 		performedAction.type = action.type;
 		performedAction.datePerformed = new Date().toISOString();
 
-		const actionsHistory: IPerformedAction[] = map.get("actionsHistory").slice(0);
+		const actionsHistory: IPerformedAction[] = (map.get("actionsHistory") as IPerformedAction[]).slice(0);
 		actionsHistory.push(performedAction);
 		map = map.set("actionsHistory", actionsHistory);
 
-		return ImmutableMap.isMap(notification) ? map : map.toObject();
+		return !ImmutableMap.isMap(notification) ? ((map.toObject() as unknown) as INotification) : map;
 	}
 
 	/**
@@ -236,7 +238,7 @@ export default class ServiceHelper {
 		notification: INotification,
 		notificationList: Map<string, INotification>,
 		defaultPrevious: INotification
-	) {
+	): INotification {
 		// @ts-ignore
 		const map = ImmutableMap(notification);
 
@@ -249,14 +251,14 @@ export default class ServiceHelper {
 			currentHistory = currentlyStoredNotification.stateHistory;
 			currentlyStoredNotification.stateHistory = [];
 		} else {
-			currentHistory = map.get("stateHistory");
+			currentHistory = map.get("stateHistory") as INotification[];
 			currentlyStoredNotification = defaultPrevious;
 			currentlyStoredNotification.stateHistory = [];
 		}
 
 		currentHistory.push(currentlyStoredNotification);
 
-		return map.set("stateHistory", currentHistory).toObject();
+		return (map.set("stateHistory", currentHistory).toObject() as unknown) as INotification;
 	}
 
 	/**
@@ -283,7 +285,7 @@ export default class ServiceHelper {
 				if (actionsHistory && actionsHistory.length) {
 					const lastUpdatedDate = Date.parse(actionsHistory[actionsHistory.length - 1].datePerformed);
 
-					if (Date.now() - purgeConfig.maxNotificationRetentionPeriodSeconds > lastUpdatedDate) {
+					if (Date.now() - purgeConfig.maxNotificationRetentionPeriodSeconds * 1000 > lastUpdatedDate) {
 						count++;
 						items.push(next.value[1]);
 						continue;

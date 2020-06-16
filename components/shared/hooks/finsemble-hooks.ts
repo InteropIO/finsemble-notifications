@@ -27,18 +27,8 @@ function usePubSub(topic: string, initialMessage: object = {}): [{ [key: string]
 
 const getWindowSpawnData = () => WindowClient.getSpawnData();
 
-/**
- * send a message over the router to toggle a component
- */
-function toggleComponent() {
-	// see if the component is in the active descriptors if not it will need loading or some other feedback
-	// do we want to show minimize / hide in the case of the center?
-	// send a message over the router with the word toggle and then the component can do a !toggle to show or do
-	const { windowName, uuid, componentType } = WindowClient.getWindowIdentifier();
-}
-
 const bringWindowToFront: Function = () => WindowClient.bringWindowToFront();
 
-export { toggleComponent, getWindowSpawnData, usePubSub, bringWindowToFront };
+export { getWindowSpawnData, usePubSub, bringWindowToFront };
 
-export default { toggleComponent, getWindowSpawnData, usePubSub, bringWindowToFront };
+export default { getWindowSpawnData, usePubSub, bringWindowToFront };

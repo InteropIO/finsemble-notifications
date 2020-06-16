@@ -1,6 +1,4 @@
-import { SpawnParams } from "../FSBL-definitions/services/window/Launcher/launcher";
-
-// type SpawnParamsWithoutData = Omit<SpawnParams, "data">;
+import { SpawnParams } from "@chartiq/finsemble/dist/types/services/window/Launcher/launcher";
 
 export interface NotificationsConfig {
 	filter?: {

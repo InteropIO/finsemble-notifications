@@ -1,7 +1,7 @@
 import INotification from "../../types/Notification-definitions/INotification";
-import { PurgeConfig } from "../../types/Notification-definitions/NotificationConfig";
 import ILastIssued from "../../types/Notification-definitions/ILastIssued";
 import ISnoozeTimer from "../../types/Notification-definitions/ISnoozeTimer";
+import { ILogger } from "@chartiq/finsemble/dist/types/clients/ILogger";
 
 const StorageClient = require("@chartiq/finsemble").Clients.StorageClient;
 
@@ -12,6 +12,7 @@ const STORAGE_KEY_LIST = "list.contents";
 export const STORAGE_KEY_NOTIFICATION_PREFIX = "id.";
 
 export default class StorageHelper {
+	public static logger: ILogger;
 	/**
 	 * Persists a notification to storage
 	 *
@@ -32,7 +33,7 @@ export default class StorageHelper {
 	 * Fetches notifications from storage
 	 */
 	public static async fetchNotifications(): Promise<Map<string, INotification>> {
-		return new Promise<Map<string, INotification>>(async (resolve, reject) => {
+		return new Promise<Map<string, INotification>>(async resolve => {
 			const returnValue = new Map<string, INotification>();
 			const keys = await StorageHelper.getValue(STORAGE_KEY_LIST);
 
@@ -45,9 +46,12 @@ export default class StorageHelper {
 			}
 
 			const notifications = await Promise.all(promises);
-
-			notifications.forEach(notification => {
-				returnValue.set(notification.id, notification);
+			notifications.forEach((notification, index) => {
+				if (notification) {
+					returnValue.set(notification.id, notification);
+				} else {
+					StorageHelper.logger.error(`Notification ${keys[index]} not found`);
+				}
 			});
 
 			resolve(returnValue);

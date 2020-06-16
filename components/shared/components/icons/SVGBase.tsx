@@ -12,10 +12,14 @@ export default function SVGBase({
 	fillRule = null,
 	clipRule = "",
 	// eslint-disable-next-line @typescript-eslint/no-empty-function
-	onClick = () => {}
+	onClick = () => {},
+	onMouseDown = null,
+	onMouseUp = null
 }: SVGProps) {
 	return (
 		<svg
+			onMouseDown={onMouseDown}
+			onMouseUp={onMouseUp}
 			onClick={onClick}
 			width={width}
 			style={style}

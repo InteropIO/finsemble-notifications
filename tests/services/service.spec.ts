@@ -6,14 +6,17 @@ import ServiceHelper from "../../services/helpers/ServiceHelper";
 import Notification from "../../types/Notification-definitions/Notification";
 import Action from "../../types/Notification-definitions/Action";
 import { ActionTypes } from "../../types/Notification-definitions/ActionTypes";
+import INotification from "../../types/Notification-definitions/INotification";
+import IPerformedAction from "../../types/Notification-definitions/IPerformedAction";
+import PerformedAction from "../../types/Notification-definitions/PerformedAction";
 
 describe("Configuration", () => {
 	let normalisedConfig: any;
 
 	const config: any = {
 		defaultDismissButtonText: "Service Default Dismiss",
-		maxNotificationsToRetain: 1000,
-		maxNotificationRetentionPeriodHours: 24,
+		maxNotificationsToRetain: 2000,
+		maxNotificationRetentionPeriodSeconds: 100,
 		presentationComponents: {
 			toast: {
 				component: "toast",
@@ -130,7 +133,25 @@ describe("Configuration", () => {
 		expect(defaults.hasOwnProperty("presentationComponents")).to.equal(false);
 		expect(defaults.hasOwnProperty("defaultDismissButtonText")).to.equal(true);
 		expect(defaults.hasOwnProperty("maxNotificationsToRetain")).to.equal(true);
-		expect(defaults.hasOwnProperty("maxNotificationRetentionPeriodHours")).to.equal(true);
+		expect(defaults.hasOwnProperty("maxNotificationRetentionPeriodSeconds")).to.equal(true);
+		expect(defaults["maxNotificationsToRetain"]).to.equal(2000);
+		expect(defaults["maxNotificationRetentionPeriodSeconds"]).to.equal(100);
+	});
+
+	it("Can get purge defaults if not set", () => {
+		expect(() => {
+			ServiceHelper.getTypes(null);
+		}).to.not.throw(Error);
+
+		expect(() => {
+			ServiceHelper.getTypes({});
+		}).to.not.throw(Error);
+
+		const defaults = ServiceHelper.getServiceDefaults({});
+		expect(defaults.hasOwnProperty("maxNotificationsToRetain")).to.equal(true);
+		expect(defaults.hasOwnProperty("maxNotificationRetentionPeriodSeconds")).to.equal(true);
+		expect(defaults["maxNotificationsToRetain"]).to.equal(1000);
+		expect(defaults["maxNotificationRetentionPeriodSeconds"]).to.equal(false);
 	});
 
 	it("Can get types from the config", () => {
@@ -382,5 +403,66 @@ describe("Filtering", () => {
 			false,
 			"Can use filter with exclude only - excludes if match"
 		);
+	});
+
+	it("Can purge items", () => {
+		const notifications: Map<string, INotification> = new Map<string, INotification>();
+
+		for (let i = 0; i < 10; i++) {
+			const notification = new Notification();
+			notification.id = `${i}`;
+
+			let age = 100000;
+			if (i >= 6) {
+				age = 0;
+			}
+
+			const performedAction: IPerformedAction = new PerformedAction();
+			performedAction.datePerformed = new Date(Date.now() - age).toISOString();
+			notification.actionsHistory.push(performedAction);
+
+			notifications.set(notification.id, notification);
+		}
+
+		let canPurge = ServiceHelper.getItemsToPurge(notifications, {
+			maxNotificationRetentionPeriodSeconds: false,
+			maxNotificationsToRetain: 1000
+		});
+
+		expect(canPurge.length).to.equal(0);
+
+		canPurge = ServiceHelper.getItemsToPurge(notifications, {
+			maxNotificationRetentionPeriodSeconds: false,
+			maxNotificationsToRetain: 5
+		});
+		expect(canPurge.length).to.equal(5);
+
+		canPurge = ServiceHelper.getItemsToPurge(notifications, {
+			maxNotificationRetentionPeriodSeconds: 200000,
+			maxNotificationsToRetain: 50
+		});
+
+		expect(canPurge.length).to.equal(0);
+
+		canPurge = ServiceHelper.getItemsToPurge(notifications, {
+			maxNotificationRetentionPeriodSeconds: 50000,
+			maxNotificationsToRetain: 50
+		});
+
+		expect(canPurge.length).to.equal(6);
+
+		canPurge = ServiceHelper.getItemsToPurge(notifications, {
+			maxNotificationRetentionPeriodSeconds: 50000,
+			maxNotificationsToRetain: 3
+		});
+
+		expect(canPurge.length).to.equal(7);
+
+		canPurge = ServiceHelper.getItemsToPurge(notifications, {
+			maxNotificationRetentionPeriodSeconds: 50000,
+			maxNotificationsToRetain: 8
+		});
+
+		expect(canPurge.length).to.equal(6);
 	});
 });

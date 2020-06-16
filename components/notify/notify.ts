@@ -111,8 +111,8 @@ function init() {
 	nClient = new NotificationClient();
 }
 
-if (window.FSBL && FSBL.addEventListener) {
-	FSBL.addEventListener("onReady", init);
+if (window.FSBL && (FSBL as any).addEventListener) {
+	(FSBL as any).addEventListener("onReady", init);
 } else {
 	window.addEventListener("FSBLReady", init);
 }

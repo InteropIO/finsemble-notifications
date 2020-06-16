@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 ### Added
+  - Notifications have their own storage topic 
+  - Notifications can now be purged based on values in the config
+  - Updated documentation to explain types better
+
+
+## [V0.1 - Prototype Phase 1]
+### Added
  - New callback type definitions specify params expected on client responses
 
 ### Modified

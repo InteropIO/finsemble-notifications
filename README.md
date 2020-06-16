@@ -9,14 +9,16 @@ This project requires the [Finsemble Seed Project](https://github.com/ChartIQ/fi
 **[Setup](#setup)**
 
 - [Getting the Sourcecode](#getting-the-sourcecode)
-    - [As a copy](#as-a-copy)
-    - [As a submodule](#as-a-submodule)
 - [Finsemble Config](#finsemble-config)
 - [Selective Finsemble Config](#selective-finsemble-config)
 
 **[Configuring the Notifications](#configuring-the-notifications)**
 
 - [Configuring the Service](#configuring-the-service)
+    - [Notification Types](#notification-types)
+    - [Persistence](#persistence)
+    - [Storage](#storage)
+    - [Send Notifications to the OS](#send-notifications-to-the-os)
 - [Configuring the Components](#configuring-the-components)
 
 **[Using the Notifications API](#using-the-notifications-api)**
@@ -34,19 +36,13 @@ This project requires the [Finsemble Seed Project](https://github.com/ChartIQ/fi
 
 Getting the Finsemble notification code running and transpiling in your Finsemble seed project.
 
-**Note: We suggest working directly with the source code at this point. This effectively means checking out the 
-notifications source code, getting it into your own project and building the source as part of your normal process (we 
-provide two methods to achieve this below). We're doing it this way as part of the initial release. As part of your 
-feedback we'd like to know your thoughts on where you felt the need to customise or use only parts of the package. 
-This will help us inform to better separate or distribute the package in future phases** 
+**Note: We suggest working directly with the source code. This effectively means checking out the notifications source
+code, getting it into your own project and building the source as part of your normal process. We're doing it this way 
+as part of the initial release. As part of your feedback we'd like to know your thoughts on where you felt the need to 
+customise or use only parts of the package. This will help us inform to better separate or distribute the package in 
+future phases** 
 
 ### Getting the Sourcecode
-
-We provide two ways of integrating the notifications project into your project. As a copy and as a submodule. We use 
-the copy method internally and believe it allows the most flexibility. If you're unsure we suggest using that method 
-too.
-
-#### As a copy
 
 1. git clone this project into the directory of your choice.
 1. run `npm install` to install dependencies needed for the copy script.
@@ -58,29 +54,14 @@ too.
 1. You're now setup to copy. Running `npm run copy-files` should now have copied all the required files in your 
 seed project.
 1. Your seed will likely be missing some of the required packages for this to run. 
-`npm install uuid date-fns immutable searchjs lodash.get` (we also suggest install `@types/react` if you have not 
-already)
-1. Make sure your seed can transpile tsx by adding `"jsx": "react"` to your seed's `compilerOptions` in the `tsconfig.json`
-1. In the seed, edit _./build/webpack/defaultWebpackConfig.js_ in the section for the `ts-loader`, set `"test": /\.ts(x)?$/` if it's not already.
-
-#### As a submodule
-
-This is a simpler method of adding notifications to your project however we find that due to the nature of the code 
-needing to be built, there may be conflicts between packages your seed's package dependencies and the notification's 
-during the build process.
-
-To add notifications as a submodule follow these steps:
-
-1. cd into your seed's components directory. `$ cd src/components`
-1. Add the project as a submodule `$ git submodule add git@github.com:ChartIQ/finsemble-notifications.git`
-1. cd into the submodule directory: `cd finsemble-notifications`
-1. Install the required packages to run `npm install --production`
-1. Make sure your seed can transpile tsx by adding `"jsx": "react"` to your seed's `compilerOptions` in the `tsconfig.json`
+`npm install uuid date-fns immutable searchjs lodash.get react-transition-group @types/react @types/lodash.get`.
+1. Modify your typescript config by adding `"jsx": "react"`, `"allowJs": true` and `"esModuleInterop": true` to your 
+seed's `compilerOptions` in the `tsconfig.json`
 1. In the seed, edit _./build/webpack/defaultWebpackConfig.js_ in the section for the `ts-loader`, set `"test": /\.ts(x)?$/` if it's not already.
 
 ### Finsemble Config
 
-You now have the source in your seed. Now you need to tell Finsemble to use it.  
+You now have the source in your seed. Now you need to tell Finsemble to use it.
 Add the notification config your finsemble seed config file: `./finsemble-seed/configs/application/config.json`
 
 ```
@@ -91,6 +72,7 @@ Add the notification config your finsemble seed config file: `./finsemble-seed/c
 ```
 
 This line will add the Notifications Service, Notification Center, Toasts, toaster and drawer to your project.
+
 
 ### Selective Finsemble Config
 
@@ -119,19 +101,160 @@ Providing defaults and changing the behaviour of the Service and Components
 
 ### Configuring the Service
 
-Certain directives can be provided to the service.
+Certain directives can be provided to the notifications service.
 You can do this by adding a `notifications` object to the `servicesConfig` object in `./configs/application/config.json` in the finsemble seed.
-All the configuration below is optional:
+All service configuration is optional.
 
+#### Notification Types
+
+Defining a notification type is the quickest method of applying a set of behaviours to many notifications at once.
+Defining a type in the config, will mean that when a notification with the corresponding `INofification.type` set, the 
+values specified in the config will be applied on any empty fields. In practice this means notifications of a specific 
+type, without any work other than setting the type, can all have the same css class, logo, header text, (sound in the 
+future), etc.
+
+Specifying the `default` type will apply these values as defaults to all notifications sent, provided that they do not 
+match any other notifications types specified in the config.
+
+You can do this by adding to the `servicesConfig.notifications.types` object in `./configs/application/config.json` in 
+the finsemble seed: 
+
+**showDismissAction** _[default: false]_ Adds a dismiss action to the Notification if one is not already present.  
+**defaultDismissButtonText:** _[Default: Dismiss]_  The dismiss button text if one needs to be added.  
+**defaults** _[default: {}]_ Sets the values on a notification if it has not already been set. All fields specified here
+ should match those on the INotification interface.
+
+
+Example type definition:
+```
+{
+    "servicesConfig": {
+        "notifications": {
+            "types": {
+                "notification-type-name": {
+                    "defaultDismissButtonText": "Default Button Text",
+                    "showDismissAction": true,
+                    "defaults": {
+                        "timeout": 2000,
+                        "headerLogo": "toast logo",
+                        "contentLogo": "toast content logo"
+                        "cssClassName": "cssClassName",
+                        "meta": {
+                            "anykey": "anyvalue",
+                            "anykey2": "anyvalue2",
+                            "anykey3": "anyvalue3",
+                        }
+                    }
+                },
+                "default": {
+                    "showDismissAction": true,
+                    "defaultDismissButtonText": "Default Button Text",
+                    "defaults": {
+                        "timeout": 1234,
+                        "headerLogo": "defaultHeaderLogo",
+                        "contentLogo": "defaultContentLogo",
+                        "title": "defaultTitle",
+                        "details": "defaultDetails",
+                        "headerText": "defaultHeaderText"
+                    }
+                }
+            }
+        }
+    }
+}
+```
+
+
+#### Persistence
+
+By default, finsemble will store a maximum of 1000 notifications. If no new notifications are sent, it will keep these 
+1000 notifications in storage forever. These directives can be changed on the `notifications` object on the 
+`servicesConfig` object in `./configs/application/config.json`:
+
+**maxNotificationsToRetain:** _[Default: 1000]_ The number of notifications to store.  
+**maxNotificationRetentionPeriodSeconds** _[default: false]_ - The number of seconds the service should keep a 
+notification in storage since that notification's last updated time.  
+
+_**Note:** Notifications are not actively purged. Rather, as a new notification comes in the collection is evaluated for
+notifications to purge from storage_
+
+```
+{
+    "servicesConfig": {
+        ....
+        "notifications": {
+            "maxNotificationsToRetain": 1000,
+            "maxNotificationRetentionPeriodSeconds": 86400
+        }
+    }
+}
+
+```
+
+#### Storage
+
+Finsemble notification gets persisted using the `finsemble.notifications` storage topic. To change which storage adapter
+notifications will use, set the appropriate value by adding the `finsemble.notifications` key to the 
+`servicesConfig.storage.topicToDataStoreAdapters` object in `./configs/application/config.json` in the finsemble seed:
+
+```
+{
+    "servicesConfig": {
+        "storage": {
+            "topicToDataStoreAdapters": {
+                ...
+                "finsemble.notifications": "IndexedDBAdapter"
+            }
+        }
+    }
+}
+```
+
+#### Send Notifications to the OS
+Using the config, you can also send your notifications to the OS. Do this by specifying the `proxyToWebApiFilter` on 
+the `notifications` object on the `servicesConfig` object in `./configs/application/config.json`. For more infomration 
+on filtering see the section on [Fetching and Receiving Notifications](/components/subscriber/Readme.md)
+
+Example filter:
+```
+{
+    "servicesConfig": {
+        "notifications": {
+            "proxyToWebApiFilter": {
+                "include": [{
+                    "type": "web"
+                }],
+                "exclude": []
+            }
+        }
+    }
+}
+```
+
+
+
+
+#### Example Psuedo Config
 ```
 {
     ...
     "servicesConfig": {
         ...
+        "storage": {
+            "topicToDataStoreAdapters": {
+                ...
+                // Sets the storage adapter for notification persistance
+                "finsemble.notifications": "IndexedDBAdapter"
+            }
+        }
         "notifications": {
+            // The maximum number of notifiations the service should store in memory
+            "maxNotificationsToRetain": 1000,
+            // The maximum
+            "maxNotificationRetentionPeriodSeconds": 86400
             // Broadcast any notifications that match this filter to the Notication Web API to appear in the OS.
             // See 'Receiveing Notifications' for more details
-            "proxyToWebAPiFilter": {
+            "proxyToWebApiFilter": {
                 "include": [{
                     "type": "web"
                 }],

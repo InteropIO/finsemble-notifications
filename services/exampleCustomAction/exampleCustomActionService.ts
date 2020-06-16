@@ -1,5 +1,4 @@
 import NotificationClient from "../notification/notificationClient";
-import { StandardCallback } from "../../types/FSBL-definitions/globals";
 
 // eslint-disable-next-line
 const Finsemble = require("@chartiq/finsemble");

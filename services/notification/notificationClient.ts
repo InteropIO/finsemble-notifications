@@ -6,12 +6,12 @@ import IAction from "../../types/Notification-definitions/IAction";
 import ISubscription from "../../types/Notification-definitions/ISubscription";
 import RouterWrapper, { ROUTER_ENDPOINTS, ROUTER_NAMESPACE } from "../helpers/RouterWrapper";
 import { ActionTypes } from "../../types/Notification-definitions/ActionTypes";
-import { IRouterClient } from "../../types/FSBL-definitions/clients/IRouterClient";
-import { ILogger } from "../../types/FSBL-definitions/clients/logger.interface";
 import OnSubscriptionSuccessCallback, {
 	OnNotificationCallback,
 	OnSubscriptionFaultCallback
 } from "../../types/Notification-definitions/Callbacks";
+import { ILogger } from "@chartiq/finsemble/dist/types/clients/ILogger";
+import { IRouterClient } from "@chartiq/finsemble/dist/types/clients/IRouterClient";
 
 const { Logger } = require("@chartiq/finsemble").Clients;
 const FSBL = window.FSBL;

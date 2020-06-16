@@ -87,6 +87,147 @@ body {
 	position: sticky;
 	top: 0;
 	align-self: flex-start;
+	width: 350px;
+}
+
+#notification-center__notification-detail > h3 {
+	background-color: #366791;
+	padding: 10px;
+}
+
+.notification_card {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-evenly;
+	width: 100%;
+}
+
+.notification_card .card_header {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.notification_card .card_header .notification_logo {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-around;
+}
+
+.notification_card .card_header .notification_logo img {
+	margin-right: 20px;
+}
+
+.notification_card .details {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	padding: 5px;
+}
+
+.notification_card .details .title {
+	font-size: 16px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: flex;
+	justify-content: center;
+	font-weight: 700;
+}
+
+.notification_card .details .notification_content {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+
+.notification_card .details .notification_content img {
+	width: 30px;
+	margin-right: 20px;
+}
+
+.notification_card .details .meta-details {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+.notification_card .details .meta-details .meta-info {
+	align-self: center;
+	text-decoration: underline;
+	margin-bottom: -10px;
+}
+
+.notification_card .details .meta-details .type {
+	font-size: 12px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: flex;
+}
+
+.notification_card .details .meta-details .type span {
+	font-weight: 700;
+}
+
+.notification_card .details .meta-details .source {
+	font-size: 12px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: flex;
+}
+
+.notification_card .details .meta-details .source span {
+	font-weight: 700;
+}
+
+.notification_card .details .meta-details .flags {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+	padding: 10px;
+}
+
+.notification_card .details .meta-details .flags span {
+	color: green;
+}
+
+.notification_card .details .meta-details .timeout {
+	font-size: 12px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: flex;
+	justify-content: center;
+}
+
+.notification_card .details .meta-details .timeout span {
+	font-weight: 700;
+}
+
+.notification_card .details_footer {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+.notification_card .details_footer hr {
+	width: 100%;
+}
+
+.notification_card .details_footer .actions {
+	display: flex;
+	justify-content: space-evenly;
+	align-content: center;
+	margin-top: -5px;
+}
+
+.notification_card .details_footer .actions button {
+	cursor: pointer;
+}
+
+.notification_card .details_footer .actions button.disabled {
+	cursor: not-allowed;
 }
 
 #notification-center__search {
@@ -134,6 +275,12 @@ body {
 	cursor: pointer;
 }
 
+.notification-center__notifications__rows .id {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
 #main-content {
 	display: flex;
 	margin: 15px;
@@ -149,11 +296,6 @@ body {
 	align-self: flex-start;
 	position: sticky;
 	top: 0;
-}
-
-#notification-center__notification-detail > h3 {
-	background-color: #366791;
-	padding: 10px;
 }
 
 .notification-center__notifications__rows:nth-child(even) {

@@ -14,7 +14,7 @@
 				"options": {
 					"transparent": true,
 					"alwaysOnTop": true,
-					"autoShow": false,
+					"autoShow": true,
 					"resizable": false,
 					"showTaskbarIcon": false
 				},

@@ -6,6 +6,7 @@ import { Map as ImmutableMap, mergeDeepWith } from "immutable";
 import IAction from "../../types/Notification-definitions/IAction";
 import PerformedAction from "../../types/Notification-definitions/PerformedAction";
 import IPerformedAction from "../../types/Notification-definitions/IPerformedAction";
+import { PurgeConfig } from "../../types/Notification-definitions/NotificationConfig";
 
 // eslint-disable-next-line
 const searchJS = require("searchjs");
@@ -23,7 +24,6 @@ export default class ServiceHelper {
 	 * Isolates the notification types from a specific part of the config tree
 	 * @param config
 	 */
-
 	public static normaliseConfig(config: Record<string, object>): Record<string, object> {
 		// TODO: Input validation
 		return {
@@ -32,12 +32,26 @@ export default class ServiceHelper {
 		};
 	}
 
+	/**
+	 * Gets the types from the config
+	 *
+	 * @param config
+	 */
 	public static getTypes(config: Record<string, object>): Record<string, object> {
 		return Object.assign({}, config && config.hasOwnProperty("types") ? config["types"] : null);
 	}
 
+	/**
+	 * Sets defaults for any missing config
+	 *
+	 * @param config
+	 */
 	public static getServiceDefaults(config: Record<string, object>): Record<string, object> {
-		const defaults = Object.assign({}, config);
+		const defaultValues: PurgeConfig = {
+			maxNotificationsToRetain: 1000,
+			maxNotificationRetentionPeriodSeconds: false
+		};
+		const defaults = Object.assign(defaultValues, config);
 		if (defaults.hasOwnProperty("types")) {
 			delete defaults["types"];
 		}
@@ -84,7 +98,7 @@ export default class ServiceHelper {
 				// @ts-ignore
 				let map = ImmutableMap(notification);
 				map = mergeDeepWith(ServiceHelper.merge, map, configToApply[KEY_NAME_DEFAULT_FIELDS]);
-				returnValue = map.toObject();
+				returnValue = (map.toObject() as unknown) as INotification;
 			}
 
 			const showDismissAction = configToApply.hasOwnProperty(KEY_NAME_SHOW_DISMISS_ACTION)
@@ -189,7 +203,10 @@ export default class ServiceHelper {
 	 * @note JavaScript is pass by reference for objects but prefer to be specific by returning a value
 	 * not sure if putting a return in is confusing and hinting at it being pass by reference.
 	 */
-	public static addPerformedAction(notification: INotification, action: IAction): INotification {
+	public static addPerformedAction(
+		notification: INotification,
+		action: IAction
+	): INotification | ImmutableMap<unknown, unknown> {
 		let map;
 		if (ImmutableMap.isMap(notification)) {
 			map = notification;
@@ -203,11 +220,11 @@ export default class ServiceHelper {
 		performedAction.type = action.type;
 		performedAction.datePerformed = new Date().toISOString();
 
-		const actionsHistory: IPerformedAction[] = map.get("actionsHistory").slice(0);
+		const actionsHistory: IPerformedAction[] = (map.get("actionsHistory") as IPerformedAction[]).slice(0);
 		actionsHistory.push(performedAction);
 		map = map.set("actionsHistory", actionsHistory);
 
-		return ImmutableMap.isMap(notification) ? map : map.toObject();
+		return !ImmutableMap.isMap(notification) ? ((map.toObject() as unknown) as INotification) : map;
 	}
 
 	/**
@@ -221,7 +238,7 @@ export default class ServiceHelper {
 		notification: INotification,
 		notificationList: Map<string, INotification>,
 		defaultPrevious: INotification
-	) {
+	): INotification {
 		// @ts-ignore
 		const map = ImmutableMap(notification);
 
@@ -234,13 +251,60 @@ export default class ServiceHelper {
 			currentHistory = currentlyStoredNotification.stateHistory;
 			currentlyStoredNotification.stateHistory = [];
 		} else {
-			currentHistory = map.get("stateHistory");
+			currentHistory = map.get("stateHistory") as INotification[];
 			currentlyStoredNotification = defaultPrevious;
 			currentlyStoredNotification.stateHistory = [];
 		}
 
 		currentHistory.push(currentlyStoredNotification);
 
-		return map.set("stateHistory", currentHistory).toObject();
+		return (map.set("stateHistory", currentHistory).toObject() as unknown) as INotification;
+	}
+
+	/**
+	 * Get a list of notifications that qualify the for the  purge from storage requirements
+	 *
+	 * @param notifications
+	 * @param purgeConfig
+	 */
+	public static getItemsToPurge(notifications: Map<string, INotification>, purgeConfig: PurgeConfig): INotification[] {
+		const items: INotification[] = [];
+
+		// If it's not set we have all collected all the old ones already
+		let gotAllExpired = purgeConfig.maxNotificationRetentionPeriodSeconds === false;
+		let count = 0;
+		const iterable = notifications.entries();
+
+		do {
+			const next = iterable.next();
+			if (next.done) {
+				break;
+			}
+			if (purgeConfig.maxNotificationRetentionPeriodSeconds) {
+				const actionsHistory = next.value[1].actionsHistory;
+				if (actionsHistory && actionsHistory.length) {
+					const lastUpdatedDate = Date.parse(actionsHistory[actionsHistory.length - 1].datePerformed);
+
+					if (Date.now() - purgeConfig.maxNotificationRetentionPeriodSeconds * 1000 > lastUpdatedDate) {
+						count++;
+						items.push(next.value[1]);
+						continue;
+					} else {
+						/**
+						 * Notifications are stored is oldest first in the data structure
+						 * if the statement does not match we can stop all checks
+						 */
+						gotAllExpired = true;
+					}
+				}
+			}
+
+			if (notifications.size - count > purgeConfig.maxNotificationsToRetain) {
+				count++;
+				items.push(next.value[1]);
+			}
+		} while (!gotAllExpired || notifications.size - count > purgeConfig.maxNotificationsToRetain);
+
+		return items;
 	}
 }

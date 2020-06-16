@@ -11,7 +11,13 @@ const _get = require("lodash.get");
 const { useEffect } = React;
 
 function App(): React.ReactElement {
-	const { notifications, doAction, removeNotification, getNotificationConfig } = useNotifications();
+	const {
+		notifications,
+		doAction,
+		removeNotification,
+		getNotificationConfig,
+		notificationIsActive
+	} = useNotifications();
 
 	const config = getNotificationConfig("notification-toasts");
 
@@ -20,8 +26,6 @@ function App(): React.ReactElement {
 		right: 0,
 		monitor: 0
 	});
-
-	const notificationIsActive = (notification: INotification) => !notification.isRead && !notification.isSnoozed;
 
 	// ensure the config and notifications have loaded before rendering the DOM
 	const ready = config && notifications;

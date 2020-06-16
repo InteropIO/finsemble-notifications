@@ -7,7 +7,6 @@ interface Props {
 }
 
 const NotificationCenter = (props: Props) => {
-	// const { title } = props;
 	return (
 		<div id="notification-center">
 			<main>{props.children}</main>

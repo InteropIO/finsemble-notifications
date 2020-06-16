@@ -11,6 +11,8 @@ import { useState } from "react";
 const _get = require("lodash.get");
 const { useEffect } = React;
 
+const WINDOW_NAME_TOASTER = "notification-toaster";
+
 function App(): React.ReactElement {
 	const [currentMonitor, setCurrentMonitor] = useState("0");
 	const {
@@ -38,32 +40,30 @@ function App(): React.ReactElement {
 	const ready = config && notifications;
 
 	const moveToMonitor = async (monitorPosition: number) => {
-		const { err, data } = (await FSBL.Clients.LauncherClient.getMonitorInfoAll()) as any;
-		let monitorInfo = null;
-		for (let k = 0; k < data.length; k++) {
-			if (data[k]["position"] == monitorPosition) {
-				monitorInfo = data[k];
-				break;
+		const { err, data } = (await FSBL.Clients.LauncherClient.getMonitorInfo({
+			windowIdentifier: { windowName: WINDOW_NAME_TOASTER }
+		})) as any;
+
+		if (err) {
+			console.error(err);
+			return;
+		}
+
+		const bounds = (await finsembleWindow.getBounds({})) as any;
+		const width = bounds.data.right - bounds.data.left;
+
+		finsembleWindow.setBounds(
+			{
+				top: data["availableRect"]["top"],
+				left: data["availableRect"]["right"] - width,
+				height: data["availableRect"]["height"],
+				width: width
+			},
+			(err: any) => {
+				finsembleWindow.show(null);
+				console.log(err);
 			}
-		}
-
-		if (monitorInfo) {
-			const bounds = (await finsembleWindow.getBounds({})) as any;
-			const width = bounds.data.right - bounds.data.left;
-
-			finsembleWindow.setBounds(
-				{
-					top: monitorInfo["availableRect"]["top"],
-					left: monitorInfo["availableRect"]["right"] - width,
-					height: monitorInfo["availableRect"]["height"],
-					width: width
-				},
-				(err: any) => {
-					finsembleWindow.show(null);
-					console.log(err);
-				}
-			);
-		}
+		);
 	};
 
 	useEffect(() => {

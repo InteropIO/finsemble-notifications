@@ -2,6 +2,7 @@ import * as React from "react";
 import { formatDistanceToNow } from "date-fns";
 import INotification from "../../../types/Notification-definitions/INotification";
 import IAction from "../../../types/Notification-definitions/IAction";
+import { useEffect, useState } from "react";
 
 interface Props {
 	children?: React.PropsWithChildren<any>;
@@ -11,6 +12,8 @@ interface Props {
 	closeButton?: boolean;
 	onMouseLeave?: Function;
 	onMouseEnter?: Function;
+	OverflowMenu?: Function;
+	overflowCount?: number;
 }
 
 const HeaderArea = (props: Props) => {
@@ -64,22 +67,67 @@ const ContentArea = (props: Props) => {
 };
 
 const ActionArea = (props: Props) => {
-	const { doAction, notification } = props;
+	const { notification, overflowCount } = props;
 
 	return (
 		<div className="action-area">
-			{notification.actions.map((action: IAction) => (
-				<button
-					key={action.buttonText}
-					onClick={e => {
-						e.preventDefault();
-						doAction(notification, action);
-					}}
-				>
-					{action.buttonText}
-				</button>
-			))}
+			{notification.actions.map((action: IAction, index) => {
+				if (!overflowCount || index + 1 <= overflowCount) {
+					return <UIAction key={index} {...props} action={action} />;
+				}
+			})}
+			{overflowCount && notification.actions.length > overflowCount && (
+				<OverflowMenu>
+					{notification.actions.map((action: IAction, index) => {
+						if (index + 1 > overflowCount) {
+							return <UIAction key={index} {...props} action={action} />;
+						}
+					})}
+				</OverflowMenu>
+			)}
 		</div>
+	);
+};
+
+interface OverflowMenuProps {
+	children?: React.PropsWithChildren<any>;
+}
+
+const OverflowMenu = (props: OverflowMenuProps) => {
+	const [isOpen, setIsOpen] = useState(false);
+
+	const toggle = () => {
+		setIsOpen(!isOpen);
+	};
+
+	return (
+		<div className={"action-overflow " + (isOpen ? "overflow-open" : "")}>
+			<div className="overflow-icon">
+				<span onClick={toggle}>...</span>
+				<div className="overflow-menu">{props.children}</div>
+			</div>
+		</div>
+	);
+};
+
+interface ActionUIProps {
+	action: IAction;
+	doAction: Function;
+	notification: INotification;
+}
+
+const UIAction = (props: ActionUIProps) => {
+	const { action, doAction, notification } = props;
+	return (
+		<button
+			key={action.buttonText}
+			onClick={e => {
+				e.preventDefault();
+				doAction(notification, action);
+			}}
+		>
+			{action.buttonText}
+		</button>
 	);
 };
 

@@ -48,6 +48,38 @@ body {
 .notification hr {
 	width: 100%;
 }
+
+.overflow-icon {
+	cursor: pointer;
+	position: relative;
+}
+
+.action-overflow {
+	margin-left: auto;
+}
+
+.overflow-menu {
+	display: none;
+}
+
+.overflow-menu > button {
+	display: inline-block;
+	padding: 3px;
+	margin: 3px;
+}
+
+.overflow-open .overflow-menu {
+	background-color: #0f4761;
+	display: block;
+	text-align: right;
+	right: 0;
+	bottom: 20px;
+	position: absolute;
+	width: 150px;
+	border-color: #f5f5f512;
+	border-radius: 3px;
+}
+
 .detail-area {
 	--fr-test: 1fr;
 	display: grid;
@@ -84,14 +116,14 @@ body {
 	display: flex;
 	color: var(--notification-font-color);
 }
-.action-area > button {
+.action-area button {
 	margin-right: 10px;
 	background-color: rgba(255, 255, 255, 0);
 	border: 0;
 	color: #b0e8a6;
 	cursor: pointer;
 }
-.action-area > button:hover {
+.action-area button:hover {
 	animation-duration: 0.6s;
 	animation-name: fadeIn;
 	animation-fill-mode: forwards;

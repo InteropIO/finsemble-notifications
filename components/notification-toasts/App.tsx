@@ -111,6 +111,7 @@ function App(): React.ReactElement {
 									doAction={doAction}
 									closeAction={() => removeNotification(notification)}
 									closeButton
+									overflowCount={3}
 								/>
 							</Animate>
 						)

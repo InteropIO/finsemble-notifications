@@ -39,6 +39,6 @@ function toggleComponent() {
 
 const bringWindowToFront: Function = () => WindowClient.bringWindowToFront();
 
-export { getWindowSpawnData, usePubSub, bringWindowToFront };
+export { toggleComponent, getWindowSpawnData, usePubSub, bringWindowToFront };
 
-export default { getWindowSpawnData, usePubSub, bringWindowToFront };
+export default { toggleComponent, getWindowSpawnData, usePubSub, bringWindowToFront };

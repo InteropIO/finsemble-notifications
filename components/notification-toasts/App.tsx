@@ -5,18 +5,27 @@ import useNotifications from "../shared/hooks/useNotifications";
 import INotification from "../../types/Notification-definitions/INotification";
 import Animate from "../shared/components/Animate";
 import { SpawnParams } from "@chartiq/finsemble/dist/types/services/window/Launcher/launcher";
+import { usePubSub } from "../shared/hooks/finsemble-hooks";
+import { useState } from "react";
 /* eslint-disable @typescript-eslint/no-var-requires */
 const _get = require("lodash.get");
 const { useEffect } = React;
 
+const WINDOW_NAME_TOASTER = "notification-toaster";
+
 function App(): React.ReactElement {
+	const [currentMonitor, setCurrentMonitor] = useState("0");
 	const {
 		notifications,
 		doAction,
 		removeNotification,
 		getNotificationConfig,
+		activeNotifications,
 		notificationIsActive
 	} = useNotifications();
+
+	const pubSubTopic = "notification-ui";
+	const [notificationSubscribeMessage, notificationsPublish] = usePubSub(pubSubTopic);
 
 	const config = getNotificationConfig("notification-toasts");
 
@@ -29,7 +38,43 @@ function App(): React.ReactElement {
 	// ensure the config and notifications have loaded before rendering the DOM
 	const ready = config && notifications;
 
+	const moveToMonitor = async () => {
+		const { err, data } = (await FSBL.Clients.LauncherClient.getMonitorInfo({
+			windowIdentifier: { windowName: WINDOW_NAME_TOASTER }
+		})) as any;
+
+		if (err) {
+			console.error(err);
+			return;
+		}
+
+		const bounds = (await finsembleWindow.getBounds({})) as any;
+		const width = bounds.data.right - bounds.data.left;
+
+		finsembleWindow.setBounds(
+			{
+				top: data["availableRect"]["top"],
+				left: data["availableRect"]["right"] - width,
+				height: data["availableRect"]["height"],
+				width: width
+			},
+			(err: any) => {
+				finsembleWindow.show(null);
+				console.log(err);
+			}
+		);
+	};
+
 	useEffect(() => {
+		if (
+			currentMonitor !== notificationSubscribeMessage.toasterMonitorPosition &&
+			!activeNotifications(notifications).length
+		) {
+			moveToMonitor().then(() => {
+				setCurrentMonitor(notificationSubscribeMessage.toasterMonitorPosition);
+			});
+		}
+
 		if (notifications.length === 0) {
 			finsembleWindow.hide();
 		} else {
@@ -44,7 +89,7 @@ function App(): React.ReactElement {
 			};
 			FSBL.Clients.WindowClient.setShape([roundedRect]);
 		}
-	}, [notifications.length]);
+	}, [notifications, notificationSubscribeMessage]);
 
 	return (
 		<Drawer notifications={notifications} windowShowParams={windowShowParams}>

@@ -20,7 +20,7 @@ function usePubSub(topic: string, initialMessage: object = {}): [{ [key: string]
 		return () => {
 			unsubscribe(subscribeId);
 		};
-	}, []); // eslint-disable-line
+	}, []);
 
 	return [message, pub];
 }

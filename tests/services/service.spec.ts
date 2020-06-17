@@ -438,28 +438,28 @@ describe("Filtering", () => {
 		expect(canPurge.length).to.equal(5);
 
 		canPurge = ServiceHelper.getItemsToPurge(notifications, {
-			maxNotificationRetentionPeriodSeconds: 200000,
+			maxNotificationRetentionPeriodSeconds: 200,
 			maxNotificationsToRetain: 50
 		});
 
 		expect(canPurge.length).to.equal(0);
 
 		canPurge = ServiceHelper.getItemsToPurge(notifications, {
-			maxNotificationRetentionPeriodSeconds: 50000,
+			maxNotificationRetentionPeriodSeconds: 50,
 			maxNotificationsToRetain: 50
 		});
 
 		expect(canPurge.length).to.equal(6);
 
 		canPurge = ServiceHelper.getItemsToPurge(notifications, {
-			maxNotificationRetentionPeriodSeconds: 50000,
+			maxNotificationRetentionPeriodSeconds: 50,
 			maxNotificationsToRetain: 3
 		});
 
 		expect(canPurge.length).to.equal(7);
 
 		canPurge = ServiceHelper.getItemsToPurge(notifications, {
-			maxNotificationRetentionPeriodSeconds: 50000,
+			maxNotificationRetentionPeriodSeconds: 50,
 			maxNotificationsToRetain: 8
 		});
 

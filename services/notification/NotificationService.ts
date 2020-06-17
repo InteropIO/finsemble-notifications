@@ -313,13 +313,12 @@ export default class NotificationService extends Finsemble.baseService implement
 	 *
 	 * @param notification
 	 * @param action
-	 * @param sleepFromBoot
 	 * @param timeoutOverride
 	 */
 	snooze(notification: INotification, action: IAction, timeoutOverride?: number): INotification {
 		this.removeFromSnoozeQueue(notification);
 
-		const defaultTimeout = 10000; // TODO: get from config
+		const defaultTimeout = 300000; // TODO: get from config
 
 		const timeout = timeoutOverride ? timeoutOverride : action.milliseconds ? action.milliseconds : defaultTimeout;
 

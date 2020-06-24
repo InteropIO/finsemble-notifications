@@ -19,6 +19,16 @@ const App = (): React.ReactElement => {
 		}
 	}, [notificationSubscribeMessage]);
 
+	useEffect(() => {
+		if (window && window.addEventListener) {
+			window.addEventListener("unload", () => {
+				const publishValue = { ...notificationSubscribeMessage };
+				publishValue["showCenter"] = false;
+				notificationsPublish(publishValue);
+			});
+		}
+	}, []);
+
 	return (
 		<div id="app">
 			<NotificationCenter title="Notification Center">

@@ -59,8 +59,9 @@ function App(): React.ReactElement {
 				width: width
 			},
 			(err: any) => {
-				finsembleWindow.show(null);
-				console.log(err);
+				if (err) {
+					console.log(err);
+				}
 			}
 		);
 	};
@@ -75,12 +76,17 @@ function App(): React.ReactElement {
 			});
 		}
 
+		const rect = document.getElementById("toasts-drawer").getBoundingClientRect();
 		if (notifications.length === 0) {
-			finsembleWindow.hide();
+			const roundedRect = {
+				x: Math.round(rect.x),
+				y: Math.round(rect.y),
+				width: 1,
+				height: 1
+			};
+			FSBL.Clients.WindowClient.setShape([roundedRect]);
 		} else {
-			finsembleWindow.show(null);
 			finsembleWindow.bringToFront();
-			const rect = document.getElementById("toasts-drawer").getBoundingClientRect();
 			const roundedRect = {
 				x: Math.round(rect.x),
 				y: Math.round(rect.y),

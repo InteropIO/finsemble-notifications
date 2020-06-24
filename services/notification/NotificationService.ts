@@ -205,6 +205,19 @@ export default class NotificationService extends Finsemble.baseService implement
 	}
 
 	/**
+	 * Takes removes a notification from a map and adds it on to the front to take advantage of
+	 * maps being aware of the insertion order. (Makes it easier to know what is the oldest notification)
+	 *
+	 * @param notification
+	 */
+	addNotification(notification: INotification): void {
+		if (this.storageAbstraction.notifications.has(notification.id)) {
+			this.storageAbstraction.notifications.delete(notification.id);
+		}
+		this.storageAbstraction.notifications.set(notification.id, notification);
+	}
+
+	/**
 	 * Handles all messages on the 'action' endpoint/channel and sends them
 	 * out to the service that knows how to deal with it.
 	 *
@@ -313,13 +326,12 @@ export default class NotificationService extends Finsemble.baseService implement
 	 *
 	 * @param notification
 	 * @param action
-	 * @param sleepFromBoot
 	 * @param timeoutOverride
 	 */
 	snooze(notification: INotification, action: IAction, timeoutOverride?: number): INotification {
 		this.removeFromSnoozeQueue(notification);
 
-		const defaultTimeout = 10000; // TODO: get from config
+		const defaultTimeout = 300000; // 5 minutes. TODO: get from config
 
 		const timeout = timeoutOverride ? timeoutOverride : action.milliseconds ? action.milliseconds : defaultTimeout;
 
@@ -507,13 +519,8 @@ export default class NotificationService extends Finsemble.baseService implement
 	 * @param notification {INotification}
 	 */
 	private async storeNotifications(notification: INotification): Promise<INotification[]> {
-		/**
-		 * We will purge notifications that are oldest - Maps store the order of entry so remove the key and add
-		 * it again to place updated entries on the end to make clean up easier
-		 */
-		this.deleteNotification(notification.id);
-
-		this.storageAbstraction.notifications.set(notification.id, notification);
+		// Remove a notification from the map and add it to the end
+		this.addNotification(notification);
 
 		const notificationsToDelete = ServiceHelper.getItemsToPurge(this.storageAbstraction.notifications, {
 			maxNotificationRetentionPeriodSeconds: this.config.service.maxNotificationRetentionPeriodSeconds,

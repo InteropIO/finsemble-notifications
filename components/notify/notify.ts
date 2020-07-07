@@ -11,8 +11,9 @@ const sendNotifications = () => {
 	const not1 = new Notification();
 	not1.issuedAt = new Date().toISOString();
 	not1.source = source;
-	not1.headerText = "Internal Actions (No Id)";
-	not1.details = "Should create a new notification in UI every time it's sent";
+	not1.headerText = "You've Got Mail";
+	not1.title = "Regarding Order...";
+	not1.details = "Creates a new notification in UI";
 	not1.type = "email";
 	not1.headerLogo = "http://localhost:3375/components/finsemble-notifications/components/shared/assets/email.svg";
 	not1.contentLogo = "http://localhost:3375/components/finsemble-notifications/components/shared/assets/graph.png";
@@ -28,7 +29,7 @@ const sendNotifications = () => {
 	snooze.milliseconds = 10000;
 
 	const welcome = new Action();
-	welcome.buttonText = "Welcome";
+	welcome.buttonText = "Launch";
 	welcome.type = ActionTypes.SPAWN;
 	welcome.component = "Welcome Component";
 
@@ -38,7 +39,8 @@ const sendNotifications = () => {
 	not2.issuedAt = new Date().toISOString();
 	not2.id = "notification_123";
 	not2.source = source;
-	not2.headerText = "Notification Same Id";
+	not2.headerText = "New chat message";
+	not2.title = "Can you join us at 2pm?"
 	not2.details = "Should only be in UI once";
 	not2.type = "chat";
 	not2.headerLogo = "http://localhost:3375/components/finsemble-notifications/components/shared/assets/chat.svg";

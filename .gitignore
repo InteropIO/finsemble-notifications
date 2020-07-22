@@ -2,3 +2,4 @@
 node_modules
 copy.config.json
 .vscode/*
+package-lock.json

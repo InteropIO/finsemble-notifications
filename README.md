@@ -137,7 +137,7 @@ Example type definition:
                     "defaults": {
                         "timeout": 2000,
                         "headerLogo": "toast logo",
-                        "contentLogo": "toast content logo"
+                        "contentLogo": "toast content logo",
                         "cssClassName": "cssClassName",
                         "meta": {
                             "anykey": "anyvalue",

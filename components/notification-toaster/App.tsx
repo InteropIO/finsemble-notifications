@@ -11,7 +11,9 @@ const { useEffect, useState } = React;
 
 function App(): React.ReactElement {
 	const [toasterMonitorPosition, settoasterMonitorPosition] = useState("0");
-	const { notifications, activeNotifications } = useNotifications({ config: { notificationsHistory: true } });
+	const { notifications, activeNotifications, getNotificationConfig, setOpaqueClassName } = useNotifications({
+		config: { notificationsHistory: true }
+	});
 	const pubSubTopic = "notification-ui";
 	const [notificationSubscribeMessage, notificationsPublish] = usePubSub(pubSubTopic);
 	const [count, setCount] = useState(activeNotifications(notifications).length);
@@ -19,6 +21,8 @@ function App(): React.ReactElement {
 	useEffect(() => {
 		setCount(activeNotifications(notifications).length);
 	}, [notifications]);
+
+	const config = getNotificationConfig();
 
 	useEffect(() => {
 		const hotkey = _get(FSBL.Clients.WindowClient.getSpawnData(), "notifications.hotkey", null);
@@ -28,6 +32,8 @@ function App(): React.ReactElement {
 				FSBL.Clients.WindowClient.showAtMousePosition();
 			});
 		}
+		setOpaqueClassName(!config.isTransparent);
+
 		return () => {
 			// cleanup;
 		};

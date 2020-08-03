@@ -15,6 +15,16 @@
 body {
 	margin: 0;
 }
+
+body.opaque {
+	background-color: var(--notification-background-color);
+	margin: 0;
+}
+
+.opaque #notifications-toaster {
+	border-radius: 0;
+}
+
 #notifications-toaster {
 	display: flex;
 	align-items: center;

@@ -11,6 +11,7 @@ export interface NotificationsConfig {
 		animateIn: string;
 		animateOut: string;
 	};
+	isTransparent?: boolean;
 	notificationsHistory?: boolean;
 }
 

@@ -12,6 +12,10 @@
 	--notification-font-color: var(--notification-contrast-color);
 }
 
+.opaque body {
+	background-color: black;
+}
+
 body {
 	margin: 0;
 	position: absolute;
@@ -24,6 +28,11 @@ body {
 	flex-direction: column-reverse;
 	align-items: flex-end;
 }
+
+.opaque .notification {
+	margin-right: 8px;
+}
+
 .notification {
 	margin-left: 0;
 	margin-bottom: 6px;
@@ -63,6 +72,8 @@ img#close-icon:hover {
 }
 .detail-area_time {
 	font-size: 12px;
+	min-width: 137px;
+	text-align: right;
 }
 .detail-area_type {
 	font-weight: 60;

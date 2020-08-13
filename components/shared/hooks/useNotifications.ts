@@ -73,19 +73,6 @@ export default function useNotifications(params: any = {}) {
 		dispatch({ type: CREATE_MULTIPLE, payload: notifications });
 	};
 
-	// start receiving Notifications and putting them in state
-	useEffect(() => {
-		// eslint-disable-next-line @typescript-eslint/no-use-before-define
-		const subscribe = init();
-		return () => {
-			// Unsubscribe using the subscription ID
-			(async () => {
-				NOTIFICATION_CLIENT = new NotificationClient();
-				await NOTIFICATION_CLIENT.unsubscribe(await subscribe);
-			})();
-		};
-	}, []); // eslint-disable-line
-
 	/**
 	 * Example for setting up button clicks
 	 *
@@ -144,10 +131,12 @@ export default function useNotifications(params: any = {}) {
 	 * Get Notification's config from
 	 * @param componentType Finsemble component type e.g "Welcome-Component"
 	 */
-	const getNotificationConfig = (componentType: string): NotificationsConfig => {
+	const getNotificationConfig = (): NotificationsConfig => {
 		const config: WindowConfig = WindowClient.options.customData;
 
-		return _get(config, "window.data.notifications", null);
+		return Object.assign(_get(config, "window.data.notifications", {}), {
+			isTransparent: _get(config, "window.options.transparent", false)
+		});
 	};
 
 	const notificationIsActive = (notification: INotification) =>
@@ -164,9 +153,7 @@ export default function useNotifications(params: any = {}) {
 			NOTIFICATION_CLIENT = new NotificationClient();
 			const subscription = new Subscription();
 
-			const notificationConfig: NotificationsConfig = getNotificationConfig(
-				await WindowClient.getWindowIdentifier().componentType
-			);
+			const notificationConfig: NotificationsConfig = getNotificationConfig();
 
 			const filter: IFilter = new Filter();
 
@@ -214,6 +201,30 @@ export default function useNotifications(params: any = {}) {
 		}
 	}
 
+	/**
+	 * Set opaque class to html element
+	 */
+	function setOpaqueClassName(isOpaque: boolean) {
+		if (isOpaque) {
+			const htmlElement = document.getElementsByTagName("html")[0];
+			if (!htmlElement.className.includes("opaque")) {
+				htmlElement.className += " opaque";
+			}
+		}
+	}
+
+	// start receiving Notifications and putting them in state
+	useEffect(() => {
+		const subscribe = init();
+		return () => {
+			// Unsubscribe using the subscription ID
+			(async () => {
+				NOTIFICATION_CLIENT = new NotificationClient();
+				await NOTIFICATION_CLIENT.unsubscribe(await subscribe);
+			})();
+		};
+	}, []);
+
 	return {
 		activeNotifications,
 		notificationIsActive,
@@ -222,6 +233,7 @@ export default function useNotifications(params: any = {}) {
 		groupNotificationsByType,
 		notifications: state.notifications,
 		removeNotification,
+		setOpaqueClassName,
 		getNotificationConfig
 	};
 }

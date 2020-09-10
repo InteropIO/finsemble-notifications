@@ -15,10 +15,10 @@ This project requires the [Finsemble Seed Project](https://github.com/ChartIQ/fi
 **[Configuring the Notifications](#configuring-the-notifications)**
 
 - [Configuring the Service](#configuring-the-service)
-    - [Notification Types](#notification-types)
-    - [Persistence](#persistence)
-    - [Storage](#storage)
-    - [Send Notifications to the OS](#send-notifications-to-the-os)
+  - [Notification Types](#notification-types)
+  - [Persistence](#persistence)
+  - [Storage](#storage)
+  - [Send Notifications to the OS](#send-notifications-to-the-os)
 - [Configuring the Components](#configuring-the-components)
 
 **[Using the Notifications API](#using-the-notifications-api)**
@@ -32,31 +32,33 @@ This project requires the [Finsemble Seed Project](https://github.com/ChartIQ/fi
 
 - [how to setup the project up for development](./docs/developing.md)
 
+**[RDP Support](#rdp-support)**
+
 ## Setup
 
 Getting the Finsemble notification code running and transpiling in your Finsemble seed project.
 
 **Note: We suggest working directly with the source code. This effectively means checking out the notifications source
-code, getting it into your own project and building the source as part of your normal process. We're doing it this way 
-as part of the initial release. As part of your feedback we'd like to know your thoughts on where you felt the need to 
-customise or use only parts of the package. This will help us inform to better separate or distribute the package in 
-future phases** 
+code, getting it into your own project and building the source as part of your normal process. We're doing it this way
+as part of the initial release. As part of your feedback we'd like to know your thoughts on where you felt the need to
+customise or use only parts of the package. This will help us inform to better separate or distribute the package in
+future phases**
 
 ### Getting the Sourcecode
 
 1. git clone this project into the directory of your choice.
 1. run `npm install` to install dependencies needed for the copy script.
 1. Copy `example.copy.config.json` to `copy.config.json`
-1. Edit `copy.config.json`: 
-    1. Make sure  `source` path points to this project
-    1. Change the `destination` path to point to a directory inside your `finsemble-seed` components directory (It will
-    create the directory if one does not exist).
-1. You're now setup to copy. Running `npm run copy-files` should now have copied all the required files in your 
-seed project.
-1. Your seed will likely be missing some of the required packages for this to run. 
-`npm install uuid date-fns immutable searchjs lodash.get react-transition-group @types/react @types/lodash.get`.
-1. Modify your typescript config by adding `"jsx": "react"`, `"allowJs": true` and `"esModuleInterop": true` to your 
-seed's `compilerOptions` in the `tsconfig.json`
+1. Edit `copy.config.json`:
+   1. Make sure `source` path points to this project
+   1. Change the `destination` path to point to a directory inside your `finsemble-seed` components directory (It will
+      create the directory if one does not exist).
+1. You're now setup to copy. Running `npm run copy-files` should now have copied all the required files in your
+   seed project.
+1. Your seed will likely be missing some of the required packages for this to run.
+   `npm install uuid date-fns immutable searchjs lodash.get react-transition-group @types/react @types/lodash.get`.
+1. Modify your typescript config by adding `"jsx": "react"`, `"allowJs": true` and `"esModuleInterop": true` to your
+   seed's `compilerOptions` in the `tsconfig.json`
 1. In the seed, edit _./build/webpack/defaultWebpackConfig.js_ in the section for the `ts-loader`, set `"test": /\.ts(x)?$/` if it's not already.
 
 ### Finsemble Config
@@ -72,7 +74,6 @@ Add the notification config your finsemble seed config file: `./finsemble-seed/c
 ```
 
 This line will add the Notifications Service, Notification Center, Toasts, toaster and drawer to your project.
-
 
 ### Selective Finsemble Config
 
@@ -108,24 +109,24 @@ All service configuration is optional.
 #### Notification Types
 
 Defining a notification type is the quickest method of applying a set of behaviours to many notifications at once.
-Defining a type in the config, will mean that when a notification with the corresponding `INofification.type` set, the 
-values specified in the config will be applied on any empty fields. In practice this means notifications of a specific 
-type, without any work other than setting the type, can all have the same css class, logo, header text, (sound in the 
+Defining a type in the config, will mean that when a notification with the corresponding `INofification.type` set, the
+values specified in the config will be applied on any empty fields. In practice this means notifications of a specific
+type, without any work other than setting the type, can all have the same css class, logo, header text, (sound in the
 future), etc.
 
-Specifying the `default` type will apply these values as defaults to all notifications sent, provided that they do not 
+Specifying the `default` type will apply these values as defaults to all notifications sent, provided that they do not
 match any other notifications types specified in the config.
 
-You can do this by adding to the `servicesConfig.notifications.types` object in `./configs/application/config.json` in 
-the finsemble seed: 
+You can do this by adding to the `servicesConfig.notifications.types` object in `./configs/application/config.json` in
+the finsemble seed:
 
-**showDismissAction** _[default: false]_ Adds a dismiss action to the Notification if one is not already present.  
-**defaultDismissButtonText:** _[Default: Dismiss]_  The dismiss button text if one needs to be added.  
+**showDismissAction** _[default: false]_ Adds a dismiss action to the Notification if one is not already present.
+**defaultDismissButtonText:** _[Default: Dismiss]_ The dismiss button text if one needs to be added.
 **defaults** _[default: {}]_ Sets the values on a notification if it has not already been set. All fields specified here
- should match those on the INotification interface.
-
+should match those on the INotification interface.
 
 Example type definition:
+
 ```
 {
     "servicesConfig": {
@@ -164,16 +165,15 @@ Example type definition:
 }
 ```
 
-
 #### Persistence
 
-By default, finsemble will store a maximum of 1000 notifications. If no new notifications are sent, it will keep these 
-1000 notifications in storage forever. These directives can be changed on the `notifications` object on the 
+By default, finsemble will store a maximum of 1000 notifications. If no new notifications are sent, it will keep these
+1000 notifications in storage forever. These directives can be changed on the `notifications` object on the
 `servicesConfig` object in `./configs/application/config.json`:
 
-**maxNotificationsToRetain:** _[Default: 1000]_ The number of notifications to store.  
-**maxNotificationRetentionPeriodSeconds** _[default: false]_ - The number of seconds the service should keep a 
-notification in storage since that notification's last updated time.  
+**maxNotificationsToRetain:** _[Default: 1000]_ The number of notifications to store.
+**maxNotificationRetentionPeriodSeconds** _[default: false]_ - The number of seconds the service should keep a
+notification in storage since that notification's last updated time.
 
 _**Note:** Notifications are not actively purged. Rather, as a new notification comes in the collection is evaluated for
 notifications to purge from storage_
@@ -194,7 +194,7 @@ notifications to purge from storage_
 #### Storage
 
 Finsemble notification gets persisted using the `finsemble.notifications` storage topic. To change which storage adapter
-notifications will use, set the appropriate value by adding the `finsemble.notifications` key to the 
+notifications will use, set the appropriate value by adding the `finsemble.notifications` key to the
 `servicesConfig.storage.topicToDataStoreAdapters` object in `./configs/application/config.json` in the finsemble seed:
 
 ```
@@ -211,11 +211,13 @@ notifications will use, set the appropriate value by adding the `finsemble.notif
 ```
 
 #### Send Notifications to the OS
-Using the config, you can also send your notifications to the OS. Do this by specifying the `proxyToWebApiFilter` on 
-the `notifications` object on the `servicesConfig` object in `./configs/application/config.json`. For more infomration 
+
+Using the config, you can also send your notifications to the OS. Do this by specifying the `proxyToWebApiFilter` on
+the `notifications` object on the `servicesConfig` object in `./configs/application/config.json`. For more infomration
 on filtering see the section on [Fetching and Receiving Notifications](/components/subscriber/Readme.md)
 
 Example filter:
+
 ```
 {
     "servicesConfig": {
@@ -231,10 +233,8 @@ Example filter:
 }
 ```
 
-
-
-
 #### Example Psuedo Config
+
 ```
 {
     ...
@@ -314,11 +314,11 @@ Example filter:
 
 ### Configuring the Components
 
-Some Notification component behaviours can be changed via configuration. To change this behaviour you will need to 
+Some Notification component behaviours can be changed via configuration. To change this behaviour you will need to
 change the component configuration entry. The standard configuration provided lumps in all the configurations so if
 modifying the behaviour is what you are after, you will need to configure the components at an individual level. To do
-this, import the service and any components of which you DO NOT want to modify the behaviour using the method outlined 
-in the in the [selective configuration method](#selective-finsemble-config). Following this, for any component configs 
+this, import the service and any components of which you DO NOT want to modify the behaviour using the method outlined
+in the in the [selective configuration method](#selective-finsemble-config). Following this, for any component configs
 you wish to modify, create and change your own component configs using the following as base:
 
 - [notification-center config](components/notification-center/config.json)
@@ -449,3 +449,19 @@ notifier.subscribe(sub, onSubHandler, onNotifyHandler);
 An [example WPF component](dot-net-notifications/NotifyComponent) is provided that uses the FinsembleNotifications.dll and Finsemble.dll to send notifications and to subscribe to the notifications stream. Please build both the [NotifyComponent](dot-net-notifications/NotifyComponent) and [FinsembleNotifications.dll](dot-net-notifications/FinsembleNotifications) using the included [Visual Studio solution](dot-net-notifications).
 
 Note: The example [configuration file](dot-net-notifications/NotifyComponent/config.json) makes use of a variable `$wpfNotificationExampleBase` set in the [sample config file](sample.config.json) to construct the path to the example executable. Set `$wpfNotificationExampleBase` such that the path in the [NotifyComponent config](dot-net-notifications/NotifyComponent/config.json) points to the built .exe file(s).
+
+## RDP Support
+
+Please note that notifications will work over RDP but will need a config update due to the way that transparency appears when running Finsemble on RDP.
+
+If you are using any of the following UI elements:
+
+- Drawer
+- Toaster
+- Toasts
+
+You will need to make a change to the value `"transparent": true` to `"transparent": false` found in the **config file** for each UI element. The transparent value is located at **window.options.transparent**
+see the exact line for the [toaster component
+](https://github.com/ChartIQ/finsemble-notifications/blob/562278a8636f27a7f28d111e32fb292cf9c57c7b/components/notification-toasts/config.json#L33).
+
+_\*Changing the visibility for the toaster will remove the round edges_

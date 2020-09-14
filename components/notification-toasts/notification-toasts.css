@@ -1,6 +1,5 @@
 @import url("https://fonts.googleapis.com/css?family=Roboto+Condensed&display=swap");
 @import "../shared/styles/animations.css";
-@import "../../../../../assets/css/_notification.css";
 
 :root {
 	--notification-primary-color: #262d38;

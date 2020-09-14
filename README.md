@@ -81,7 +81,7 @@ Alternatively, if you want to customise your experience and incorporate only som
 
 ```
 "importConfig": [
-    // This config is required for notifcations to funtion.
+    // This config is required for notifications to function.
     "$applicationRoot/components/finsemble-notifications/services/notification/config.json"
     ...
     // Select from the configs below to customise the experience.
@@ -109,9 +109,9 @@ All service configuration is optional.
 #### Notification Types
 
 Defining a notification type is the quickest method of applying a set of behaviours to many notifications at once.
-Defining a type in the config, will mean that when a notification with the corresponding `INofification.type` set, the
-values specified in the config will be applied on any empty fields. In practice this means notifications of a specific
-type, without any work other than setting the type, can all have the same css class, logo, header text, (sound in the
+Defining a type in the config, will mean that when a notification with the corresponding `INotification.type` set, the 
+values specified in the config will be applied on any empty fields. In practice this means notifications of a specific 
+type, without any work other than setting the type, can all have the same css class, logo, header text, (sound in the 
 future), etc.
 
 Specifying the `default` type will apply these values as defaults to all notifications sent, provided that they do not
@@ -212,8 +212,8 @@ notifications will use, set the appropriate value by adding the `finsemble.notif
 
 #### Send Notifications to the OS
 
-Using the config, you can also send your notifications to the OS. Do this by specifying the `proxyToWebApiFilter` on
-the `notifications` object on the `servicesConfig` object in `./configs/application/config.json`. For more infomration
+Using the config, you can also send your notifications to the OS. Do this by specifying the `proxyToWebApiFilter` on 
+the `notifications` object on the `servicesConfig` object in `./configs/application/config.json`. For more information 
 on filtering see the section on [Fetching and Receiving Notifications](/components/subscriber/Readme.md)
 
 Example filter:
@@ -248,12 +248,12 @@ Example filter:
             }
         }
         "notifications": {
-            // The maximum number of notifiations the service should store in memory
+            // The maximum number of notifications the service should store in memory
             "maxNotificationsToRetain": 1000,
             // The maximum
             "maxNotificationRetentionPeriodSeconds": 86400
-            // Broadcast any notifications that match this filter to the Notication Web API to appear in the OS.
-            // See 'Receiveing Notifications' for more details
+            // Broadcast any notifications that match this filter to the Notification Web API to appear in the OS.
+            // See 'Receiving Notifications' for more details
             "proxyToWebApiFilter": {
                 "include": [{
                     "type": "web"
@@ -264,18 +264,18 @@ Example filter:
             // If the service needs to add dismiss actions to the button. The text will default
             // to the value set here as a last resort. There is a hardcoded value if this not set.
             "defaultDismissButtonText": "Dismiss",
-            // 'types' provide a way of setting default values on notifications based on the INotifcaition.type
+            // 'types' provide a way of setting default values on notifications based on the INotification.type
             "types": {
-                // object key 'toast' correspondes to INotification.type = 'toast'.
-                // The values inside the `toast` object will only be applied to notications the property 'type' set to 'toast'.
+                // object key 'toast' corresponds to INotification.type = 'toast'.
+                // The values inside the `toast` object will only be applied to notifications the property 'type' set to 'toast'.
                 "toast": {
                     // Will add a dismiss action to the Notification if one is not already set.
                     "defaultDismissButtonText": "Default Button Text",
-                    // Add a dismiss action to the nofication if one does not exists. Default set to false
+                    // Add a dismiss action to the notification if one does not exists. Default set to false
                     "showDismissAction": true,
                     // For any values on a notification not already set, these default values will be set on the Notification object.
                     "defaults": {
-                        // All fields in here should match those in the INotication interface.
+                        // All fields in here should match those in the INotification interface.
                         "timeout": 2000,
                         "headerLogo": "toast logo",
                         "contentLogo": "toast content logo"
@@ -391,7 +391,7 @@ You can then instantiate a notification Object and submit to the client:
 Notification not = new Notification();
 not.issuedAt = DateTime.Now;
 not.source = "WPF NotifyComponent";
-not.headerText = "WPF minmal notification, no actions";
+not.headerText = "WPF minimal notification, no actions";
 not.details = "Should create a new notification in UI every time it's sent (from WPF)";
 not.type = "email";
 not.headerLogo = "http://localhost:3375/components/finsemble-notifications/components/shared/assets/email.svg";

@@ -20,7 +20,6 @@ if (envResource) {
 function copyAll() {
 	const resources = [
 		"components",
-		"preloads",
 		"services",
 		"types",
 		"config.json",

@@ -139,8 +139,17 @@ export default function useNotifications(params: any = {}) {
 		});
 	};
 
-	const notificationIsActive = (notification: INotification) =>
-		!notification.isSnoozed && !notification.isRead && !notification.isDeleted;
+	const notificationIsActive = (notification: INotification) => {
+		const config = getNotificationConfig();
+		const applyMuteFilters = _get(config, "applyMuteFilters", false);
+
+		return (
+			!notification.isSnoozed &&
+			!notification.isRead &&
+			!notification.isDeleted &&
+			(applyMuteFilters ? !notification.isMuted : true)
+		);
+	};
 
 	const activeNotifications = (notifications: INotification[]) =>
 		notifications.filter(notification => notificationIsActive(notification));

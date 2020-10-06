@@ -7,6 +7,7 @@ import IAction from "../../types/Notification-definitions/IAction";
 import PerformedAction from "../../types/Notification-definitions/PerformedAction";
 import IPerformedAction from "../../types/Notification-definitions/IPerformedAction";
 import { PurgeConfig } from "../../types/Notification-definitions/NotificationConfig";
+import IMuteFilter from "../../types/Notification-definitions/IMuteFilter";
 
 // eslint-disable-next-line
 const searchJS = require("searchjs");
@@ -306,5 +307,19 @@ export default class ServiceHelper {
 		} while (!gotAllExpired || notifications.size - count > purgeConfig.maxNotificationsToRetain);
 
 		return items;
+	}
+
+	public static matchesMuteFilters(notification: INotification, muteFilters: IMuteFilter[]): boolean {
+		let isInArray = false;
+		muteFilters.forEach((muteFilter: IMuteFilter) => {
+			// if filter has both type and source - must match both
+			if (!isInArray && muteFilter.source && muteFilter.type) {
+				isInArray = muteFilter.source === notification.source && muteFilter.type === notification.type;
+			} else if ((!isInArray && muteFilter.source === notification.source) || muteFilter.type === notification.type) {
+				isInArray = true;
+			}
+		});
+
+		return isInArray;
 	}
 }

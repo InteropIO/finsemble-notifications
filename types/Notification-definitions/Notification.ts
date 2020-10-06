@@ -20,6 +20,7 @@ export default class Notification implements INotification {
 	notificationAlertSound?: string;
 
 	isRead: boolean;
+	isMuted: boolean;
 	isSnoozed: boolean;
 	isDeleted: boolean;
 
@@ -32,6 +33,7 @@ export default class Notification implements INotification {
 		this.actions = [];
 		this.isRead = false;
 		this.isSnoozed = false;
+		this.isMuted = false;
 		this.isDeleted = false;
 		this.actionsHistory = [];
 		this.meta = new Meta();

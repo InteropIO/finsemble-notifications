@@ -2,9 +2,9 @@ import IFilter from "./IFilter";
 import INotification from "./INotification";
 import IAction from "./IAction";
 import ISubscription from "./ISubscription";
+import IMuteFilter from "./IMuteFilter";
 
 export default interface INotificationClient {
-
 	/**
 	 * Subscribe to a notification stream given a set of name/value pair filters. Returns subscriptionId
 	 * @param {ISubscription} subscription with name value pair used to match on.
@@ -12,7 +12,11 @@ export default interface INotificationClient {
 	 * @param {Function} onSubscriptionFault if there is an error creating the subscription.
 	 * @throws Error
 	 */
-	subscribe(subscription: ISubscription, onSubscriptionSuccess: Function, onSubscriptionFault: Function): Promise<string>;
+	subscribe(
+		subscription: ISubscription,
+		onSubscriptionSuccess: Function,
+		onSubscriptionFault: Function
+	): Promise<string>;
 
 	/**
 	 * Used to unsubscribe to a notification stream.
@@ -44,7 +48,7 @@ export default interface INotificationClient {
 	 * @param {INotification[]} notifications Array of INotification
 	 * @throws Error If no error is thrown the service has received the notifications successfully
 	 */
-	notify(notifications: INotification[]): Promise<void>;
+	notify(notifications: INotification | INotification[]): Promise<void>;
 
 	/**
 	 * Tells the service to perform the action on the notification(s)
@@ -54,4 +58,22 @@ export default interface INotificationClient {
 	 * @throws Error If no error is thrown the service has received the request to perform the action successfully. Note a successful resolution of the promise does not mean successful completion of the action.
 	 */
 	performAction(notifications: INotification[], action: IAction): Promise<void>;
+
+	/**
+	 * Sets the user preference on which notifications to mute. All future notifications that match the filter will
+	 * have the mute flag set to true
+	 *
+	 * @param {IFilter} filter Notifications to apply action to.
+	 * @throws Error If no error is thrown the service has performed the mute successfully.
+	 */
+	mute(filter: IMuteFilter): Promise<void>;
+
+	/**
+	 * Sets the filter preference on which notifications to mute. All future notifications that match the filter will
+	 * have the mute flag set to true
+	 *
+	 * @param {IFilter} filter Notifications to apply action to.
+	 * @throws Error If no error is thrown the service has performed the unmute successfully.
+	 */
+	unmute(filter: IMuteFilter): Promise<void>;
 }

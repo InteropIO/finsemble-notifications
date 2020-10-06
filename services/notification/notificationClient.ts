@@ -12,6 +12,7 @@ import OnSubscriptionSuccessCallback, {
 } from "../../types/Notification-definitions/Callbacks";
 import { ILogger } from "@chartiq/finsemble/dist/types/clients/ILogger";
 import { IRouterClient } from "@chartiq/finsemble/dist/types/clients/IRouterClient";
+import IMuteFilter from "../../types/Notification-definitions/IMuteFilter";
 
 const { Logger } = require("@chartiq/finsemble").Clients;
 const FSBL = window.FSBL;
@@ -137,13 +138,15 @@ export default class NotificationClient implements INotificationClient {
 	 * @param {INotification[]} notifications Array of INotification
 	 * @throws Error If no error is thrown the service has received the notifications successfully
 	 */
-	notify(notifications: INotification[]): Promise<void> {
+	notify(notifications: INotification | INotification[]): Promise<void> {
 		this.loggerClient.info("notify() called with params: ", notifications);
 		return new Promise<void>((resolve, reject) => {
 			try {
-				this.routerWrapper.query(ROUTER_ENDPOINTS.NOTIFY, notifications).then(() => {
-					resolve();
-				});
+				this.routerWrapper
+					.query(ROUTER_ENDPOINTS.NOTIFY, Array.isArray(notifications) ? notifications : [notifications])
+					.then(() => {
+						resolve();
+					});
 			} catch (e) {
 				reject(e);
 			}
@@ -224,6 +227,48 @@ export default class NotificationClient implements INotificationClient {
 		});
 
 		this.subscriptions = [];
+	}
+
+	/**
+	 * Sets the user preference on which notifications to mute. All future notifications that match the filter will
+	 * have the mute flag set to true
+	 *
+	 * @param {IFilter[]} filter Notifications to apply action to.
+	 * @throws Error If no error is thrown the service has performed the mute successfully.
+	 */
+	mute(filter: IMuteFilter): Promise<void> {
+		this.loggerClient.info("mute() called with params: ", filter);
+		return new Promise(async (resolve, reject) => {
+			try {
+				const data = await this.routerWrapper.query(ROUTER_ENDPOINTS.MUTE, {
+					filter: filter
+				});
+				resolve(data);
+			} catch (e) {
+				reject(e);
+			}
+		});
+	}
+
+	/**
+	 * Sets the filter preference on which notifications to mute. All future notifications that match the filter will
+	 * have the mute flag set to true
+	 *
+	 * @param {IFilter[]} filter Notifications to apply action to.
+	 * @throws Error If no error is thrown the service has performed the unmute successfully.
+	 */
+	unmute(filter: IMuteFilter): Promise<void> {
+		this.loggerClient.info("unmute() called with params: ", filter);
+		return new Promise(async (resolve, reject) => {
+			try {
+				const data = await this.routerWrapper.query(ROUTER_ENDPOINTS.UNMUTE, {
+					filter: filter
+				});
+				resolve(data);
+			} catch (e) {
+				reject(e);
+			}
+		});
 	}
 
 	private cleanupSubscription(subscriptionId: string): void {

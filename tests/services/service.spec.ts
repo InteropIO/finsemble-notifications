@@ -9,6 +9,7 @@ import { ActionTypes } from "../../types/Notification-definitions/ActionTypes";
 import INotification from "../../types/Notification-definitions/INotification";
 import IPerformedAction from "../../types/Notification-definitions/IPerformedAction";
 import PerformedAction from "../../types/Notification-definitions/PerformedAction";
+import IMuteFilter from "../../types/Notification-definitions/IMuteFilter";
 
 describe("Configuration", () => {
 	let normalisedConfig: any;
@@ -464,5 +465,33 @@ describe("Filtering", () => {
 		});
 
 		expect(canPurge.length).to.equal(6);
+	});
+
+	it.only("Can can match mute filters", () => {
+		const not = new Notification();
+
+		expect(ServiceHelper.matchesMuteFilters(not, [])).to.equal(false, "No filters");
+
+		not.type = "type";
+
+		expect(ServiceHelper.matchesMuteFilters(not, [])).to.equal(false, "No filter with type set");
+
+		let filters: IMuteFilter[] = [{ source: "source" }];
+		expect(ServiceHelper.matchesMuteFilters(not, filters)).to.equal(false, "No match at all");
+
+		// 1 filter matches
+		filters = [{ type: "type" }];
+		expect(ServiceHelper.matchesMuteFilters(not, filters)).to.be.true;
+
+		//
+		filters = [{ type: "type", source: "source" }];
+		expect(ServiceHelper.matchesMuteFilters(not, filters)).to.equal(
+			false,
+			"Filter has both, Notification has 1, should not match"
+		);
+
+		filters = [{ type: "chat" }];
+
+		expect(ServiceHelper.matchesMuteFilters(not, filters)).to.be.true;
 	});
 });

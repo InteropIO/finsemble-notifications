@@ -40,6 +40,7 @@ export default interface INotification {
 	notificationAlertSound?: string;
 	meta?: Meta;
 	isRead: boolean;
+	isMuted: boolean;
 	isSnoozed: boolean;
 	isDeleted: boolean;
 

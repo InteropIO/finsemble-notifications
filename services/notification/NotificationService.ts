@@ -18,7 +18,7 @@ import StorageHelper, { STORAGE_KEY_NOTIFICATION_PREFIX } from "../helpers/Stora
 
 // TODO: Add Ticket to allow importing Finsemble
 // eslint-disable-next-line
-const Finsemble = require("@chartiq/finsemble");
+const Finsemble = require("@finsemble/finsemble-core");
 
 Finsemble.Clients.Logger.start();
 Finsemble.Clients.Logger.log("notification Service starting up");

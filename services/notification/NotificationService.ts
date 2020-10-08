@@ -16,6 +16,7 @@ import { v4 as uuidV4 } from "uuid";
 import { Map as ImmutableMap } from "immutable";
 import StorageHelper, { STORAGE_KEY_NOTIFICATION_PREFIX } from "../helpers/StorageHelper";
 import IMuteFilter from "../../types/Notification-definitions/IMuteFilter";
+import FinsembleNotification from "../../types/Notification-definitions/Notification";
 
 // TODO: Add Ticket to allow importing Finsemble
 // eslint-disable-next-line
@@ -630,7 +631,12 @@ export default class NotificationService extends Finsemble.baseService implement
 		let pubSubState = {
 			showDrawer: false,
 			showCenter: false,
-			toasterMonitor: "0"
+			toasterMonitor: "0",
+			overFlowMenu: {
+				notification: false,
+				overflowCount: false,
+				clickCoordinates: false
+			}
 		};
 		const spawnIfClosed: StandardCallback = (error, publish) => {
 			if (!error) {

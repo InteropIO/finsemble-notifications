@@ -6,7 +6,7 @@ import INotification from "../../types/Notification-definitions/INotification";
 import Animate from "../shared/components/Animate";
 import { CSSTransition } from "react-transition-group";
 import CenterIcon from "../shared/components/icons/CenterIcon";
-import { usePubSub } from "../shared/hooks/finsemble-hooks";
+import { usePubSub, overflowMenuClick } from "../shared/hooks/finsemble-hooks";
 import ConditionalWrapper from "../shared/components/ConditionalWrapper";
 
 const { useState, useEffect } = React;
@@ -33,6 +33,10 @@ function App(): React.ReactElement {
 	useEffect(() => {
 		setOpaqueClassName(!config.isTransparent);
 	}, []);
+
+	const overflowClick = (event: React.MouseEvent, data: any) => {
+		overflowMenuClick(event, { ...data, notificationSubscribeMessage, notificationsPublish });
+	};
 
 	const toggleDrawer = (show: boolean, isTransparent: boolean) => {
 		if (isTransparent) {
@@ -102,7 +106,12 @@ function App(): React.ReactElement {
 							(notification: INotification) =>
 								notificationIsActive(notification) && (
 									<Animate animateIn="slide-in-fwd-bottom" animateOut="slide-out-right" key={notification.id}>
-										<Notification notification={notification} doAction={doAction} overflowCount={3} />
+										<Notification
+											notification={notification}
+											overflowMenuAction={overflowClick}
+											doAction={doAction}
+											overflowCount={3}
+										/>
 									</Animate>
 								)
 						)

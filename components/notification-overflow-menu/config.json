@@ -1,0 +1,54 @@
+{
+	"components": {
+		"notification-overflow-menu": {
+			"window": {
+				"name": "notification-overflow-menu",
+				"url": "$applicationRoot/components/finsemble-notifications/components/notification-overflow-menu/notification-overflow-menu.html",
+				"forceOntoMonitor": true,
+				"bottom": 0,
+				"left": "0",
+				"height": 400,
+				"width": 200,
+				"position": "available",
+				"options": {
+					"resizable": false,
+					"transparent": true,
+					"alwaysOnTop": true,
+					"showTaskbarIcon": false,
+					"autoShow": false
+				},
+				"data": {
+					"notifications": {}
+				}
+			},
+			"component": {
+				"preload": false,
+				"spawnOnStartup": true,
+				"singleton": true
+			},
+			"foreign": {
+				"services": {
+					"windowService": {
+						"manageWindowMovement": true,
+						"allowSnapping": false,
+						"allowGrouping": false,
+						"allowAutoArrange": false,
+						"allowMinimize": false
+					}
+				},
+				"components": {
+					"App Launcher": {
+						"launchableByUser": false
+					},
+					"Window Manager": {
+						"title": "notification-toaster",
+						"FSBLHeader": false
+					},
+					"Toolbar": {
+						"iconClass": "notification-toaster"
+					}
+				}
+			}
+		}
+	}
+}

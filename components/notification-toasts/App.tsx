@@ -5,7 +5,7 @@ import useNotifications from "../shared/hooks/useNotifications";
 import INotification from "../../types/Notification-definitions/INotification";
 import Animate from "../shared/components/Animate";
 import { SpawnParams } from "@chartiq/finsemble/dist/types/services/window/Launcher/launcher";
-import { usePubSub } from "../shared/hooks/finsemble-hooks";
+import { overflowMenuClick, usePubSub } from "../shared/hooks/finsemble-hooks";
 import { useState } from "react";
 /* eslint-disable @typescript-eslint/no-var-requires */
 const _get = require("lodash.get");
@@ -65,6 +65,10 @@ function App(): React.ReactElement {
 				}
 			}
 		);
+	};
+
+	const overflowClick = (event: React.MouseEvent, data: any) => {
+		overflowMenuClick(event, { ...data, notificationSubscribeMessage, notificationsPublish });
 	};
 
 	useEffect(() => {
@@ -150,6 +154,7 @@ function App(): React.ReactElement {
 								animateOutComplete={() => removeNotification(notification)}
 							>
 								<Notification
+									overflowMenuAction={overflowClick}
 									key={notification.id}
 									notification={notification}
 									doAction={doAction}

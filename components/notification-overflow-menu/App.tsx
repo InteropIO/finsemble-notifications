@@ -1,0 +1,231 @@
+import * as React from "react";
+import { useEffect, useState } from "react";
+import Action from "../../types/Notification-definitions/Action";
+import UIAction from "../shared/components/UIAction";
+import useNotifications from "../shared/hooks/useNotifications";
+import { ActionTypes } from "../../types/Notification-definitions/ActionTypes";
+import IMuteFilter from "../../types/Notification-definitions/IMuteFilter";
+import { usePubSub } from "../shared/hooks/finsemble-hooks";
+import _get = require("lodash/get");
+import INotification from "../../types/Notification-definitions/INotification";
+import SettingsIcon from "../shared/components/icons/Settings";
+import IAction from "../../types/Notification-definitions/IAction";
+
+type CheckboxProps = {
+	isActive: boolean;
+};
+
+const FSBLCheckbox = (props: CheckboxProps) => {
+	return (
+		<div className={"inline-checkbox" + (props.isActive ? " active" : "")} title="">
+			<div className={"checkbox" + (props.isActive ? " active" : "")}>
+				<div className={"checkbox-background" + (props.isActive ? " active" : "")} />
+			</div>
+		</div>
+	);
+};
+
+type MuteProps = {
+	muteFilters: IMuteFilter[];
+	filter: IMuteFilter;
+	toggleMute: (filter: IMuteFilter) => void;
+};
+
+const MuteOption = (props: MuteProps) => {
+	const { muteFilters, toggleMute, filter } = props;
+	const isFilterInList = (): boolean => {
+		let inList = false;
+		for (const muteFilter of muteFilters) {
+			// If it has both, both need to match
+			if (filter.source && filter.type) {
+				inList = muteFilter.source === filter.source && muteFilter.type === filter.type;
+			} else if (filter.source && !filter.type && !muteFilter.type) {
+				inList = muteFilter.source === filter.source;
+			} else if (filter.type && !filter.source && !muteFilter.source) {
+				inList = muteFilter.type === filter.type;
+			}
+
+			if (inList) {
+				return inList;
+			}
+		}
+		return inList;
+	};
+
+	let message = "";
+
+	if (filter.type && filter.source) {
+		message = `Mute '${filter.type}' notifications from '${filter.source}'`;
+	} else if (filter.source) {
+		message = `Mute notifications from '${filter.source}'`;
+	} else if (filter.type) {
+		message = `Mute '${filter.type}' notifications`;
+	}
+
+	return (
+		<>
+			<label className="mute-option">
+				<FSBLCheckbox isActive={isFilterInList()} />
+				<input
+					type="checkbox"
+					onChange={toggleMute}
+					data-notification-source={filter.source ? filter.source : null}
+					data-notification-type={filter.type ? filter.type : null}
+					checked={isFilterInList()}
+				/>
+				<span>{message}</span>
+			</label>
+		</>
+	);
+};
+
+function App(): React.ReactElement {
+	const [muteFilters, setMuteFilters] = useState([]);
+	const [refresh, setRefresh] = useState(false);
+	const { doAction, mute, unmute } = useNotifications();
+
+	const [notification, setNotification] = useState() as [INotification, Function];
+	const [overflowCount, setOverflowCount] = useState(9000);
+	const [settingsOpen, setOpenState] = useState(true);
+
+	const pubSubTopic = "notification-ui";
+	const [notificationSubscribeMessage] = usePubSub(pubSubTopic);
+
+	useEffect(() => {
+		const overflowNotification = _get(notificationSubscribeMessage, "overFlowMenu.notification");
+		const clickCoordinates = _get(notificationSubscribeMessage, "overFlowMenu.clickCoordinates", {});
+		const count = _get(notificationSubscribeMessage, "overFlowMenu.overflowCount", false);
+		setOverflowCount(count);
+
+		if (overflowNotification && clickCoordinates) {
+			finsembleWindow.show({});
+			setNotification(overflowNotification);
+			setOpenState(overflowNotification.actions.length <= count);
+			window.requestAnimationFrame(async () => {
+				FSBL.Clients.WindowClient.fitToDOM({}, async () => {
+					// @ts-ignore
+					const { data: bounds } = await finsembleWindow.getBounds({});
+					// @ts-ignore
+					const { data: monitorData } = await FSBL.Clients.LauncherClient.getMonitorInfo({}, null);
+					finsembleWindow.setBounds(
+						{
+							height: bounds.height,
+							width: bounds.width,
+							top: Math.max(clickCoordinates.top - bounds.height, monitorData.availableRect.top),
+							left: clickCoordinates.left - bounds.width
+						},
+						async () => {
+							finsembleWindow.focus();
+							finsembleWindow.bringToFront();
+						}
+					);
+				});
+			});
+		}
+	}, [JSON.stringify(notificationSubscribeMessage.overFlowMenu)]);
+
+	const hide = () => {
+		setOpenState(false);
+		finsembleWindow.hide();
+	};
+
+	useEffect(() => {
+		finsembleWindow.addEventListener("blurred", () => {
+			hide();
+		});
+	}, []);
+
+	useEffect(() => {
+		FSBL.Clients.ConfigClient.getValue({ field: "finsemble.notifications.mute" }, (err: any, config: any) => {
+			if (config) {
+				setMuteFilters(config);
+			}
+		});
+	}, [refresh]);
+
+	const doActionAndHide = (notification: INotification, action: any) => {
+		doAction(notification, action);
+		hide();
+	};
+
+	const toggleMute = async (event: React.ChangeEvent) => {
+		const target = event.target as HTMLInputElement;
+		const filter: IMuteFilter = {};
+
+		if (target.dataset.notificationSource) {
+			filter.source = target.dataset.notificationSource;
+		}
+
+		if (target.dataset.notificationType) {
+			filter.type = target.dataset.notificationType;
+		}
+
+		if (target.checked) {
+			await mute(filter);
+		} else {
+			await unmute(filter);
+		}
+		setRefresh(!refresh);
+	};
+
+	const toggleSettings = () => {
+		setOpenState(!settingsOpen);
+		requestAnimationFrame(() => {
+			FSBL.Clients.WindowClient.fitToDOM();
+		});
+	};
+
+	return (
+		<>
+			{notification && (
+				<>
+					<div className="notification-overflow-menu-header">
+						<div className="close">
+							<img src="../shared/assets/close.svg" id="close-icon" onClick={() => hide()} alt="" />
+						</div>
+					</div>
+					{notification.actions.length > overflowCount &&
+						notification.actions.map((action: IAction, index) => {
+							if (index + 1 > overflowCount) {
+								return <UIAction key={index} doAction={doActionAndHide} notification={notification} action={action} />;
+							}
+						})}
+					{(notification.source || notification.type) && (
+						<div className="notification-settings">
+							{notification.actions.length > overflowCount ? (
+								<SettingsIcon
+									onClick={toggleSettings}
+									className={settingsOpen ? "settings-icons--active" : "settings-icons"}
+								/>
+							) : (
+								""
+							)}
+							<div className={settingsOpen ? "mute-container--active" : "mute-container"}>
+								{notification.actions.length > overflowCount && <hr />}
+								{notification.source && (
+									<MuteOption
+										muteFilters={muteFilters}
+										toggleMute={toggleMute}
+										filter={{ source: notification.source }}
+									/>
+								)}
+								{notification.type && (
+									<MuteOption muteFilters={muteFilters} toggleMute={toggleMute} filter={{ type: notification.type }} />
+								)}
+								{notification.type && notification.source && (
+									<MuteOption
+										muteFilters={muteFilters}
+										toggleMute={toggleMute}
+										filter={{ source: notification.source, type: notification.type }}
+									/>
+								)}
+							</div>
+						</div>
+					)}
+				</>
+			)}
+		</>
+	);
+}
+
+export default App;

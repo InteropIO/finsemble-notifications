@@ -7,6 +7,7 @@ import WindowConfig, { NotificationsConfig } from "../../../types/Notification-d
 import IFilter from "../../../types/Notification-definitions/IFilter";
 import { NotificationGroupList } from "../../../types/Notification-definitions/NotificationHookTypes";
 import _get from "lodash.get";
+import IMuteFilter from "../../../types/Notification-definitions/IMuteFilter";
 
 const { useReducer, useEffect } = React;
 
@@ -91,6 +92,38 @@ export default function useNotifications(params: any = {}) {
 			// NOTE: The request to perform the action has failed
 			console.error("could not create a notification client", e);
 			FSBL.Clients.Logger.error("could not create a notification client", e);
+		}
+	}
+
+	/**
+	 * Example for setting up button clicks
+	 *
+	 * @param filter
+	 */
+	async function mute(filter: IMuteFilter) {
+		try {
+			NOTIFICATION_CLIENT = new NotificationClient();
+			await NOTIFICATION_CLIENT.mute(filter);
+		} catch (e) {
+			// NOTE: The request to perform the action has failed
+			console.error("Could save mute preferences", e);
+			FSBL.Clients.Logger.error("Could save mute preferences", e);
+		}
+	}
+
+	/**
+	 * Example for setting up button clicks
+	 *
+	 * @param filter
+	 */
+	async function unmute(filter: IMuteFilter) {
+		try {
+			NOTIFICATION_CLIENT = new NotificationClient();
+			await NOTIFICATION_CLIENT.unmute(filter);
+		} catch (e) {
+			// NOTE: The request to perform the action has failed
+			console.error("Could save mute preferences", e);
+			FSBL.Clients.Logger.error("Could save mute preferences", e);
 		}
 	}
 
@@ -238,6 +271,8 @@ export default function useNotifications(params: any = {}) {
 		activeNotifications,
 		notificationIsActive,
 		doAction,
+		mute,
+		unmute,
 		getNotificationHistory,
 		groupNotificationsByType,
 		notifications: state.notifications,

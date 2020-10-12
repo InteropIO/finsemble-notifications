@@ -13,6 +13,7 @@ export const ROUTER_ENDPOINTS = {
 	UNSUBSCRIBE: "unsubscribe",
 	PERFORM_ACTION: "perform_action",
 	LAST_ISSUED: "last_issued",
+	MARK_UNREAD: "mark_unread",
 	FETCH_HISTORY: "fetch_history",
 	CHANNEL_PREFIX: "notification.",
 	ACTION_PREFIX: "action."

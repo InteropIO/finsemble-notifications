@@ -127,6 +127,7 @@ export default class NotificationService extends Finsemble.baseService implement
 		this.setupFetchHistory();
 		this.setupUnsubscribe();
 		this.setupUIPubSub();
+		this.setupMarkUnread();
 	}
 
 	/**
@@ -514,6 +515,21 @@ export default class NotificationService extends Finsemble.baseService implement
 	}
 
 	/**
+	 * Marks a notification as unread
+	 *
+	 * @param notification {INotification}
+	 */
+	private markNotificationUnread(notification: INotification): INotification {
+		Finsemble.Clients.Logger.info("Received state markUnread", notification);
+
+		//@ts-ignore
+		let map = ImmutableMap(notification);
+
+		map = map.set("isRead", false);
+		return (map.toObject() as unknown) as INotification;
+	}
+
+	/**
 	 * Stores the notifications
 	 *
 	 * @param notification {INotification}
@@ -570,6 +586,16 @@ export default class NotificationService extends Finsemble.baseService implement
 	 */
 	private setupUnsubscribe() {
 		this.routerWrapper.addResponder(ROUTER_ENDPOINTS.UNSUBSCRIBE, this.unsubscribe);
+	}
+
+	/**
+	 * Setup callback on mark unread channel
+	 */
+	private setupMarkUnread() {
+		this.routerWrapper.addResponder(
+			`${ROUTER_ENDPOINTS.CHANNEL_PREFIX}.${ROUTER_ENDPOINTS.MARK_UNREAD}`,
+			this.markNotificationUnread
+		);
 	}
 
 	/**

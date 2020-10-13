@@ -1,4 +1,4 @@
-import { SpawnParams } from "@chartiq/finsemble/dist/types/services/window/Launcher/launcher";
+import { SpawnParams } from "services/window/Launcher/launcher";
 
 export interface NotificationsConfig {
 	filter?: {

@@ -4,7 +4,7 @@ import Notification from "../shared/components/Notification";
 import useNotifications from "../shared/hooks/useNotifications";
 import INotification from "../../types/Notification-definitions/INotification";
 import Animate from "../shared/components/Animate";
-import { SpawnParams } from "@chartiq/finsemble/dist/types/services/window/Launcher/launcher";
+import { SpawnParams } from "services/window/Launcher/launcher";
 import { usePubSub } from "../shared/hooks/finsemble-hooks";
 import { useState } from "react";
 /* eslint-disable @typescript-eslint/no-var-requires */

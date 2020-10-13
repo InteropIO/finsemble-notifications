@@ -1,7 +1,7 @@
 import NotificationClient from "../notification/notificationClient";
 
 // eslint-disable-next-line
-const Finsemble = require("@chartiq/finsemble");
+const Finsemble = require("@finsemble/finsemble-core");
 
 Finsemble.Clients.Logger.start();
 Finsemble.Clients.Logger.log("exampleCustomActionService Service starting up");

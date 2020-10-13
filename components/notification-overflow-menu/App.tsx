@@ -103,6 +103,8 @@ function App(): React.ReactElement {
 			finsembleWindow.show({});
 			setNotification(overflowNotification);
 			setOpenState(overflowNotification.actions.length <= count);
+			// Fit to dom was sometimes being called before the UI update happened. (I believe requestAnimationFrame is
+			// a decent method of waiting for that to complete)
 			window.requestAnimationFrame(async () => {
 				FSBL.Clients.WindowClient.fitToDOM({}, async () => {
 					// @ts-ignore
@@ -117,6 +119,9 @@ function App(): React.ReactElement {
 							left: clickCoordinates.left - bounds.width
 						},
 						async () => {
+							// Occasionally the overflow menu would not appear above toasts, lose focus and close
+							// (not convinced this fixes it)
+							finsembleWindow.bringToFront();
 							finsembleWindow.focus();
 							finsembleWindow.bringToFront();
 						}

@@ -16,6 +16,10 @@ body {
 	color: var(--notification-font-color);
 }
 
+.opaque #notifications-overflow-menu {
+	border-radius: 0;
+}
+
 #notifications-overflow-menu {
 	font-family: var(--notification-font-family);
 	box-sizing: border-box;

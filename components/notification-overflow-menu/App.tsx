@@ -82,7 +82,7 @@ const MuteOption = (props: MuteProps) => {
 function App(): React.ReactElement {
 	const [muteFilters, setMuteFilters] = useState([]);
 	const [refresh, setRefresh] = useState(false);
-	const { doAction, mute, unmute } = useNotifications();
+	const { doAction, mute, unmute, getNotificationConfig, setOpaqueClassName } = useNotifications();
 
 	const [notification, setNotification] = useState() as [INotification, Function];
 	const [overflowCount, setOverflowCount] = useState(9000);
@@ -90,6 +90,8 @@ function App(): React.ReactElement {
 
 	const pubSubTopic = "notification-ui";
 	const [notificationSubscribeMessage] = usePubSub(pubSubTopic);
+
+	const config = getNotificationConfig();
 
 	useEffect(() => {
 		const overflowNotification = _get(notificationSubscribeMessage, "overFlowMenu.notification");
@@ -133,6 +135,7 @@ function App(): React.ReactElement {
 		finsembleWindow.addEventListener("blurred", () => {
 			hide();
 		});
+		setOpaqueClassName(!config.isTransparent);
 	}, []);
 
 	useEffect(() => {

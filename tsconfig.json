@@ -10,7 +10,7 @@
 		"preserveConstEnums": true,
 		"sourceMap": true,
 		"jsx": "react",
-		"types": ["@types/mocha", "@types/node", "@types/chai", "@testing-library/react", "@chartiq/finsemble"]
+		"types": ["@types/mocha", "@types/node", "@types/chai", "@testing-library/react", "@finsemble/finsemble-core"]
 	},
 	"include": ["**/*"],
 	"exclude": ["./node_modules/**", "**/*.spec.ts", "./types", "./docs", "./tests", "./preloads", "./services"]

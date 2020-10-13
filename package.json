@@ -42,7 +42,7 @@
 	},
 	"devDependencies": {
 		"@babel/register": "^7.8.3",
-		"@chartiq/finsemble": "^4.3.0",
+		"@finsemble/finsemble-core": "^5.0.1",
 		"@testing-library/react": "^9.4.0",
 		"@types/chai": "^4.2.7",
 		"@types/lodash": "^4.14.149",

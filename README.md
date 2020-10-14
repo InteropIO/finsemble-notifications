@@ -440,6 +440,14 @@ Set the applyMuteFilters value.
 }
 ```
 
+#### Muting preferences panel
+
+Once a user has added a mute filter, they may wish to remove this mute filter. This can be done by adding the
+Notification Preferences component to the User preferences component in your Finsemble Seed.
+
+This is a manual process that a developer would need to implement. See the [recipe in the seed](https://github.com/ChartIQ/finsemble-seed/compare/release/4.5.0...recipes/add-notification-mute-to-preferences-panel)
+for the code require to do this. 
+
 
 ### Custom Actions
 

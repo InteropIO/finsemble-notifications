@@ -456,8 +456,12 @@ export default class NotificationService extends Finsemble.baseService implement
 			Finsemble.Clients.Logger.error(`Unable to get config err: ${err}`);
 		}
 
-		if (config && config.value) {
-			this.muteFilters = config.value;
+		if (config) {
+			// configClient.getValue() and configClient.addListener return different formats
+			if (config.value) {
+				config = config.value;
+			}
+			this.muteFilters = config;
 		}
 	};
 
@@ -541,6 +545,9 @@ export default class NotificationService extends Finsemble.baseService implement
 			action.type = "FINSEMBLE:RECEIVED";
 			if (ServiceHelper.matchesMuteFilters(notification, this.muteFilters)) {
 				map = map.set("isMuted", true);
+				Finsemble.Clients.Logger
+					.log(`Mute notificationID:${notification.id}, '${notification.title}', source:'${notification.source}', type: 
+				'${notification.type}'`);
 			}
 			// @ts-ignore
 			map = ServiceHelper.addPerformedAction(map, action);

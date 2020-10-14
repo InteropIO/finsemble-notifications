@@ -55,11 +55,11 @@ const MuteOption = (props: MuteProps) => {
 	let message = "";
 
 	if (filter.type && filter.source) {
-		message = `Mute '${filter.type}' notifications from '${filter.source}'`;
+		message = `Mute '${filter.type}' type notifications from '${filter.source}'`;
 	} else if (filter.source) {
 		message = `Mute notifications from '${filter.source}'`;
 	} else if (filter.type) {
-		message = `Mute '${filter.type}' notifications`;
+		message = `Mute '${filter.type}' type notifications`;
 	}
 
 	return (
@@ -81,17 +81,74 @@ const MuteOption = (props: MuteProps) => {
 
 function App(): React.ReactElement {
 	const [muteFilters, setMuteFilters] = useState([]);
-	const [refresh, setRefresh] = useState(false);
 	const { doAction, mute, unmute, getNotificationConfig, setOpaqueClassName } = useNotifications();
 
 	const [notification, setNotification] = useState() as [INotification, Function];
-	const [overflowCount, setOverflowCount] = useState(9000);
+	const [overflowCount, setOverflowCount] = useState(9001);
 	const [settingsOpen, setOpenState] = useState(true);
 
 	const pubSubTopic = "notification-ui";
 	const [notificationSubscribeMessage] = usePubSub(pubSubTopic);
 
 	const config = getNotificationConfig();
+
+	const hide = () => {
+		setOpenState(false);
+		finsembleWindow.hide();
+	};
+
+	const doActionAndHide = (notification: INotification, action: any) => {
+		doAction(notification, action);
+		hide();
+	};
+
+	const toggleMute = async (event: React.ChangeEvent) => {
+		const target = event.target as HTMLInputElement;
+		const filter: IMuteFilter = {};
+
+		if (target.dataset.notificationSource) {
+			filter.source = target.dataset.notificationSource;
+		}
+
+		if (target.dataset.notificationType) {
+			filter.type = target.dataset.notificationType;
+		}
+
+		if (target.checked) {
+			await mute(filter);
+		} else {
+			await unmute(filter);
+		}
+	};
+
+	const toggleSettings = () => {
+		setOpenState(!settingsOpen);
+		requestAnimationFrame(() => {
+			FSBL.Clients.WindowClient.fitToDOM();
+		});
+	};
+
+	const applyConfigChange = (err: any, config: any) => {
+		if (config) {
+			// configClient.getValue() and configClient.addListener return different formats
+			if (config.value) {
+				config = config.value;
+			}
+			setMuteFilters(config);
+		}
+	};
+
+	useEffect(() => {
+		finsembleWindow.addEventListener("blurred", hide);
+		FSBL.Clients.ConfigClient.addListener({ field: "finsemble.notifications.mute" }, applyConfigChange);
+		FSBL.Clients.ConfigClient.getValue({ field: "finsemble.notifications.mute" }, applyConfigChange);
+		setOpaqueClassName(!config.isTransparent);
+
+		return () => {
+			finsembleWindow.removeEventListener("blurred", hide);
+			FSBL.Clients.ConfigClient.removeListener({ field: "finsemble.notifications.mute" }, applyConfigChange);
+		};
+	}, []);
 
 	useEffect(() => {
 		const overflowNotification = _get(notificationSubscribeMessage, "overFlowMenu.notification");
@@ -130,58 +187,6 @@ function App(): React.ReactElement {
 			});
 		}
 	}, [JSON.stringify(notificationSubscribeMessage.overFlowMenu)]);
-
-	const hide = () => {
-		setOpenState(false);
-		finsembleWindow.hide();
-	};
-
-	useEffect(() => {
-		finsembleWindow.addEventListener("blurred", () => {
-			hide();
-		});
-		setOpaqueClassName(!config.isTransparent);
-	}, []);
-
-	useEffect(() => {
-		FSBL.Clients.ConfigClient.getValue({ field: "finsemble.notifications.mute" }, (err: any, config: any) => {
-			if (config) {
-				setMuteFilters(config);
-			}
-		});
-	}, [refresh]);
-
-	const doActionAndHide = (notification: INotification, action: any) => {
-		doAction(notification, action);
-		hide();
-	};
-
-	const toggleMute = async (event: React.ChangeEvent) => {
-		const target = event.target as HTMLInputElement;
-		const filter: IMuteFilter = {};
-
-		if (target.dataset.notificationSource) {
-			filter.source = target.dataset.notificationSource;
-		}
-
-		if (target.dataset.notificationType) {
-			filter.type = target.dataset.notificationType;
-		}
-
-		if (target.checked) {
-			await mute(filter);
-		} else {
-			await unmute(filter);
-		}
-		setRefresh(!refresh);
-	};
-
-	const toggleSettings = () => {
-		setOpenState(!settingsOpen);
-		requestAnimationFrame(() => {
-			FSBL.Clients.WindowClient.fitToDOM();
-		});
-	};
 
 	return (
 		<>

@@ -1,7 +1,7 @@
 import INotification from "../../types/Notification-definitions/INotification";
 import ILastIssued from "../../types/Notification-definitions/ILastIssued";
 import ISnoozeTimer from "../../types/Notification-definitions/ISnoozeTimer";
-import { ILogger } from "@chartiq/finsemble/dist/types/clients/ILogger";
+import { ILogger } from "clients/ILogger";
 
 const StorageClient = require("@chartiq/finsemble").Clients.StorageClient;
 
@@ -48,7 +48,7 @@ export default class StorageHelper {
 			const notifications = await Promise.all(promises);
 			notifications.forEach((notification, index) => {
 				if (notification) {
-					returnValue.set(notification.id, notification);
+					returnValue.set(notification.id as string, notification);
 				} else {
 					StorageHelper.logger.error(`Notification ${keys[index]} not found`);
 				}

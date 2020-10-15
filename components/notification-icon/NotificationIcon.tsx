@@ -10,7 +10,7 @@ interface Props {
 }
 
 function App(props: Props): React.ReactElement {
-	const [activeNotifications, setActiveNotifications] = useState([]);
+	const [activeNotifications, setActiveNotifications] = useState() as [INotification[], Function];
 	const { notifications, groupNotificationsByType } = useNotifications();
 
 	const { action } = props;

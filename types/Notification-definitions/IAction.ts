@@ -11,9 +11,9 @@
  * TODO: Ensure this interface (or implemented type) is publicly accessible
  */
 export default interface IAction {
-	id: string;
-	buttonText: string;
-	type: string;
+	id?: string;
+	buttonText?: string;
+	type?: string;
 	milliseconds?: number;
 	component?: string;
 	spawnParams?: any;

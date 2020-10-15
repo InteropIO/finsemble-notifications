@@ -4,7 +4,6 @@ import IAction from "./IAction";
 import ISubscription from "./ISubscription";
 
 export default interface INotificationClient {
-
 	/**
 	 * Subscribe to a notification stream given a set of name/value pair filters. Returns subscriptionId
 	 * @param {ISubscription} subscription with name value pair used to match on.
@@ -12,7 +11,11 @@ export default interface INotificationClient {
 	 * @param {Function} onSubscriptionFault if there is an error creating the subscription.
 	 * @throws Error
 	 */
-	subscribe(subscription: ISubscription, onSubscriptionSuccess: Function, onSubscriptionFault: Function): Promise<string>;
+	subscribe(
+		subscription: ISubscription,
+		onSubscriptionSuccess?: Function,
+		onSubscriptionFault?: Function
+	): Promise<string>;
 
 	/**
 	 * Used to unsubscribe to a notification stream.

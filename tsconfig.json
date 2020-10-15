@@ -10,6 +10,7 @@
 		"preserveConstEnums": true,
 		"sourceMap": true,
 		"jsx": "react",
+		"strict": true,
 		"types": ["@types/mocha", "@types/node", "@types/chai", "@testing-library/react", "@finsemble/finsemble-core"]
 	},
 	"include": ["**/*"],

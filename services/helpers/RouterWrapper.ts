@@ -51,8 +51,8 @@ export default class RouterWrapper {
 			logger = typeof FSBL !== "undefined" ? FSBL.Clients.Logger : Logger;
 		}
 
-		this.routerClient = router;
-		this.loggerClient = logger;
+		this.routerClient = router as IRouterClient;
+		this.loggerClient = logger as ILogger;
 
 		this.query = this.query.bind(this);
 		this.addResponder = this.addResponder.bind(this);
@@ -121,15 +121,15 @@ export default class RouterWrapper {
 
 			try {
 				this.loggerClient && this.loggerClient.info(`Processing message on channel ${channel}: `, message);
-				const returnVal = dataProcessor(message.data);
+				const returnVal = dataProcessor(message?.data);
 				this.loggerClient && this.loggerClient.info(`Message response on ${channel}: `, returnVal);
-				message.sendQueryResponse(null, {
+				message?.sendQueryResponse(null, {
 					status: "success",
 					data: returnVal
 				});
 			} catch (err) {
 				this.loggerClient && this.loggerClient.error(`Failed to process query`, err);
-				message.sendQueryResponse(err);
+				message?.sendQueryResponse(err);
 			}
 		});
 	}

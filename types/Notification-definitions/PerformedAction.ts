@@ -8,4 +8,10 @@ export default class PerformedAction implements IPerformedAction {
 	id: string;
 	type: string;
 	datePerformed: string;
+
+	constructor(id: string, type: string, datePerformed: string) {
+		this.id = id;
+		this.type = type;
+		this.datePerformed = datePerformed;
+	}
 }

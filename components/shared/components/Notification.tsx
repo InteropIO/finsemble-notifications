@@ -2,13 +2,13 @@ import * as React from "react";
 import { formatDistanceToNow } from "date-fns";
 import INotification from "../../../types/Notification-definitions/INotification";
 import IAction from "../../../types/Notification-definitions/IAction";
-import { useEffect, useState } from "react";
+import { MouseEventHandler, useEffect, useState } from "react";
 
 interface Props {
 	children?: React.PropsWithChildren<any>;
 	notification: INotification;
 	doAction: Function;
-	closeAction?: Function;
+	closeAction?: MouseEventHandler;
 	closeButton?: boolean;
 	onMouseLeave?: Function;
 	onMouseEnter?: Function;
@@ -44,7 +44,7 @@ const HeaderArea = (props: Props) => {
 			</div>
 			<div className="detail-area_type">{notification.headerText}</div>
 			<div className="detail-area_time">{time} ago</div>
-			{closeButton && <img src="../shared/assets/close.svg" id="close-icon" onClick={() => closeAction()} />}
+			{closeButton && <img src="../shared/assets/close.svg" id="close-icon" onClick={closeAction} />}
 		</div>
 	);
 };
@@ -70,14 +70,14 @@ const ActionArea = (props: Props) => {
 
 	return (
 		<div className="action-area">
-			{notification.actions.map((action: IAction, index) => {
+			{notification.actions?.map((action: IAction, index) => {
 				if (!overflowCount || index + 1 <= overflowCount) {
 					return <UIAction key={index} {...props} action={action} />;
 				}
 			})}
-			{overflowCount && notification.actions.length > overflowCount && (
+			{overflowCount && notification.actions && notification.actions.length > overflowCount && (
 				<OverflowMenu>
-					{notification.actions.map((action: IAction, index) => {
+					{notification.actions?.map((action: IAction, index) => {
 						if (index + 1 > overflowCount) {
 							return <UIAction key={index} {...props} action={action} />;
 						}

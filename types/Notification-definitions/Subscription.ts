@@ -13,9 +13,11 @@ export default class Subscription implements ISubscription {
 	 * @param {IFilter|null} filter
 	 * @param onNotification
 	 */
-	constructor(filter?: IFilter, onNotification?: (notification: INotification) => void) {
+	constructor(id?: string, filter?: IFilter, onNotification?: (notification: INotification) => void) {
+		// @ts-ignore
+		this.id = id ? id : null;
 		this.filter = filter;
 		// @ts-ignore
-		this.onNotification = onNotification ? onNotification : undefined;
+		this.onNotification = onNotification ? onNotification : null;
 	}
 }

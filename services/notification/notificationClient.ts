@@ -43,12 +43,13 @@ export default class NotificationClient implements INotificationClient {
 	constructor(routerClient?: IRouterClient, loggerClient?: ILogger) {
 		if (routerClient || loggerClient) {
 			this.routerWrapper = new RouterWrapper(routerClient, loggerClient);
-			this.loggerClient = loggerClient ? loggerClient : null;
 		} else {
 			this.routerWrapper = new RouterWrapper();
 		}
 
-		if (!this.loggerClient) {
+		if (loggerClient) {
+			this.loggerClient = loggerClient;
+		} else {
 			this.loggerClient = typeof FSBL !== "undefined" ? FSBL.Clients.Logger : Logger;
 		}
 
@@ -95,7 +96,7 @@ export default class NotificationClient implements INotificationClient {
 		this.loggerClient.info("getLastIssued called with params: ", source);
 		return new Promise<string>(async (resolve, reject) => {
 			try {
-				const data = await this.routerWrapper.query(ROUTER_ENDPOINTS.LAST_ISSUED, source);
+				const data = await this.routerWrapper.query(ROUTER_ENDPOINTS.LAST_ISSUED, source as string);
 				resolve(data);
 			} catch (e) {
 				reject(e);

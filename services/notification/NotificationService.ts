@@ -46,6 +46,7 @@ export default class NotificationService extends Finsemble.baseService implement
 	subscriptions: Map<string, ISubscription>;
 
 	private proxyToWebApiFilter: IFilter | false;
+	// @ts-ignore
 	private routerWrapper: RouterWrapper;
 
 	private config: any = {
@@ -149,11 +150,11 @@ export default class NotificationService extends Finsemble.baseService implement
 		Finsemble.Clients.Logger.log("Broadcasting Notification: ", notification.id);
 		this.subscriptions.forEach(subscription => {
 			// Check if this notification matches any filters
-			if (ServiceHelper.filterMatches(subscription.filter, notification)) {
+			if (subscription.filter && ServiceHelper.filterMatches(subscription.filter, notification)) {
 				// For each notification that matches, expect a response and send it out.
 				this.expectReceipt(subscription, notification);
 				this.routerWrapper
-					.query(subscription.channel, notification, null, (error, response) => {
+					.query(subscription.channel as string, notification, undefined, (error, response) => {
 						this.setReceivedReceipt(subscription, notification, error, response);
 					})
 					.then();
@@ -211,10 +212,11 @@ export default class NotificationService extends Finsemble.baseService implement
 	 * @param notification
 	 */
 	addNotification(notification: INotification): void {
-		if (this.storageAbstraction.notifications.has(notification.id)) {
-			this.storageAbstraction.notifications.delete(notification.id);
+		const notificationId = notification.id as string;
+		if (this.storageAbstraction.notifications.has(notificationId)) {
+			this.storageAbstraction.notifications.delete(notificationId);
 		}
-		this.storageAbstraction.notifications.set(notification.id, notification);
+		this.storageAbstraction.notifications.set(notificationId, notification);
 	}
 
 	/**
@@ -250,7 +252,7 @@ export default class NotificationService extends Finsemble.baseService implement
 	notify(notifications: INotification[]): void {
 		notifications.forEach(async notification => {
 			let processedNotification = this.receiveNotification(notification);
-			this.saveLastIssuedAt(processedNotification.source, processedNotification.issuedAt);
+			this.saveLastIssuedAt(processedNotification.source as string, processedNotification.issuedAt as string);
 			processedNotification = ServiceHelper.setNotificationHistory(
 				processedNotification,
 				this.storageAbstraction.notifications,
@@ -300,7 +302,7 @@ export default class NotificationService extends Finsemble.baseService implement
 
 		if (this.storageAbstraction.lastIssued.has(source)) {
 			const d1 = new Date(issuedAt);
-			const d2 = new Date(this.storageAbstraction.lastIssued.get(source).issuedAt);
+			const d2 = new Date(this.storageAbstraction.lastIssued.get(source)?.issuedAt as string);
 			// Update only if the new date is newer
 			if (d1 > d2) {
 				this.storageAbstraction.lastIssued.set(source, new LastIssued(source, issuedAt));
@@ -336,7 +338,7 @@ export default class NotificationService extends Finsemble.baseService implement
 		const timeout = timeoutOverride ? timeoutOverride : action.milliseconds ? action.milliseconds : defaultTimeout;
 
 		const snoozeTimer = new SnoozeTimer();
-		snoozeTimer.notificationId = notification.id;
+		snoozeTimer.notificationId = notification.id as string;
 		snoozeTimer.snoozeInterval = timeout;
 		snoozeTimer.timeoutId = setTimeout(() => {
 			this.wake(notification);
@@ -347,7 +349,7 @@ export default class NotificationService extends Finsemble.baseService implement
 		snoozeTimer.wakeEpochMilliseconds = Date.now() + timeout;
 		Finsemble.Clients.Logger.log(`Timing Snoozing for ${snoozeTimer.wakeEpochMilliseconds}`);
 
-		this.storageAbstraction.snoozeTimers.set(notification.id, snoozeTimer);
+		this.storageAbstraction.snoozeTimers.set(notification.id as string, snoozeTimer);
 		StorageHelper.storeSnoozeTimers(this.storageAbstraction.snoozeTimers);
 		notification.isSnoozed = true;
 		return notification;
@@ -451,7 +453,7 @@ export default class NotificationService extends Finsemble.baseService implement
 
 		Finsemble.Clients.Logger.info(`Action type: ${action.type}`);
 		// Pick up any updated states from performing the action
-		switch (action.type.toUpperCase()) {
+		switch (action.type?.toUpperCase()) {
 			case ActionTypes.SNOOZE:
 				notification = this.snooze(notification, action);
 				break;
@@ -527,7 +529,7 @@ export default class NotificationService extends Finsemble.baseService implement
 			maxNotificationsToRetain: this.config.service.maxNotificationsToRetain
 		});
 		notificationsToDelete.forEach(toBeDeleted => {
-			this.deleteNotification(toBeDeleted.id);
+			this.deleteNotification(toBeDeleted.id as string);
 			toBeDeleted.isDeleted = true;
 		});
 
@@ -651,7 +653,7 @@ export default class NotificationService extends Finsemble.baseService implement
 	 * @param subscription
 	 */
 	private addToSubscription(subscription: ISubscription) {
-		this.subscriptions.set(subscription.id, subscription);
+		this.subscriptions.set(subscription.id as string, subscription);
 	}
 
 	/**
@@ -665,7 +667,7 @@ export default class NotificationService extends Finsemble.baseService implement
 			notification.isRead = true;
 			this.routerWrapper
 				.query(
-					action.channel,
+					action.channel as string,
 					{
 						notification: notification,
 						actionPayload: action.payload
@@ -690,7 +692,7 @@ export default class NotificationService extends Finsemble.baseService implement
 	private forwardAsTransmit(notification: INotification, action: IAction): INotification {
 		this.validateForwardParams(action);
 		this.routerWrapper.transmit(
-			action.channel,
+			action.channel as string,
 			{
 				notification: notification,
 				actionPayload: action.payload
@@ -711,7 +713,7 @@ export default class NotificationService extends Finsemble.baseService implement
 	private forwardAsPublish(notification: INotification, action: IAction): INotification {
 		this.validateForwardParams(action);
 		this.routerWrapper.publish(
-			action.channel,
+			action.channel as string,
 			{
 				notification: notification,
 				actionPayload: action.payload
@@ -735,7 +737,7 @@ export default class NotificationService extends Finsemble.baseService implement
 		Finsemble.Clients.Logger.info(`Finding last issued for source: '${source}'`);
 		let returnValue = "";
 		if (source && this.storageAbstraction.lastIssued.has(source)) {
-			returnValue = this.storageAbstraction.lastIssued.get(source).issuedAt;
+			returnValue = this.storageAbstraction.lastIssued.get(source)?.issuedAt as string;
 		} else {
 			this.storageAbstraction.lastIssued.forEach((lastIssued: ILastIssued) => {
 				if (!returnValue) {
@@ -776,7 +778,7 @@ export default class NotificationService extends Finsemble.baseService implement
 			if (since) {
 				// If there is a date and the notification was received before the date - skip it
 				Finsemble.Clients.Logger.info("Notification date", notification.receivedAt);
-				const notificationDate = new Date(notification.receivedAt);
+				const notificationDate = new Date(notification.receivedAt as string);
 				if (notificationDate < since) {
 					return;
 				}
@@ -802,10 +804,11 @@ export default class NotificationService extends Finsemble.baseService implement
 	}
 
 	private removeFromSnoozeQueue(notification: INotification) {
-		if (this.storageAbstraction.snoozeTimers.has(notification.id)) {
-			clearTimeout(this.storageAbstraction.snoozeTimers.get(notification.id).timeoutId);
-			this.storageAbstraction.snoozeTimers.delete(notification.id);
-			StorageHelper.storeSnoozeTimers(this.storageAbstraction.snoozeTimers);
+		const id = notification.id as string;
+		if (this.storageAbstraction.snoozeTimers.has(id)) {
+			clearTimeout(this.storageAbstraction.snoozeTimers.get(id)?.timeoutId as NodeJS.Timeout);
+			this.storageAbstraction.snoozeTimers.delete(id);
+			StorageHelper.storeSnoozeTimers(this.storageAbstraction.snoozeTimers).then();
 		}
 	}
 
@@ -818,11 +821,10 @@ export default class NotificationService extends Finsemble.baseService implement
 		const toWake: INotification[] = [];
 
 		this.storageAbstraction.snoozeTimers.forEach((timer, id) => {
-			let notification: INotification = null;
-			notification = this.storageAbstraction.notifications.get(id);
+			const notification = this.storageAbstraction.notifications.get(id) as INotification;
 
 			if (notification) {
-				if (Date.now() >= timer.wakeEpochMilliseconds) {
+				if (timer.wakeEpochMilliseconds && Date.now() >= timer.wakeEpochMilliseconds) {
 					toWake.push(notification);
 				} else {
 					toSnooze.push(notification);
@@ -831,11 +833,12 @@ export default class NotificationService extends Finsemble.baseService implement
 		});
 
 		toSnooze.forEach(notification => {
-			const timer = this.storageAbstraction.snoozeTimers.get(notification.id);
-			Finsemble.Clients.Logger.log(`Timing Timestamp ${timer.wakeEpochMilliseconds}`);
+			const timer = this.storageAbstraction.snoozeTimers.get(notification.id as string);
+			const wakeEpochMilliseconds = timer?.wakeEpochMilliseconds as number;
+			Finsemble.Clients.Logger.log(`Timing Timestamp ${timer?.wakeEpochMilliseconds}`);
 			Finsemble.Clients.Logger.log(`Timing Now Timestamp ${Date.now()}`);
-			Finsemble.Clients.Logger.log("Timing: " + `${timer.wakeEpochMilliseconds - Date.now()}`);
-			this.snooze(notification, new Action(), Math.max(SNOOZE_BOOT_WAIT, timer.wakeEpochMilliseconds - Date.now()));
+			Finsemble.Clients.Logger.log("Timing: " + `${wakeEpochMilliseconds - Date.now()}`);
+			this.snooze(notification, new Action(), Math.max(SNOOZE_BOOT_WAIT, wakeEpochMilliseconds - Date.now()));
 		});
 
 		toWake.forEach(notification => {

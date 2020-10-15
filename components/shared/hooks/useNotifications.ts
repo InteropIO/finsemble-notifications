@@ -56,7 +56,7 @@ function reducer(state: { notifications: INotification[] }, action: { type: stri
 export default function useNotifications(params: any = {}) {
 	const [state, dispatch] = useReducer(reducer, initialState);
 
-	let NOTIFICATION_CLIENT: NotificationClient = null;
+	let NOTIFICATION_CLIENT: NotificationClient;
 
 	/*
 		Action Creators
@@ -102,11 +102,11 @@ export default function useNotifications(params: any = {}) {
 		const groupBy = (arr: INotification[], type: keyof INotification) =>
 			arr
 				.map(
-					(notification: INotification): INotification["type"] =>
+					(notification: INotification): string =>
 						//@ts-ignore
 						notification[type]
 				)
-				.reduce((acc: { [x: string]: any }, notificationType: INotification["type"], index: number) => {
+				.reduce((acc: { [x: string]: any }, notificationType: string, index: number) => {
 					acc[notificationType] = [...(acc[notificationType] || []), arr[index]];
 					return acc;
 				}, {});
@@ -125,11 +125,11 @@ export default function useNotifications(params: any = {}) {
 		filter: null | IFilter = null
 	): Promise<INotification[]> => {
 		NOTIFICATION_CLIENT = new NotificationClient();
-		return NOTIFICATION_CLIENT.fetchHistory(since, filter);
+		return NOTIFICATION_CLIENT.fetchHistory(since, filter as IFilter);
 	};
+
 	/**
 	 * Get Notification's config from
-	 * @param componentType Finsemble component type e.g "Welcome-Component"
 	 */
 	const getNotificationConfig = (): NotificationsConfig => {
 		const config: WindowConfig = WindowClient.options.customData;
@@ -220,7 +220,7 @@ export default function useNotifications(params: any = {}) {
 			// Unsubscribe using the subscription ID
 			(async () => {
 				NOTIFICATION_CLIENT = new NotificationClient();
-				await NOTIFICATION_CLIENT.unsubscribe(await subscribe);
+				await NOTIFICATION_CLIENT.unsubscribe((await subscribe) as string);
 			})();
 		};
 	}, []);

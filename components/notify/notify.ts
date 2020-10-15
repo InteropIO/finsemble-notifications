@@ -5,7 +5,7 @@ import Action from "../../types/Notification-definitions/Action";
 /**
  * A manual Notifications source
  */
-let nClient: NotificationClient = null;
+let nClient: NotificationClient;
 const sendNotifications = () => {
 	const source = (document.getElementById("feed-source") as HTMLInputElement).value;
 	const not1 = new Notification();
@@ -40,7 +40,7 @@ const sendNotifications = () => {
 	not2.id = "notification_123";
 	not2.source = source;
 	not2.headerText = "New chat message";
-	not2.title = "Can you join us at 2pm?"
+	not2.title = "Can you join us at 2pm?";
 	not2.details = "Should only be in UI once";
 	not2.type = "chat";
 	not2.headerLogo = "http://localhost:3375/components/finsemble-notifications/components/shared/assets/chat.svg";
@@ -67,16 +67,22 @@ const sendNotifications = () => {
 
 	not2.actions = [query, transmit, publish];
 
-	nClient.notify([not1, not2]);
+	nClient.notify([not1, not2]).then();
 
-	document.getElementById("feed-last-issued").innerText = not2.issuedAt;
+	const feedLastIssued = document.getElementById("feed-last-issued");
+	if (feedLastIssued) {
+		feedLastIssued.innerText = not2.issuedAt;
+	}
 };
 
 const getLastIssuedAt = () => {
 	const source = (document.getElementById("feed-source") as HTMLInputElement).value;
 
 	nClient.getLastIssuedAt(source).then(issuedDate => {
-		document.getElementById("service-last-issued").innerText = issuedDate;
+		const serviceLastIssued = document.getElementById("service-last-issued");
+		if (serviceLastIssued) {
+			serviceLastIssued.innerText = issuedDate;
+		}
 	});
 };
 
@@ -102,14 +108,14 @@ const timedNotification = () => {
 
 		customNot.actions = [dismiss];
 
-		nClient.notify([customNot]);
+		nClient.notify([customNot]).then();
 	}, 20000);
 };
 
 function init() {
-	document.getElementById("send-notification").addEventListener("click", sendNotifications);
-	document.getElementById("send-timed").addEventListener("click", timedNotification);
-	document.getElementById("get-last-issued").addEventListener("click", getLastIssuedAt);
+	document.getElementById("send-notification")?.addEventListener("click", sendNotifications);
+	document.getElementById("send-timed")?.addEventListener("click", timedNotification);
+	document.getElementById("get-last-issued")?.addEventListener("click", getLastIssuedAt);
 	nClient = new NotificationClient();
 }
 

@@ -8,8 +8,8 @@
 import Timeout = NodeJS.Timeout;
 
 export default interface ISnoozeTimer {
-	timeoutId: Timeout;
-	notificationId: string;
-	wakeEpochMilliseconds: number;
-	snoozeInterval: number;
+	timeoutId?: Timeout;
+	notificationId?: string;
+	wakeEpochMilliseconds?: number;
+	snoozeInterval?: number;
 }

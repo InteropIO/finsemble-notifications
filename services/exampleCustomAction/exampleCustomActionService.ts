@@ -7,6 +7,7 @@ Finsemble.Clients.Logger.start();
 Finsemble.Clients.Logger.log("exampleCustomActionService Service starting up");
 
 class ExampleCustomActionService extends Finsemble.baseService {
+	// @ts-ignore
 	nClient: NotificationClient;
 
 	/**

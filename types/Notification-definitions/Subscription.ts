@@ -4,19 +4,18 @@ import IFilter from "./IFilter";
 import { OnNotificationCallback } from "./Callbacks";
 
 export default class Subscription implements ISubscription {
-	id: string;
-	filter: IFilter;
+	id?: string;
+	filter?: IFilter;
 	onNotification: OnNotificationCallback;
 
 	/**
 	 *
-	 * @param {string|null} id
-	 * @param {IFilter[]|null} filter
+	 * @param {IFilter|null} filter
 	 * @param onNotification
 	 */
-	constructor(id?: string, filter?: IFilter, onNotification?: (notification: INotification) => void) {
-		this.id = id ? id : null;
+	constructor(filter?: IFilter, onNotification?: (notification: INotification) => void) {
 		this.filter = filter;
-		this.onNotification = onNotification ? onNotification : null;
+		// @ts-ignore
+		this.onNotification = onNotification ? onNotification : undefined;
 	}
 }

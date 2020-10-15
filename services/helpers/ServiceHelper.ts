@@ -71,9 +71,10 @@ export default class ServiceHelper {
 	 */
 	public static applyDefaults(config: any, notification: INotification): INotification {
 		let configToApply;
+		const notificationType = notification.type as string;
 
-		if (config && config["types"] && config["types"][notification.type]) {
-			configToApply = config["types"][notification.type];
+		if (config && config["types"] && config["types"][notificationType]) {
+			configToApply = config["types"][notificationType];
 		} else if (config && config["types"] && config["types"][DEFAULT_TYPE_NAME]) {
 			configToApply = config["types"][DEFAULT_TYPE_NAME];
 		}
@@ -132,7 +133,7 @@ export default class ServiceHelper {
 			const action = new Action();
 			action.type = ActionTypes.DISMISS;
 			action.buttonText = buttonText;
-			notification.actions.push(action);
+			notification.actions?.push(action);
 		}
 
 		return notification;
@@ -140,8 +141,8 @@ export default class ServiceHelper {
 
 	public static hasDismissAction(notification: INotification) {
 		let returnValue = false;
-		notification.actions.forEach(action => {
-			if (action.type.toLowerCase() === "dismiss") {
+		notification.actions?.forEach(action => {
+			if (action.type?.toLowerCase() === "dismiss") {
 				returnValue = true;
 			}
 		});
@@ -215,10 +216,7 @@ export default class ServiceHelper {
 			map = ImmutableMap(notification);
 		}
 
-		const performedAction = new PerformedAction();
-		performedAction.id = action.id;
-		performedAction.type = action.type;
-		performedAction.datePerformed = new Date().toISOString();
+		const performedAction = new PerformedAction(action.id as string, action.type as string, new Date().toISOString());
 
 		const actionsHistory: IPerformedAction[] = (map.get("actionsHistory") as IPerformedAction[]).slice(0);
 		actionsHistory.push(performedAction);
@@ -246,8 +244,10 @@ export default class ServiceHelper {
 
 		let currentHistory: INotification[];
 
-		if (notificationList.has(notification.id)) {
-			currentlyStoredNotification = notificationList.get(notification.id);
+		const id = notification.id as string;
+
+		if (notificationList.has(id)) {
+			currentlyStoredNotification = notificationList.get(id) as INotification;
 			currentHistory = currentlyStoredNotification.stateHistory;
 			currentlyStoredNotification.stateHistory = [];
 		} else {

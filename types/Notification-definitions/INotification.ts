@@ -25,11 +25,11 @@ import Meta from "./Meta";
  */
 export default interface INotification {
 	id?: string;
-	issuedAt: string;
+	issuedAt?: string;
 	receivedAt?: string;
 	type?: string;
 	source?: string;
-	title: string;
+	title?: string;
 	details?: string;
 	headerText?: string;
 	headerLogo?: string;

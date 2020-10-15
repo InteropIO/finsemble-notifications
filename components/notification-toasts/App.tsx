@@ -26,7 +26,7 @@ function App(): React.ReactElement {
 	} = useNotifications();
 
 	const pubSubTopic = "notification-ui";
-	const [notificationSubscribeMessage, notificationsPublish] = usePubSub(pubSubTopic);
+	const [notificationSubscribeMessage] = usePubSub(pubSubTopic);
 
 	const config = getNotificationConfig();
 
@@ -54,10 +54,12 @@ function App(): React.ReactElement {
 
 		finsembleWindow.setBounds(
 			{
-				top: data["availableRect"]["top"],
-				left: data["availableRect"]["right"] - width,
-				height: data["availableRect"]["height"],
-				width: width
+				bounds: {
+					top: data["availableRect"]["top"],
+					left: data["availableRect"]["right"] - width,
+					height: data["availableRect"]["height"],
+					width: width
+				}
 			},
 			(err: any) => {
 				if (err) {
@@ -81,12 +83,12 @@ function App(): React.ReactElement {
 			});
 		}
 
-		const rect = document.getElementById("toasts-drawer").getBoundingClientRect();
+		const rect = document.getElementById("toasts-drawer")?.getBoundingClientRect();
 		if (notifications.length === 0) {
 			if (config.isTransparent) {
 				const roundedRect = {
-					x: Math.round(rect.x),
-					y: Math.round(rect.y),
+					x: Math.round(rect?.x as number),
+					y: Math.round(rect?.y as number),
 					width: 1,
 					height: 1
 				};
@@ -98,10 +100,10 @@ function App(): React.ReactElement {
 			finsembleWindow.bringToFront();
 			if (config.isTransparent) {
 				const roundedRect = {
-					x: Math.round(rect.x),
-					y: Math.round(rect.y),
-					width: Math.round(rect.width),
-					height: Math.round(rect.height)
+					x: Math.round(rect?.x as number),
+					y: Math.round(rect?.y as number),
+					width: Math.round(rect?.width as number),
+					height: Math.round(rect?.height as number)
 				};
 				FSBL.Clients.WindowClient.setShape([roundedRect]);
 			} else {
@@ -115,14 +117,16 @@ function App(): React.ReactElement {
 
 					const bounds = (await finsembleWindow.getBounds({})) as any;
 					const width = bounds.data.right - bounds.data.left;
-					const height = Math.round(rect.height) + 6;
+					const height = Math.round(rect?.height as number) + 6;
 
 					finsembleWindow.setBounds(
 						{
-							top: data["availableRect"]["bottom"] - height,
-							left: data["availableRect"]["right"] - width,
-							height: height,
-							width: width
+							bounds: {
+								top: data["availableRect"]["bottom"] - height,
+								left: data["availableRect"]["right"] - width,
+								height: height,
+								width: width
+							}
 						},
 						(err: any) => {
 							if (err) {
@@ -144,9 +148,9 @@ function App(): React.ReactElement {
 							// TODO: Recommend to change this to react transition group
 							<Animate
 								key={notification.id}
-								displayDuration={notification.timeout || config.animation.displayDuration}
-								animateIn={config.animation.animateIn}
-								animateOut={config.animation.animateOut}
+								displayDuration={notification.timeout || config.animation?.displayDuration}
+								animateIn={config.animation?.animateIn}
+								animateOut={config.animation?.animateOut}
 								animateOutComplete={() => removeNotification(notification)}
 							>
 								<Notification

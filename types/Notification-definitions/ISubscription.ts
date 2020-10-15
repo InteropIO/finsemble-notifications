@@ -9,8 +9,8 @@ import { OnNotificationCallback } from "./Callbacks";
  * TODO: Ensure this interface (or implemented type) is publicly accessible
  */
 export default interface ISubscription {
-	id: string;
-	filter: IFilter;
+	id?: string;
+	filter?: IFilter;
 	channel?: string;
 
 	onNotification: OnNotificationCallback;

@@ -10,10 +10,10 @@ import OnSubscriptionSuccessCallback, {
 	OnNotificationCallback,
 	OnSubscriptionFaultCallback
 } from "../../types/Notification-definitions/Callbacks";
-import { ILogger } from "@chartiq/finsemble/dist/types/clients/ILogger";
-import { IRouterClient } from "@chartiq/finsemble/dist/types/clients/IRouterClient";
+import { ILogger } from "clients/ILogger";
+import { IRouterClient } from "clients/IRouterClient";
 
-const { Logger } = require("@chartiq/finsemble").Clients;
+const { Logger } = require("@finsemble/finsemble-core").Clients;
 const FSBL = window.FSBL;
 
 /**

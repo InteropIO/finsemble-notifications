@@ -8,27 +8,20 @@ const envResource = process.argv[2];
 const source = path.resolve(__dirname, config.source);
 const dest = path.resolve(__dirname, config.destination);
 
+function copyAll() {
+	const resources = ["components", "services", "types", "config.json", "sample.config.json", "finsemble.webpack.json"];
+	resources.forEach(resource => {
+		copy(path.join(source, resource), path.join(dest, resource));
+	});
+}
+
 if (envResource) {
 	const [, resource] = envResource.split("=");
 	console.log(`copying ${resource}`);
 	copy(path.join(source, resource), path.join(dest, resource));
 } else {
 	copyAll();
-	copyWPF();
-}
-
-function copyAll() {
-	const resources = [
-		"components",
-		"services",
-		"types",
-		"config.json",
-		"sample.config.json",
-		"finsemble.webpack.json"
-	];
-	resources.forEach(resource => {
-		copy(path.join(source, resource), path.join(dest, resource));
-	});
+	// copyWPF();
 }
 
 function copyWPF() {

@@ -90,6 +90,7 @@ export default class NotificationService extends Finsemble.baseService implement
 		this.fetchHistory = this.fetchHistory.bind(this);
 		this.unsubscribe = this.unsubscribe.bind(this);
 		this.deleteNotification = this.deleteNotification.bind(this);
+		this.markNotificationUnread = this.markNotificationUnread.bind(this);
 		this.applyConfigChange = this.applyConfigChange.bind(this);
 		this.onBaseServiceReady(this.readyHandler);
 	}
@@ -517,16 +518,21 @@ export default class NotificationService extends Finsemble.baseService implement
 	/**
 	 * Marks a notification as unread
 	 *
-	 * @param notification {INotification}
+	 * @param notifications {INotification[]}
 	 */
-	private markNotificationUnread(notification: INotification): INotification {
-		Finsemble.Clients.Logger.info("Received state markUnread", notification);
+	private markNotificationUnread(notifications: INotification[]): INotification[] {
+		Finsemble.Clients.Logger.info("Received state markUnread", notifications);
 
-		//@ts-ignore
-		let map = ImmutableMap(notification);
+		const newNotifications: INotification[] = notifications.map(notification => {
+			//@ts-ignore
+			let map = ImmutableMap(notification);
 
-		map = map.set("isRead", false);
-		return (map.toObject() as unknown) as INotification;
+			map = map.set("isRead", false);
+			return (map.toObject() as unknown) as INotification;
+		});
+
+		this.notify(newNotifications);
+		return newNotifications;
 	}
 
 	/**
@@ -557,6 +563,7 @@ export default class NotificationService extends Finsemble.baseService implement
 	 * Setup callback on notify channel
 	 */
 	private setupNotify(): void {
+		console.log("setup notify");
 		this.routerWrapper.addResponder(ROUTER_ENDPOINTS.NOTIFY, this.notify);
 	}
 
@@ -591,11 +598,9 @@ export default class NotificationService extends Finsemble.baseService implement
 	/**
 	 * Setup callback on mark unread channel
 	 */
-	private setupMarkUnread() {
-		this.routerWrapper.addResponder(
-			`${ROUTER_ENDPOINTS.CHANNEL_PREFIX}.${ROUTER_ENDPOINTS.MARK_UNREAD}`,
-			this.markNotificationUnread
-		);
+	private setupMarkUnread(): void {
+		console.log("setup mark unread");
+		this.routerWrapper.addResponder(ROUTER_ENDPOINTS.MARK_UNREAD, this.markNotificationUnread);
 	}
 
 	/**

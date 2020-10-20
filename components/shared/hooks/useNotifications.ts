@@ -95,6 +95,24 @@ export default function useNotifications(params: any = {}) {
 	}
 
 	/**
+	 * Marks a notification as read
+	 *
+	 * @param {INotification[]} notifications
+	 */
+	function markNotificationsUnread(notifications: INotification[]) {
+		try {
+			NOTIFICATION_CLIENT = new NotificationClient();
+			NOTIFICATION_CLIENT.markUnread(notifications).then(() => {
+				// NOTE: The request to perform the action has be sent to the notifications service successfully
+				// The action itself has not necessarily been perform successfully
+			});
+		} catch (e) {
+			console.error("Error marking messages as unread", e);
+			FSBL.Clients.Logger.error("Could not mark notification as unread", e);
+		}
+	}
+
+	/**
 	 * Group Notifications by Type
 	 * @param notifications
 	 */
@@ -229,6 +247,7 @@ export default function useNotifications(params: any = {}) {
 		activeNotifications,
 		notificationIsActive,
 		doAction,
+		markNotificationsUnread,
 		getNotificationHistory,
 		groupNotificationsByType,
 		notifications: state.notifications,

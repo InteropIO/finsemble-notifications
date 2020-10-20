@@ -80,6 +80,32 @@ body {
 	margin-right: 3em;
 }
 
+#notification-center__notifications div.action_buttons {
+	display: flex;
+	flex-direction: row;
+	padding: 0 0 5px 0;
+	justify-content: flex-start;
+	height: 15px;
+	text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+	font-family: OpenSans;
+	font-size: 11px;
+	font-weight: 600;
+	font-stretch: normal;
+	font-style: normal;
+	line-height: normal;
+	letter-spacing: normal;
+	color: #ffffff;
+}
+
+#notification-center__notifications div.action_buttons div {
+	cursor: pointer;
+	padding: 0 10px;
+}
+
+#notification-center__notifications div.action_buttons div.disabled {
+	color: var(--core-primary-5);
+}
+
 #notification-center__notification-detail {
 	border-top: 1px solid white;
 	border-bottom: 1px solid white;
@@ -267,7 +293,7 @@ body {
 .notification-center__notifications__rows {
 	display: grid;
 	padding: 4px;
-	grid-template-columns: repeat(5, minmax(20px, 1fr));
+	grid-template-columns: repeat(7, minmax(20px, 1fr));
 	overflow-wrap: break-word;
 	grid-column-gap: 12px;
 	border: 1px solid #5a5a5a7a;
@@ -278,6 +304,10 @@ body {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
+}
+
+.notification-center__notifications__rows span {
+	color: green;
 }
 
 #main-content {

@@ -131,6 +131,24 @@ export default class NotificationClient implements INotificationClient {
 		});
 	}
 
+	markUnread(notifications: INotification[]): Promise<void> {
+		this.loggerClient.info("markUnread() called with params: ", notifications);
+
+		if (!Array.isArray(notifications)) {
+			notifications = [notifications];
+		}
+
+		return new Promise<void>(async (resolve, reject) => {
+			try {
+				await this.routerWrapper.query(ROUTER_ENDPOINTS.MARK_UNREAD, notifications).then(() => {
+					resolve();
+				});
+			} catch (e) {
+				reject(e);
+			}
+		});
+	}
+
 	/**
 	 * Creates or updates notifications in Finsemble.
 	 *

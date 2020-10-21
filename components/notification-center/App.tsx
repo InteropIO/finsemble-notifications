@@ -8,7 +8,7 @@ import { usePubSub } from "../shared/hooks/finsemble-hooks";
 import { useState, useEffect } from "react";
 
 const App = (): React.ReactElement => {
-	const { notifications, doAction } = useNotifications();
+	const { notifications, doAction, markNotificationsUnread } = useNotifications();
 	const [activeNotification, setActiveNotification] = useState();
 	const pubSubTopic = "notification-ui";
 	const [notificationSubscribeMessage, notificationsPublish] = usePubSub(pubSubTopic);
@@ -37,12 +37,18 @@ const App = (): React.ReactElement => {
 						<p>You do not have any notifications!</p>
 					) : (
 						<>
-							<NotificationsPanel notifications={notifications} setActiveNotification={setActiveNotification} />
+							<NotificationsPanel
+								notifications={notifications}
+								setActiveNotification={setActiveNotification}
+								doAction={doAction}
+								markUnread={markNotificationsUnread}
+							/>
 							{activeNotification && (
 								<NotificationDetailPanel
 									notification={activeNotification}
 									clearActiveNotification={setActiveNotification}
 									doAction={doAction}
+									markUnread={markNotificationsUnread}
 								/>
 							)}
 						</>

@@ -598,7 +598,6 @@ export default class NotificationService extends Finsemble.baseService implement
 	 * Setup callback on mark unread channel
 	 */
 	private setupMarkUnread(): void {
-		console.log("setup mark unread");
 		this.routerWrapper.addResponder(ROUTER_ENDPOINTS.MARK_UNREAD, this.markNotificationUnread);
 	}
 

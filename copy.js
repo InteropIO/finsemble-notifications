@@ -8,24 +8,8 @@ const envResource = process.argv[2];
 const source = path.resolve(__dirname, config.source);
 const dest = path.resolve(__dirname, config.destination);
 
-if (envResource) {
-	const [, resource] = envResource.split("=");
-	console.log(`copying ${resource}`);
-	copy(path.join(source, resource), path.join(dest, resource));
-} else {
-	copyAll();
-	copyWPF();
-}
-
 function copyAll() {
-	const resources = [
-		"components",
-		"services",
-		"types",
-		"config.json",
-		"sample.config.json",
-		"finsemble.webpack.json"
-	];
+	const resources = ["components", "services", "types", "config.json", "sample.config.json", "finsemble.webpack.json"];
 	resources.forEach(resource => {
 		copy(path.join(source, resource), path.join(dest, resource));
 	});
@@ -37,7 +21,18 @@ function copyWPF() {
 	const wpfResources = ["NotifyComponent"];
 	wpfResources.forEach(async resource => {
 		await mkdirp(path.join(wpfDest, resource));
-		copy(path.join(wpfSource, resource, "bin"), path.join(wpfDest, resource));
+		copy(path.join(wpfSource, resource, "bin"), path.join(wpfDest, resource)).catch(e => {
+			console.log(`${path.join(wpfSource, resource, "bin")} does not exist. Build .net example to see it in action.`);
+		});
 		copy(path.join(wpfSource, resource, "config.json"), path.join(wpfDest, resource, "config.json"));
 	});
+}
+
+if (envResource) {
+	const [, resource] = envResource.split("=");
+	console.log(`copying ${resource}`);
+	copy(path.join(source, resource), path.join(dest, resource));
+} else {
+	copyAll();
+	// copyWPF();
 }

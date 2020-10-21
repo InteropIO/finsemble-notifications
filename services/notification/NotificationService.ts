@@ -563,7 +563,6 @@ export default class NotificationService extends Finsemble.baseService implement
 	 * Setup callback on notify channel
 	 */
 	private setupNotify(): void {
-		console.log("setup notify");
 		this.routerWrapper.addResponder(ROUTER_ENDPOINTS.NOTIFY, this.notify);
 	}
 

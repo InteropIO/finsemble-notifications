@@ -1,5 +1,3 @@
-import NotificationClient from "../notification/notificationClient";
-
 // eslint-disable-next-line
 const Finsemble = require("@finsemble/finsemble-core");
 
@@ -7,9 +5,6 @@ Finsemble.Clients.Logger.start();
 Finsemble.Clients.Logger.log("exampleCustomActionService Service starting up");
 
 class ExampleCustomActionService extends Finsemble.baseService {
-	// @ts-ignore
-	nClient: NotificationClient;
-
 	/**
 	 * Initializes a new instance of the notificationsBuiltInActionsService class.
 	 */
@@ -39,7 +34,6 @@ class ExampleCustomActionService extends Finsemble.baseService {
 	 * @param {function} callback
 	 */
 	readyHandler(callback: Function) {
-		this.nClient = new NotificationClient();
 		this.createRouterEndpoints();
 		callback();
 	}
@@ -73,9 +67,9 @@ class ExampleCustomActionService extends Finsemble.baseService {
 	transmitHandler: StandardCallback = (error, response) => {
 		Finsemble.Clients.Logger.log("Transmit handler got message", error, response);
 		if (!error) {
-			// let notification = queryMessage.data;
-			// notification.headerText = "Header Changed";
-			// this.nClient.notify([notification]);
+			const notification = response.data;
+			notification.headerText = "Header Changed";
+			Finsemble.Clients.NotificationClient.notify([notification]);
 		}
 	};
 

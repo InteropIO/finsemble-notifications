@@ -1,15 +1,10 @@
 /* eslint-disable @typescript-eslint/ban-ts-ignore */
-import NotificationClient from "../../services/notification/notificationClient";
-import Subscription from "../../types/Notification-definitions/Subscription";
-import INotification from "../../types/Notification-definitions/INotification";
-import Filter from "../../types/Notification-definitions/Filter";
-import IAction from "../../types/Notification-definitions/IAction";
+import INotification from "common/notifications/definitions/INotification";
+import IAction from "common/notifications/definitions/IAction";
 
 /**
  * Basic example of a getting a component to subscribe to notifications
  */
-
-let nClient: NotificationClient;
 
 let subscriptionId: string;
 
@@ -20,8 +15,9 @@ let subscriptionId: string;
  * @param action
  */
 const doAction = (notification: INotification, action: IAction) => {
+	const { NotificationClient } = FSBL.Clients;
 	try {
-		nClient.performAction([notification], action).then(() => {
+		NotificationClient.performAction([notification], action).then(() => {
 			// NOTE: The request to perform the action has be sent to the notifications service successfully
 			// The action itself has not necessarily been perform successfully
 			console.log("success");
@@ -74,19 +70,19 @@ const addToList = (notification: INotification) => {
 };
 
 function init() {
-	nClient = new NotificationClient();
-	const subscription = new Subscription();
+	const { NotificationClient } = FSBL.Clients;
+	const subscription = new NotificationClient.Subscription();
 
 	// Set the filter to match INotification fields
-	subscription.filter = new Filter();
+	subscription.filter = new NotificationClient.Filter();
 	// subscription.filter.include.push({"type": "chat"});
 
-	subscription.onNotification = function(notification: INotification) {
+	const onNotification = (notification: INotification) => {
 		// This function will be called when a notification arrives
 		addToList(notification);
 	};
 
-	nClient.subscribe(subscription).then(subId => {
+	NotificationClient.subscribe(subscription, onNotification).then((subId: string) => {
 		subscriptionId = subId;
 		console.log(subId);
 	});
@@ -101,16 +97,18 @@ function init() {
 	});
 
 	document.getElementById("fetch-history")?.addEventListener("click", () => {
-		nClient.fetchHistory((document.getElementById("fetch-from-date") as HTMLInputElement).value).then(notifications => {
-			notifications.forEach(notification => {
-				addToList(notification);
-			});
-		});
+		NotificationClient.fetchHistory((document.getElementById("fetch-from-date") as HTMLInputElement).value).then(
+			(notifications: INotification[]) => {
+				notifications.forEach(notification => {
+					addToList(notification);
+				});
+			}
+		);
 	});
 
 	document.getElementById("unsubscribe")?.addEventListener("click", () => {
 		try {
-			nClient.unsubscribe(subscriptionId).then(() => {
+			NotificationClient.unsubscribe(subscriptionId).then(() => {
 				// Unsubscribed
 			});
 		} catch (e) {}

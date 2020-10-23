@@ -13,7 +13,7 @@ import ConditionalWrapper from "../shared/components/ConditionalWrapper";
 const { useState, useEffect } = React;
 
 const HideDrawer = ({ onClick }: { onClick: Function }) => (
-	<SlideRightIcon className="hide-icon" alt="Hide drawer Icon" onClick={() => onClick()} />
+	<SlideRightIcon className="hide-icon" onClick={() => onClick()}><title>hide drawer</title></SlideRightIcon>
 );
 
 function App(): React.ReactElement {
@@ -94,7 +94,7 @@ function App(): React.ReactElement {
 		>
 			<Drawer>
 				<div id="notifications-drawer__menu">
-					<CenterIcon id="notification-center-icon" className="notification-center-icon" onClick={toggleCenter} />
+					<CenterIcon id="notification-center-icon" className="notification-center-icon" onClick={toggleCenter}><title>Notification Center</title></CenterIcon>
 					<HideDrawer onClick={closeDrawerClick} />
 				</div>
 				<div>

@@ -3,13 +3,13 @@ import { formatDistanceToNow } from "date-fns";
 import INotification from "../../../types/Notification-definitions/INotification";
 import IAction from "../../../types/Notification-definitions/IAction";
 import CloseIcon from '../components/icons/CloseIcon';
-import { MouseEventHandler, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 interface Props {
 	children?: React.PropsWithChildren<any>;
 	notification: INotification;
 	doAction: Function;
-	closeAction?: MouseEventHandler;
+	closeAction?: Function;
 	closeButton?: boolean;
 	onMouseLeave?: Function;
 	onMouseEnter?: Function;
@@ -45,7 +45,7 @@ const HeaderArea = (props: Props) => {
 			</div>
 			<div className="detail-area_type">{notification.headerText}</div>
 			<div className="detail-area_time">{time} ago</div>
-			{closeButton && <CloseIcon className="close-icon" onClick={() => closeAction()} />}
+			{closeButton && <CloseIcon className="close-icon" onClick={() => closeAction && closeAction()} />}
 		</div>
 	);
 };

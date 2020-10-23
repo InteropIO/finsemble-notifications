@@ -4,3 +4,4 @@
 *.svg
 *.png
 *jpg
+node_modules

@@ -1,9 +1,10 @@
 import * as React from "react";
 import { formatDistanceToNow } from "date-fns";
-import INotification from "../../../types/Notification-definitions/INotification";
-import IAction from "../../../types/Notification-definitions/IAction";
-import CloseIcon from '../components/icons/CloseIcon';
+import "@finsemble/finsemble-core";
+import INotification from "common/notifications/definitions/INotification";
+import IAction from "common/notifications/definitions/IAction";
 import { MouseEventHandler, useEffect, useState } from "react";
+import CloseIcon from "./icons/CloseIcon";
 
 interface Props {
 	children?: React.PropsWithChildren<any>;
@@ -18,7 +19,7 @@ interface Props {
 }
 
 const HeaderArea = (props: Props) => {
-	const { closeAction, closeButton = false, notification } = props;
+	const { closeAction = false, closeButton = false, notification } = props;
 	const { issuedAt = new Date() } = notification;
 
 	const [time, setTime] = useState(
@@ -45,7 +46,7 @@ const HeaderArea = (props: Props) => {
 			</div>
 			<div className="detail-area_type">{notification.headerText}</div>
 			<div className="detail-area_time">{time} ago</div>
-			{closeButton && <CloseIcon className="close-icon" onClick={() => closeAction()} />}
+			{closeButton && <CloseIcon className="close-icon" onClick={() => closeAction && closeAction()} />}
 		</div>
 	);
 };
@@ -71,14 +72,14 @@ const ActionArea = (props: Props) => {
 
 	return (
 		<div className="action-area">
-			{notification.actions?.map((action: IAction, index) => {
+			{notification.actions?.map((action: IAction, index: number) => {
 				if (!overflowCount || index + 1 <= overflowCount) {
 					return <UIAction key={index} {...props} action={action} />;
 				}
 			})}
 			{overflowCount && notification.actions && notification.actions.length > overflowCount && (
 				<OverflowMenu>
-					{notification.actions?.map((action: IAction, index) => {
+					{notification.actions?.map((action: IAction, index: number) => {
 						if (index + 1 > overflowCount) {
 							return <UIAction key={index} {...props} action={action} />;
 						}

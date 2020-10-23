@@ -92,8 +92,6 @@ function App(): React.ReactElement {
 				onClick={() => toggleDrawer()}
 			/>
 			<CenterIcon className="toaster-icons" onClick={toggleCenter} />
-			{/* <div id="toaster-divider"></div>
-			<SettingsIcon className="toaster-icons" /> */}
 		</>
 	);
 }

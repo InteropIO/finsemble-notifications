@@ -5,7 +5,6 @@ import Meta from "../../../types/Notification-definitions/Meta";
 import IPerformedAction from "../../../types/Notification-definitions/IPerformedAction";
 import { ActionTypes } from "../../../types/Notification-definitions/ActionTypes";
 import { formatDistanceToNow } from "date-fns";
-import { stat } from "fs";
 
 interface NotificationHeaderProps {
 	issuedAt?: string;

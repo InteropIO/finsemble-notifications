@@ -1,3 +1,5 @@
+@import "../shared/styles/notification-theme.css";
+
 #notification-icon__wrapper {
 	top: 9px;
 	position: relative;
@@ -14,7 +16,7 @@
 	align-items: center;
 }
 #notification-icon_vector {
-	fill: white;
+	fill: var(--notification-font-color);
 	padding-top: 8px;
 	margin-right: -2px;
 	cursor: pointer;

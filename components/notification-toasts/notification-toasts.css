@@ -1,18 +1,9 @@
 @import url("https://fonts.googleapis.com/css?family=Roboto+Condensed&display=swap");
 @import "../shared/styles/animations.css";
-
-:root {
-	--notification-primary-color: #262d38;
-	--notification-secondary-color: black;
-	--notification-contrast-color: white;
-
-	--notification-background-color: var(--notification-primary-color);
-	--notification-font-family: "Roboto-Condensed", sans-serif;
-	--notification-font-color: var(--notification-contrast-color);
-}
+@import "../shared/styles/notification-theme.css";
 
 .opaque body {
-	background-color: black;
+	background-color: rgba(0, 0, 0, 0);
 }
 
 body {
@@ -61,13 +52,14 @@ body {
 	height: 16px;
 	padding-top: 1px;
 }
-img#close-icon {
-	filter: invert(1);
+.close-icon {
+	height:18px;
 	margin-top: -7px;
 	cursor: pointer;
 }
-img#close-icon:hover {
-	filter: invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%);
+.close-icon:hover {
+	/* filter: invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%); */
+	fill:red;
 }
 .detail-area_time {
 	font-size: 12px;
@@ -94,18 +86,15 @@ img#close-icon:hover {
 	color: var(--notification-font-color);
 }
 .action-area > button {
+	border: 1px solid transparent;
+	background: transparent;
 	margin-right: 10px;
-	background-color: rgba(255, 255, 255, 0);
-	border: 0;
 	color: var(--notification-font-color);
 	height: 20px;
 	cursor: pointer;
 }
 .action-area > button:hover {
-	animation-duration: 0.6s;
-	animation-name: fadeIn;
-	animation-fill-mode: forwards;
-	border-radius: 2px;
+	border: 1px solid var(--notification-font-color);
 }
 
 .overflow-icon {
@@ -137,13 +126,4 @@ img#close-icon:hover {
 	width: 150px;
 	border-color: #f5f5f512;
 	border-radius: 3px;
-}
-
-@keyframes fadeIn {
-	0% {
-		background-color: rgba(126, 126, 19, 0);
-	}
-	100% {
-		background-color: rgb(126, 126, 19);
-	}
 }

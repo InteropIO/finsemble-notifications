@@ -1,7 +1,9 @@
+@import "../shared/styles/notification-theme.css";
+
 body {
 	margin: 0px;
-	background-color: rgb(28, 42, 54);
-	color: white;
+	background-color:var(--notification-background-color);
+	color: var(--notification-font-color);
 	font-size: var(--procMonitor-font-size);
 	font-weight: var(--procMonitor-font-weight);
 	font-family: var(--font-family);
@@ -10,7 +12,7 @@ body {
 	font-family: "Open Sans", sans-serif;
 	max-width: 400px;
 	min-width: 200px;
-	color: white;
+	color: var(--notification-font-color);
 	background-color: #333333;
 	display: grid;
 	grid-auto-rows: auto;

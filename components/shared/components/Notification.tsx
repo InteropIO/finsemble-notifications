@@ -71,14 +71,14 @@ const ActionArea = (props: Props) => {
 
 	return (
 		<div className="action-area">
-			{notification.actions?.map((action: IAction, index) => {
+			{notification.actions?.map((action: IAction, index: number) => {
 				if (!overflowCount || index + 1 <= overflowCount) {
 					return <UIAction key={index} {...props} action={action} />;
 				}
 			})}
 			{overflowCount && notification.actions && notification.actions.length > overflowCount && (
 				<OverflowMenu>
-					{notification.actions?.map((action: IAction, index) => {
+					{notification.actions?.map((action: IAction, index: number) => {
 						if (index + 1 > overflowCount) {
 							return <UIAction key={index} {...props} action={action} />;
 						}

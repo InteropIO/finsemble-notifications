@@ -25,7 +25,7 @@ body.opaque {
 	overflow: hidden;
 	width: 100vw;
 	height: 100vh;
-	background:var(--notification-background-color);
+	background: var(--notification-background-color);
 	border-radius: 13px;
 }
 

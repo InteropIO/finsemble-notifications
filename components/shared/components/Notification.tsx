@@ -2,7 +2,7 @@ import * as React from "react";
 import { formatDistanceToNow } from "date-fns";
 import INotification from "../../../types/Notification-definitions/INotification";
 import IAction from "../../../types/Notification-definitions/IAction";
-import CloseIcon from '../components/icons/CloseIcon';
+import CloseIcon from "../components/icons/CloseIcon";
 import { useEffect, useState } from "react";
 
 interface Props {

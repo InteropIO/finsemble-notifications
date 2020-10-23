@@ -2,7 +2,7 @@
 
 body {
 	margin: 0px;
-	background-color:var(--notification-background-color);
+	background-color: var(--notification-background-color);
 	color: var(--notification-font-color);
 	font-size: var(--procMonitor-font-size);
 	font-weight: var(--procMonitor-font-weight);

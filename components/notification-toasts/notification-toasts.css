@@ -53,13 +53,13 @@ body {
 	padding-top: 1px;
 }
 .close-icon {
-	height:18px;
+	height: 18px;
 	margin-top: -7px;
 	cursor: pointer;
 }
 .close-icon:hover {
 	/* filter: invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%); */
-	fill:red;
+	fill: red;
 }
 .detail-area_time {
 	font-size: 12px;

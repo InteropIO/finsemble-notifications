@@ -3,7 +3,8 @@ import ILastIssued from "../../types/Notification-definitions/ILastIssued";
 import ISnoozeTimer from "../../types/Notification-definitions/ISnoozeTimer";
 import { ILogger } from "clients/ILogger";
 
-const StorageClient = require("@chartiq/finsemble").Clients.StorageClient;
+const Finsemble = require("@finsemble/finsemble-core");
+const { StorageClient } = Finsemble.Clients;
 
 const STORAGE_TOPIC = "finsemble.notifications";
 const STORAGE_KEY_LAST_ISSUED = "last.issued";

@@ -48,7 +48,7 @@
 		"@types/lodash": "^4.14.149",
 		"@types/lodash.get": "^4.4.6",
 		"@types/mocha": "^5.2.7",
-		"@types/node": "^12.12.5",
+		"@types/node": "^12.19.1",
 		"@types/react-dom": "^16.9.3",
 		"@types/react-transition-group": "^4.2.4",
 		"@types/uuid": "^3.4.7",

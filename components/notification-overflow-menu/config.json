@@ -1,27 +1,24 @@
 {
 	"components": {
-		"notification-toaster": {
+		"notification-overflow-menu": {
 			"window": {
-				"name": "notification-toaster",
-				"url": "$applicationRoot/components/finsemble-notifications/components/notification-toaster/notification-toaster.html",
+				"name": "notification-overflow-menu",
+				"url": "$applicationRoot/components/finsemble-notifications/components/notification-overflow-menu/notification-overflow-menu.html",
 				"forceOntoMonitor": true,
 				"bottom": 0,
-				"left": "50%",
-				"height": 45,
-				"width": 150,
+				"left": "0",
+				"height": 400,
+				"width": 200,
 				"position": "available",
 				"options": {
 					"resizable": false,
 					"transparent": true,
 					"alwaysOnTop": true,
 					"showTaskbarIcon": false,
-					"autoShow": true
+					"autoShow": false
 				},
 				"data": {
-					"notifications": {
-						"applyMuteFilters": false,
-						"hotkey": ["ctrl", "alt", "shift", "t"]
-					}
+					"notifications": {}
 				}
 			},
 			"component": {

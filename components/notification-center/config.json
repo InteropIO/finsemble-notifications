@@ -16,6 +16,7 @@
 				},
 				"data": {
 					"notifications": {
+						"applyMuteFilters": false,
 						"notificationsHistory": true
 					}
 				}

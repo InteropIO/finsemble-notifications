@@ -7,6 +7,7 @@ import WindowConfig, { NotificationsConfig } from "../../../types/Notification-d
 import IFilter from "../../../types/Notification-definitions/IFilter";
 import { NotificationGroupList } from "../../../types/Notification-definitions/NotificationHookTypes";
 import _get from "lodash.get";
+import IMuteFilter from "../../../types/Notification-definitions/IMuteFilter";
 
 const { useReducer, useEffect } = React;
 
@@ -95,6 +96,38 @@ export default function useNotifications(params: any = {}) {
 	}
 
 	/**
+	 * Example for setting up button clicks
+	 *
+	 * @param filter
+	 */
+	async function mute(filter: IMuteFilter) {
+		try {
+			NOTIFICATION_CLIENT = new NotificationClient();
+			await NOTIFICATION_CLIENT.mute(filter);
+		} catch (e) {
+			// NOTE: The request to perform the action has failed
+			console.error("Could not save mute preferences", e);
+			FSBL.Clients.Logger.error("Could not save mute preferences", e);
+		}
+	}
+
+	/**
+	 * Example for setting up button clicks
+	 *
+	 * @param filter
+	 */
+	async function unmute(filter: IMuteFilter) {
+		try {
+			NOTIFICATION_CLIENT = new NotificationClient();
+			await NOTIFICATION_CLIENT.unmute(filter);
+		} catch (e) {
+			// NOTE: The request to perform the action has failed
+			console.error("Could not save mute preferences", e);
+			FSBL.Clients.Logger.error("Could not save mute preferences", e);
+		}
+	}
+
+	/**
 	 * Marks a notification as read
 	 *
 	 * @param {INotification[]} notifications
@@ -157,8 +190,17 @@ export default function useNotifications(params: any = {}) {
 		});
 	};
 
-	const notificationIsActive = (notification: INotification) =>
-		!notification.isSnoozed && !notification.isRead && !notification.isDeleted;
+	const notificationIsActive = (notification: INotification) => {
+		const config = getNotificationConfig();
+		const applyMuteFilters = _get(config, "applyMuteFilters", false);
+
+		return (
+			!notification.isSnoozed &&
+			!notification.isRead &&
+			!notification.isDeleted &&
+			(applyMuteFilters ? !notification.isMuted : true)
+		);
+	};
 
 	const activeNotifications = (notifications: INotification[]) =>
 		notifications.filter(notification => notificationIsActive(notification));
@@ -248,6 +290,8 @@ export default function useNotifications(params: any = {}) {
 		notificationIsActive,
 		doAction,
 		markNotificationsUnread,
+		mute,
+		unmute,
 		getNotificationHistory,
 		groupNotificationsByType,
 		notifications: state.notifications,

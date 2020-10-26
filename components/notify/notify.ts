@@ -23,6 +23,14 @@ const sendNotifications = () => {
 	dismiss.buttonText = "Dismiss";
 	dismiss.type = ActionTypes.DISMISS;
 
+	const dismiss2 = new Action();
+	dismiss2.buttonText = "Dismiss";
+	dismiss2.type = ActionTypes.DISMISS;
+
+	const dismiss3 = new Action();
+	dismiss3.buttonText = "Dismiss";
+	dismiss3.type = ActionTypes.DISMISS;
+
 	const snooze = new Action();
 	snooze.buttonText = "Snooze";
 	snooze.type = ActionTypes.SNOOZE;
@@ -33,14 +41,14 @@ const sendNotifications = () => {
 	welcome.type = ActionTypes.SPAWN;
 	welcome.component = "Welcome Component";
 
-	not1.actions = [snooze, welcome, dismiss];
+	not1.actions = [snooze, welcome, dismiss, dismiss2, dismiss3];
 
 	const not2 = new Notification();
 	not2.issuedAt = new Date().toISOString();
 	not2.id = "notification_123";
 	not2.source = source;
 	not2.headerText = "New chat message";
-	not2.title = "Can you join us at 2pm?"
+	not2.title = "Can you join us at 2pm?";
 	not2.details = "Should only be in UI once";
 	not2.type = "chat";
 	not2.headerLogo = "http://localhost:3375/components/finsemble-notifications/components/shared/assets/chat.svg";
@@ -84,7 +92,7 @@ const timedNotification = () => {
 	setInterval(() => {
 		const source = (document.getElementById("feed-source") as HTMLInputElement).value;
 
-		//notifiation custom
+		//notification custom
 		const customNot = new Notification();
 		customNot.issuedAt = new Date().toISOString();
 		customNot.source = source;
@@ -106,10 +114,19 @@ const timedNotification = () => {
 	}, 20000);
 };
 
+const mute = async () => {
+	await nClient.mute({ type: "chat" });
+};
+const unmute = async () => {
+	await nClient.unmute({ type: "chat" });
+};
+
 function init() {
 	document.getElementById("send-notification").addEventListener("click", sendNotifications);
 	document.getElementById("send-timed").addEventListener("click", timedNotification);
 	document.getElementById("get-last-issued").addEventListener("click", getLastIssuedAt);
+	document.getElementById("mute").addEventListener("click", mute);
+	document.getElementById("unmute").addEventListener("click", unmute);
 	nClient = new NotificationClient();
 }
 

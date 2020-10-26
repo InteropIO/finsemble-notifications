@@ -15,6 +15,8 @@ import IFilter from "../../types/Notification-definitions/IFilter";
 import { v4 as uuidV4 } from "uuid";
 import { Map as ImmutableMap } from "immutable";
 import StorageHelper, { STORAGE_KEY_NOTIFICATION_PREFIX } from "../helpers/StorageHelper";
+import IMuteFilter from "../../types/Notification-definitions/IMuteFilter";
+import FinsembleNotification from "../../types/Notification-definitions/Notification";
 
 // TODO: Add Ticket to allow importing Finsemble
 // eslint-disable-next-line
@@ -24,6 +26,7 @@ Finsemble.Clients.Logger.start();
 Finsemble.Clients.Logger.log("notification Service starting up");
 
 Finsemble.Clients.StorageClient.initialize();
+Finsemble.Clients.ConfigClient.initialize();
 
 const NO_SOURCE = "NO_SOURCE_DEFINED";
 const SNOOZE_BOOT_WAIT = 10000;
@@ -42,6 +45,8 @@ export default class NotificationService extends Finsemble.baseService implement
 		notifications: Map<string, INotification>;
 		lastIssued: Map<string, ILastIssued>;
 	};
+
+	private muteFilters: IMuteFilter[];
 
 	subscriptions: Map<string, ISubscription>;
 
@@ -62,11 +67,11 @@ export default class NotificationService extends Finsemble.baseService implement
 			startupDependencies: {
 				// If the service is using another service directly via an event listener or a responder, that service
 				// should be listed as a service start up dependency.
-				services: ["storageService"],
+				services: ["storageService", "configService"],
 				// When ever you use a client API with in the service, it should be listed as a client startup
 				// dependency. Any clients listed as a dependency must be initialized at the top of this file for your
 				// service to startup.
-				clients: ["storageClient"]
+				clients: ["storageClient", "ConfigClient"]
 			}
 		});
 
@@ -81,6 +86,8 @@ export default class NotificationService extends Finsemble.baseService implement
 			lastIssued: new Map<string, ILastIssued>()
 		};
 
+		this.muteFilters = [];
+
 		this.subscribe = this.subscribe.bind(this);
 		this.notify = this.notify.bind(this);
 		this.broadcastNotification = this.broadcastNotification.bind(this);
@@ -89,6 +96,8 @@ export default class NotificationService extends Finsemble.baseService implement
 		this.performAction = this.performAction.bind(this);
 		this.fetchHistory = this.fetchHistory.bind(this);
 		this.unsubscribe = this.unsubscribe.bind(this);
+		this.mute = this.mute.bind(this);
+		this.unmute = this.unmute.bind(this);
 		this.deleteNotification = this.deleteNotification.bind(this);
 		this.markNotificationUnread = this.markNotificationUnread.bind(this);
 		this.applyConfigChange = this.applyConfigChange.bind(this);
@@ -102,18 +111,26 @@ export default class NotificationService extends Finsemble.baseService implement
 	async readyHandler(callback: Function) {
 		this.routerWrapper = new RouterWrapper(Finsemble.Clients.RouterClient, Finsemble.Clients.Logger);
 		this.createRouterEndpoints();
-		Finsemble.Clients.Logger.log("notification Service ready");
 		Finsemble.Clients.ConfigClient.addListener(
 			{ field: "finsemble.servicesConfig.notifications" },
 			this.applyConfigChange
 		);
+
 		Finsemble.Clients.ConfigClient.getValue(
 			{ field: "finsemble.servicesConfig.notifications" },
 			this.applyConfigChange
 		).then();
 
+		Finsemble.Clients.ConfigClient.addListener({ field: "finsemble.notifications.mute" }, this.applyMuteFilterChange);
+
+		Finsemble.Clients.ConfigClient.getValue(
+			{ field: "finsemble.notifications.mute" },
+			this.applyMuteFilterChange
+		).then();
+
 		await this.fetchStateFromStorage();
 		this.wakeSnoozeFromLoad();
+		Finsemble.Clients.Logger.log("notification Service ready");
 		callback();
 	}
 
@@ -126,6 +143,7 @@ export default class NotificationService extends Finsemble.baseService implement
 		this.setupSubscribe();
 		this.setupAction();
 		this.setupFetchHistory();
+		this.setupMute();
 		this.setupUnsubscribe();
 		this.setupUIPubSub();
 		this.setupMarkUnread();
@@ -430,6 +448,26 @@ export default class NotificationService extends Finsemble.baseService implement
 	};
 
 	/**
+	 * Mute filter change callback
+	 *
+	 * @param err
+	 * @param config
+	 */
+	applyMuteFilterChange: StandardCallback = (err, config) => {
+		if (err) {
+			Finsemble.Clients.Logger.error(`Unable to get config err: ${err}`);
+		}
+
+		if (config) {
+			// configClient.getValue() and configClient.addListener return different formats
+			if (config.value) {
+				config = config.value;
+			}
+			this.muteFilters = config;
+		}
+	};
+
+	/**
 	 * Delegate the action to any service that is registered on the correct channel
 	 *
 	 * @see notificationsBuiltInActionsService for an example
@@ -507,6 +545,12 @@ export default class NotificationService extends Finsemble.baseService implement
 			const action = new Action();
 			action.id = this.getUuid();
 			action.type = "FINSEMBLE:RECEIVED";
+			if (ServiceHelper.matchesMuteFilters(notification, this.muteFilters)) {
+				map = map.set("isMuted", true);
+				Finsemble.Clients.Logger
+					.log(`Mute notificationID:${notification.id}, '${notification.title}', source:'${notification.source}', type: 
+				'${notification.type}'`);
+			}
 			// @ts-ignore
 			map = ServiceHelper.addPerformedAction(map, action);
 			map = map.set("receivedAt", new Date().toISOString());
@@ -581,6 +625,14 @@ export default class NotificationService extends Finsemble.baseService implement
 	}
 
 	/**
+	 * Setup callback on notify channel
+	 */
+	private setupMute(): void {
+		this.routerWrapper.addResponder(ROUTER_ENDPOINTS.MUTE, this.mute);
+		this.routerWrapper.addResponder(ROUTER_ENDPOINTS.UNMUTE, this.unmute);
+	}
+
+	/**
 	 * Setup callback on subscribe channel
 	 */
 	private setupSubscribe() {
@@ -615,7 +667,12 @@ export default class NotificationService extends Finsemble.baseService implement
 		let pubSubState = {
 			showDrawer: false,
 			showCenter: false,
-			toasterMonitor: "0"
+			toasterMonitor: "0",
+			overFlowMenu: {
+				notification: false,
+				overflowCount: false,
+				clickCoordinates: false
+			}
 		};
 		const spawnIfClosed: StandardCallback = (error, publish) => {
 			if (!error) {
@@ -821,6 +878,70 @@ export default class NotificationService extends Finsemble.baseService implement
 			notifications.push(notification);
 		});
 		return notifications;
+	}
+
+	/**
+	 * Executes the fetch instruction to return notifications stored by the service
+	 *
+	 * If source is not provided it will get the latest issue from the all registered sources
+	 *
+	 * @param message
+	 */
+	private unmute(message: any): void {
+		Finsemble.Clients.Logger.info("Unmute request with params", message);
+
+		const { filter } = message;
+		// Keep filters that don't match
+		const newMuteFilters = this.muteFilters.filter((muteFilter: IMuteFilter) => {
+			return muteFilter.source !== (filter as IMuteFilter).source || muteFilter.type !== (filter as IMuteFilter).type;
+		});
+
+		Finsemble.Clients.ConfigClient.setPreference(
+			{ field: "finsemble.notifications.mute", value: newMuteFilters },
+			(err: Error) => {
+				if (err) {
+					Finsemble.Clients.Logger.error("Could not save mute preference", message);
+				}
+			}
+		);
+
+		return;
+	}
+
+	/**
+	 * Executes the fetch instruction to return notifications stored by the service
+	 *
+	 * If source is not provided it will get the latest issue from the all registered sources
+	 *
+	 * @param message
+	 */
+	private mute(message: any): void {
+		Finsemble.Clients.Logger.info("Mute request with params", message);
+		const { filter } = message;
+
+		const newMuteFilters = this.muteFilters.slice();
+
+		let isInArray = false;
+		this.muteFilters.forEach((muteFilter: IMuteFilter) => {
+			if (muteFilter.source === (filter as IMuteFilter).source && muteFilter.type === (filter as IMuteFilter).type) {
+				isInArray = true;
+			}
+		});
+
+		if (!isInArray) {
+			newMuteFilters.push(filter);
+		}
+
+		Finsemble.Clients.ConfigClient.setPreference(
+			{ field: "finsemble.notifications.mute", value: newMuteFilters },
+			(err: Error) => {
+				if (err) {
+					Finsemble.Clients.Logger.error("Could not save mute preference", message);
+				}
+			}
+		);
+
+		return;
 	}
 
 	/**

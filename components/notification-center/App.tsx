@@ -10,7 +10,7 @@ import { useState, useEffect } from "react";
 import INotification from "../../types/Notification-definitions/INotification";
 
 const App = (): React.ReactElement => {
-	const { notifications, doAction, getNotificationConfig } = useNotifications();
+	const { notifications, doAction, markNotificationsUnread, getNotificationConfig } = useNotifications();
 	const [activeNotification, setActiveNotification] = useState();
 	const pubSubTopic = "notification-ui";
 	const [notificationSubscribeMessage, notificationsPublish] = usePubSub(pubSubTopic);
@@ -48,12 +48,15 @@ const App = (): React.ReactElement => {
 							<NotificationsPanel
 								notifications={muteFilter(notifications)}
 								setActiveNotification={setActiveNotification}
+								doAction={doAction}
+								markUnread={markNotificationsUnread}
 							/>
 							{activeNotification && (
 								<NotificationDetailPanel
 									notification={activeNotification}
 									clearActiveNotification={setActiveNotification}
 									doAction={doAction}
+									markUnread={markNotificationsUnread}
 								/>
 							)}
 						</>

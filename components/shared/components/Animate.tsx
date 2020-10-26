@@ -27,7 +27,7 @@ export default function Animate(props: Props) {
 
 	useEffect(
 		() => {
-			let timer1: NodeJS.Timeout | undefined;
+			let timer1: number;
 			if (props.displayDuration) {
 				timer1 = setTimeout(() => {
 					animateOut && setCSS(animateOut);

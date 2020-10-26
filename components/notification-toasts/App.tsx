@@ -2,13 +2,11 @@ import * as React from "react";
 import Drawer from "./components/Drawer";
 import Notification from "../shared/components/Notification";
 import useNotifications from "../shared/hooks/useNotifications";
-import INotification from "../../types/Notification-definitions/INotification";
+import INotification from "common/notifications/definitions/INotification";
 import Animate from "../shared/components/Animate";
-import { SpawnParams } from "@chartiq/finsemble/dist/types/services/window/Launcher/launcher";
+import { SpawnParams } from "services/window/Launcher/launcher";
 import { usePubSub } from "../shared/hooks/finsemble-hooks";
 import { useState } from "react";
-/* eslint-disable @typescript-eslint/no-var-requires */
-const _get = require("lodash.get");
 const { useEffect } = React;
 
 const WINDOW_NAME_TOASTER = "notification-toaster";
@@ -26,15 +24,15 @@ function App(): React.ReactElement {
 	} = useNotifications();
 
 	const pubSubTopic = "notification-ui";
-	const [notificationSubscribeMessage, notificationsPublish] = usePubSub(pubSubTopic);
+	const [notificationSubscribeMessage] = usePubSub(pubSubTopic);
 
 	const config = getNotificationConfig();
 
-	const windowShowParams: SpawnParams = _get(config, "config.position", {
+	const windowShowParams: SpawnParams = config?.position || {
 		bottom: 0,
 		right: 0,
 		monitor: 0
-	});
+	};
 
 	// ensure the config and notifications have loaded before rendering the DOM
 	const ready = config && notifications;
@@ -54,10 +52,12 @@ function App(): React.ReactElement {
 
 		finsembleWindow.setBounds(
 			{
-				top: data["availableRect"]["top"],
-				left: data["availableRect"]["right"] - width,
-				height: data["availableRect"]["height"],
-				width: width
+				bounds: {
+					top: data["availableRect"]["top"],
+					left: data["availableRect"]["right"] - width,
+					height: data["availableRect"]["height"],
+					width: width
+				}
 			},
 			(err: any) => {
 				if (err) {
@@ -81,12 +81,12 @@ function App(): React.ReactElement {
 			});
 		}
 
-		const rect = document.getElementById("toasts-drawer").getBoundingClientRect();
+		const rect = document.getElementById("toasts-drawer")?.getBoundingClientRect();
 		if (notifications.length === 0) {
 			if (config.isTransparent) {
 				const roundedRect = {
-					x: Math.round(rect.x),
-					y: Math.round(rect.y),
+					x: Math.round(rect?.x as number),
+					y: Math.round(rect?.y as number),
 					width: 1,
 					height: 1
 				};
@@ -98,10 +98,10 @@ function App(): React.ReactElement {
 			finsembleWindow.bringToFront();
 			if (config.isTransparent) {
 				const roundedRect = {
-					x: Math.round(rect.x),
-					y: Math.round(rect.y),
-					width: Math.round(rect.width),
-					height: Math.round(rect.height)
+					x: Math.round(rect?.x as number),
+					y: Math.round(rect?.y as number),
+					width: Math.round(rect?.width as number),
+					height: Math.round(rect?.height as number)
 				};
 				FSBL.Clients.WindowClient.setShape([roundedRect]);
 			} else {
@@ -115,14 +115,16 @@ function App(): React.ReactElement {
 
 					const bounds = (await finsembleWindow.getBounds({})) as any;
 					const width = bounds.data.right - bounds.data.left;
-					const height = Math.round(rect.height) + 6;
+					const height = Math.round(rect?.height as number) + 6;
 
 					finsembleWindow.setBounds(
 						{
-							top: data["availableRect"]["bottom"] - height,
-							left: data["availableRect"]["right"] - width,
-							height: height,
-							width: width
+							bounds: {
+								top: data["availableRect"]["bottom"] - height,
+								left: data["availableRect"]["right"] - width,
+								height: height,
+								width: width
+							}
 						},
 						(err: any) => {
 							if (err) {
@@ -144,9 +146,9 @@ function App(): React.ReactElement {
 							// TODO: Recommend to change this to react transition group
 							<Animate
 								key={notification.id}
-								displayDuration={notification.timeout || config.animation.displayDuration}
-								animateIn={config.animation.animateIn}
-								animateOut={config.animation.animateOut}
+								displayDuration={notification.timeout || config.animation?.displayDuration}
+								animateIn={config.animation?.animateIn}
+								animateOut={config.animation?.animateOut}
 								animateOutComplete={() => removeNotification(notification)}
 							>
 								<Notification

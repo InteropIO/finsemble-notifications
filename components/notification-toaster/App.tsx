@@ -4,13 +4,12 @@ import DragHandleIcon from "../shared/components/icons/DragHandleIcon";
 import NotificationIcon from "../shared/components/icons/NotificationIcon";
 import CenterIcon from "../shared/components/icons/CenterIcon";
 import SettingsIcon from "../shared/components/icons/settings";
-import _get = require("lodash/get");
 import { usePubSub } from "../shared/hooks/finsemble-hooks";
 
 const { useEffect, useState } = React;
 
 function App(): React.ReactElement {
-	const [toasterMonitorPosition, settoasterMonitorPosition] = useState("0");
+	const [toasterMonitorPosition, setToasterMonitorPosition] = useState("0");
 	const { notifications, activeNotifications, getNotificationConfig, setOpaqueClassName } = useNotifications({
 		config: { notificationsHistory: true }
 	});
@@ -25,7 +24,7 @@ function App(): React.ReactElement {
 	const config = getNotificationConfig();
 
 	useEffect(() => {
-		const hotkey = _get(FSBL.Clients.WindowClient.getSpawnData(), "notifications.hotkey", null);
+		const hotkey = FSBL.Clients.WindowClient.getSpawnData()?.notifications?.hotkey;
 		// TODO: Pull this out of the component into a hook
 		if (hotkey) {
 			FSBL.Clients.HotkeyClient.addGlobalHotkey(hotkey, () => {
@@ -64,7 +63,7 @@ function App(): React.ReactElement {
 				if (toasterMonitorPosition !== monitorInfo.position) {
 					const publishValue = { ...notificationSubscribeMessage };
 					publishValue["toasterMonitorPosition"] = monitorInfo.position;
-					settoasterMonitorPosition(monitorInfo.position);
+					setToasterMonitorPosition(monitorInfo.position);
 					notificationsPublish(publishValue);
 				}
 			}

@@ -1,14 +1,10 @@
-import NotificationClient, { ActionTypes } from "../../services/notification/notificationClient";
-import Notification from "../../types/Notification-definitions/Notification";
-import Action from "../../types/Notification-definitions/Action";
-
 /**
  * A manual Notifications source
  */
-let nClient: NotificationClient = null;
 const sendNotifications = () => {
+	const { NotificationClient } = FSBL.Clients;
 	const source = (document.getElementById("feed-source") as HTMLInputElement).value;
-	const not1 = new Notification();
+	const not1 = new NotificationClient.Notification();
 	not1.issuedAt = new Date().toISOString();
 	not1.source = source;
 	not1.headerText = "You've Got Mail";
@@ -19,73 +15,81 @@ const sendNotifications = () => {
 	not1.contentLogo = "http://localhost:3375/components/finsemble-notifications/components/shared/assets/graph.png";
 	not1.cssClassName = "css-class";
 
-	const dismiss = new Action();
+	const dismiss = new NotificationClient.Action();
 	dismiss.buttonText = "Dismiss";
-	dismiss.type = ActionTypes.DISMISS;
+	dismiss.type = NotificationClient.ActionTypes.DISMISS;
 
-	const snooze = new Action();
+	const snooze = new NotificationClient.Action();
 	snooze.buttonText = "Snooze";
-	snooze.type = ActionTypes.SNOOZE;
+	snooze.type = NotificationClient.ActionTypes.SNOOZE;
 	snooze.milliseconds = 10000;
 
-	const welcome = new Action();
+	const welcome = new NotificationClient.Action();
 	welcome.buttonText = "Launch";
-	welcome.type = ActionTypes.SPAWN;
+	welcome.type = NotificationClient.ActionTypes.SPAWN;
 	welcome.component = "Welcome Component";
 
 	not1.actions = [snooze, welcome, dismiss];
 
-	const not2 = new Notification();
+	const not2 = new NotificationClient.Notification();
 	not2.issuedAt = new Date().toISOString();
 	not2.id = "notification_123";
 	not2.source = source;
 	not2.headerText = "New chat message";
-	not2.title = "Can you join us at 2pm?"
+	not2.title = "Can you join us at 2pm?";
 	not2.details = "Should only be in UI once";
 	not2.type = "chat";
 	not2.headerLogo = "http://localhost:3375/components/finsemble-notifications/components/shared/assets/chat.svg";
 	not2.contentLogo = "http://localhost:3375/components/finsemble-notifications/components/shared/assets/sheild.png";
 	not2.cssClassName = "border-red";
 
-	const query = new Action();
+	const query = new NotificationClient.Action();
 	query.buttonText = "Send Query";
-	query.type = ActionTypes.QUERY;
+	query.type = NotificationClient.ActionTypes.QUERY;
 	query.channel = "query-channel";
 	query.payload = { hello: "world" };
 
-	const transmit = new Action();
+	const transmit = new NotificationClient.Action();
 	transmit.buttonText = "Send Transmit";
-	transmit.type = ActionTypes.TRANSMIT;
+	transmit.type = NotificationClient.ActionTypes.TRANSMIT;
 	transmit.channel = "transmit-channel";
 	transmit.payload = { foo: "bar" };
 
-	const publish = new Action();
+	const publish = new NotificationClient.Action();
 	publish.buttonText = "Send Publish";
-	publish.type = ActionTypes.PUBLISH;
+	publish.type = NotificationClient.ActionTypes.PUBLISH;
 	publish.channel = "publish-channel";
 	publish.payload = { xyzzy: "moo" };
 
 	not2.actions = [query, transmit, publish];
 
-	nClient.notify([not1, not2]);
+	NotificationClient.notify([not1, not2]).then();
 
-	document.getElementById("feed-last-issued").innerText = not2.issuedAt;
+	const feedLastIssued = document.getElementById("feed-last-issued");
+	if (feedLastIssued) {
+		feedLastIssued.innerText = not2.issuedAt;
+	}
 };
 
 const getLastIssuedAt = () => {
+	const { NotificationClient } = FSBL.Clients;
 	const source = (document.getElementById("feed-source") as HTMLInputElement).value;
 
-	nClient.getLastIssuedAt(source).then(issuedDate => {
-		document.getElementById("service-last-issued").innerText = issuedDate;
+	NotificationClient.getLastIssuedAt(source).then(issuedDate => {
+		const serviceLastIssued = document.getElementById("service-last-issued");
+		if (serviceLastIssued) {
+			serviceLastIssued.innerText = issuedDate;
+		}
 	});
 };
 
 const timedNotification = () => {
 	setInterval(() => {
+		const { NotificationClient } = FSBL.Clients;
 		const source = (document.getElementById("feed-source") as HTMLInputElement).value;
 
 		//notifiation custom
-		const customNot = new Notification();
+		const customNot = new NotificationClient.Notification();
 		customNot.issuedAt = new Date().toISOString();
 		customNot.source = source;
 		customNot.headerText = "Custom";
@@ -96,25 +100,26 @@ const timedNotification = () => {
 			"http://localhost:3375/components/finsemble-notifications/components/shared/assets/call-center-agent.svg";
 		customNot.cssClassName = "inverted";
 
-		const dismiss = new Action();
+		const dismiss = new NotificationClient.Action();
 		dismiss.buttonText = "Dismiss";
-		dismiss.type = ActionTypes.DISMISS;
+		dismiss.type = NotificationClient.ActionTypes.DISMISS;
 
 		customNot.actions = [dismiss];
 
-		nClient.notify([customNot]);
+		NotificationClient.notify([customNot]).then();
 	}, 20000);
 };
 
-function init() {
-	document.getElementById("send-notification").addEventListener("click", sendNotifications);
-	document.getElementById("send-timed").addEventListener("click", timedNotification);
-	document.getElementById("get-last-issued").addEventListener("click", getLastIssuedAt);
-	nClient = new NotificationClient();
+function initialize() {
+	const { NotificationClient } = FSBL.Clients;
+	const n = new NotificationClient.Notification();
+	document.getElementById("send-notification")?.addEventListener("click", sendNotifications);
+	document.getElementById("send-timed")?.addEventListener("click", timedNotification);
+	document.getElementById("get-last-issued")?.addEventListener("click", getLastIssuedAt);
 }
 
 if (window.FSBL && (FSBL as any).addEventListener) {
-	(FSBL as any).addEventListener("onReady", init);
+	(FSBL as any).addEventListener("onReady", initialize);
 } else {
-	window.addEventListener("FSBLReady", init);
+	window.addEventListener("FSBLReady", initialize);
 }

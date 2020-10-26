@@ -9,12 +9,12 @@ export default function SVGBase({
 	viewBox = "0 0 24 24",
 	d = "",
 	opacity = "",
-	fillRule = null,
+	fillRule,
 	clipRule = "",
 	// eslint-disable-next-line @typescript-eslint/no-empty-function
 	onClick = () => {},
-	onMouseDown = null,
-	onMouseUp = null
+	onMouseDown,
+	onMouseUp
 }: SVGProps) {
 	return (
 		<svg

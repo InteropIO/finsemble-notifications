@@ -1,12 +1,9 @@
 import * as React from "react";
-import INotification from "../../../types/Notification-definitions/INotification";
-import Subscription from "../../../types/Notification-definitions/Subscription";
-import NotificationClient from "../../../services/notification/notificationClient";
-import Filter from "../../../types/Notification-definitions/Filter";
+import INotification from "common/notifications/definitions/INotification";
 import WindowConfig, { NotificationsConfig } from "../../../types/Notification-definitions/NotificationConfig";
-import IFilter from "../../../types/Notification-definitions/IFilter";
+import IFilter from "common/notifications/definitions/IFilter";
 import { NotificationGroupList } from "../../../types/Notification-definitions/NotificationHookTypes";
-import _get from "lodash.get";
+const _get = require("lodash/get");
 
 const { useReducer, useEffect } = React;
 
@@ -56,7 +53,7 @@ function reducer(state: { notifications: INotification[] }, action: { type: stri
 export default function useNotifications(params: any = {}) {
 	const [state, dispatch] = useReducer(reducer, initialState);
 
-	let NOTIFICATION_CLIENT: NotificationClient = null;
+	const { NotificationClient } = FSBL.Clients;
 
 	/*
 		Action Creators
@@ -81,8 +78,7 @@ export default function useNotifications(params: any = {}) {
 	 */
 	function doAction(notification: INotification, action: any) {
 		try {
-			NOTIFICATION_CLIENT = new NotificationClient();
-			NOTIFICATION_CLIENT.performAction([notification], action).then(() => {
+			NotificationClient.performAction([notification], action).then(() => {
 				// NOTE: The request to perform the action has be sent to the notifications service successfully
 				// The action itself has not necessarily been perform successfully
 				// 1) alert user notification has been sent (action may not have completed)
@@ -120,11 +116,11 @@ export default function useNotifications(params: any = {}) {
 		const groupBy = (arr: INotification[], type: keyof INotification) =>
 			arr
 				.map(
-					(notification: INotification): INotification["type"] =>
+					(notification: INotification): string =>
 						//@ts-ignore
 						notification[type]
 				)
-				.reduce((acc: { [x: string]: any }, notificationType: INotification["type"], index: number) => {
+				.reduce((acc: { [x: string]: any }, notificationType: string, index: number) => {
 					acc[notificationType] = [...(acc[notificationType] || []), arr[index]];
 					return acc;
 				}, {});
@@ -142,18 +138,17 @@ export default function useNotifications(params: any = {}) {
 		since = "1969-12-31T23:59:59.999Z",
 		filter: null | IFilter = null
 	): Promise<INotification[]> => {
-		NOTIFICATION_CLIENT = new NotificationClient();
-		return NOTIFICATION_CLIENT.fetchHistory(since, filter);
+		return NotificationClient.fetchHistory(since, filter as IFilter);
 	};
+
 	/**
 	 * Get Notification's config from
-	 * @param componentType Finsemble component type e.g "Welcome-Component"
 	 */
 	const getNotificationConfig = (): NotificationsConfig => {
 		const config: WindowConfig = WindowClient.options.customData;
 
-		return Object.assign(_get(config, "window.data.notifications", {}), {
-			isTransparent: _get(config, "window.options.transparent", false)
+		return Object.assign(config?.window?.data?.notifications || {}, {
+			isTransparent: config?.window?.options?.transparent || false
 		});
 	};
 
@@ -168,12 +163,11 @@ export default function useNotifications(params: any = {}) {
 	 */
 	async function init() {
 		try {
-			NOTIFICATION_CLIENT = new NotificationClient();
-			const subscription = new Subscription();
+			const subscription = new NotificationClient.Subscription();
 
 			const notificationConfig: NotificationsConfig = getNotificationConfig();
 
-			const filter: IFilter = new Filter();
+			const filter: IFilter = new NotificationClient.Filter();
 
 			// make filters from the config
 			if (notificationConfig) {
@@ -188,15 +182,12 @@ export default function useNotifications(params: any = {}) {
 
 			subscription.filter = filter;
 
-			if (
-				(notificationConfig && notificationConfig.notificationsHistory) ||
-				_get(params, "config.notificationsHistory")
-			) {
+			if ((notificationConfig && notificationConfig.notificationsHistory) || params?.config?.notificationsHistory) {
 				// const { since, filter } = notificationConfig.notificationsHistory;
 				const pastNotifications = await getNotificationHistory();
 				addMultipleNotifications(pastNotifications);
 			}
-			subscription.onNotification = function(notification: INotification) {
+			const onNotification = function(notification: INotification) {
 				// This function will be called when a notification arrives
 				if (notification.isDeleted) {
 					removeNotification(notification);
@@ -205,15 +196,7 @@ export default function useNotifications(params: any = {}) {
 				}
 			};
 
-			return NOTIFICATION_CLIENT.subscribe(
-				subscription,
-				(data: any) => {
-					console.log(data);
-				},
-				(error: any) => {
-					console.error(error);
-				}
-			);
+			return NotificationClient.subscribe(subscription, onNotification);
 		} catch (error) {
 			console.error(error);
 		}
@@ -237,8 +220,7 @@ export default function useNotifications(params: any = {}) {
 		return () => {
 			// Unsubscribe using the subscription ID
 			(async () => {
-				NOTIFICATION_CLIENT = new NotificationClient();
-				await NOTIFICATION_CLIENT.unsubscribe(await subscribe);
+				await NotificationClient.unsubscribe((await subscribe) as string);
 			})();
 		};
 	}, []);

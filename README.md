@@ -354,11 +354,11 @@ See the [Subscriber component example](components/subscriber)
 
 ### Muting Notifications
 
-Notifications are designed to grab the user's attention to something that occurred within the system. This most
-effective attention way this is achieved when a Notification toast pops up from off-screen. If the information presented
-in the Toast is not important and this unimportant information grabs the user's attention too frequently, it can be
-distracting and may hindering the user in doing their actual task. There are two ways to control this behaviour. The
-first, for developers, is the via the Toast filter config, and the second is user controlled muting.
+Notifications are designed to grab the user's attention and let them know something has occurred within the system.
+This most effective way of grabbing attention is when a Notification toast pops up from off-screen. If the information
+presented in the Toast is not important and this unimportant information grabs the user's attention too frequently, it
+can be distracting and may hindering the user in doing their actual task. There are two ways to control this behaviour.
+The first, for developers, is the via the Toast filter config, and the second is user controlled muting.
 
 #### Toast Config
 

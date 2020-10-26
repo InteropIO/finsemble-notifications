@@ -106,8 +106,8 @@ export default function useNotifications(params: any = {}) {
 			await NOTIFICATION_CLIENT.mute(filter);
 		} catch (e) {
 			// NOTE: The request to perform the action has failed
-			console.error("Could save mute preferences", e);
-			FSBL.Clients.Logger.error("Could save mute preferences", e);
+			console.error("Could not save mute preferences", e);
+			FSBL.Clients.Logger.error("Could not save mute preferences", e);
 		}
 	}
 
@@ -122,8 +122,8 @@ export default function useNotifications(params: any = {}) {
 			await NOTIFICATION_CLIENT.unmute(filter);
 		} catch (e) {
 			// NOTE: The request to perform the action has failed
-			console.error("Could save mute preferences", e);
-			FSBL.Clients.Logger.error("Could save mute preferences", e);
+			console.error("Could not save mute preferences", e);
+			FSBL.Clients.Logger.error("Could not save mute preferences", e);
 		}
 	}
 

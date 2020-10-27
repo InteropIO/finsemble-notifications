@@ -217,8 +217,7 @@ const HistoryArea = (props: NotificationHistoryProps) => {
 
 const NotificationsPanel = (props: NotificationPanelProps) => {
 	const { notification, doAction, markUnread } = props;
-	const { actions, isRead } = notification;
-	const { id } = notification as INotification;
+	const { id, actions, isRead } = notification as INotification;
 
 	return (
 		<section id="notification-center__notification-detail">

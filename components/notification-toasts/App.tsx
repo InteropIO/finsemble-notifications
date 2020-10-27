@@ -2,7 +2,7 @@ import * as React from "react";
 import Drawer from "./components/Drawer";
 import Notification from "../shared/components/Notification";
 import useNotifications from "../shared/hooks/useNotifications";
-import INotification from "common/notifications/definitions/INotification";
+import { INotification } from "common/notifications/definitions/INotification";
 import Animate from "../shared/components/Animate";
 import { SpawnParams } from "services/window/Launcher/launcher";
 import { usePubSub } from "../shared/hooks/finsemble-hooks";

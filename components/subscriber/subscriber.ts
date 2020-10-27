@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-ignore */
-import INotification from "common/notifications/definitions/INotification";
+import { INotification } from "common/notifications/definitions/INotification";
 import IAction from "common/notifications/definitions/IAction";
 
 /**

@@ -1,8 +1,6 @@
 import * as React from "react";
-import INotification from "../../../types/Notification-definitions/INotification";
+import { INotification } from "common/notifications/definitions/INotification";
 import { format, parseISO } from "date-fns";
-import { ActionTypes } from "../../../services/notification/notificationClient";
-import Action from "../../../types/Notification-definitions/Action";
 
 interface TableProps {
 	children?: React.PropsWithChildren<any>;
@@ -29,7 +27,7 @@ const NotificationRow = (props: RowProps) => {
 	return (
 		<div
 			className="notification-center__notifications__rows"
-			key={notification.id}
+			key={notification?.id}
 			onClick={() => props.setActiveNotification(notification)}
 		>
 			<div>
@@ -52,17 +50,17 @@ const NotificationRow = (props: RowProps) => {
 				></input>
 			</div>
 			<div
-				className={idClass}
-				title={notification.id}
+				className={idClass as string}
+				title={notification?.id}
 				onMouseOver={() => toggleIdField(!expandedField)}
 				onMouseLeave={() => toggleIdField(!expandedField)}
 			>
-				{notification.id}
+				{notification?.id}
 			</div>
-			<div>{notification.title} </div>
-			<div>{notification.headerText} </div>
-			<div>{format(parseISO(notification.issuedAt), "yyyy-MM-dd' at 'HH:mm:ss")}</div>
-			<div>{notification.type} </div>
+			<div>{notification?.title} </div>
+			<div>{notification?.headerText} </div>
+			<div>{format(parseISO(notification?.issuedAt as string), "yyyy-MM-dd' at 'HH:mm:ss")}</div>
+			<div>{notification?.type} </div>
 			<div>{notification.isRead ? <span>✓</span> : null}</div>
 		</div>
 	);

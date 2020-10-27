@@ -1,9 +1,8 @@
 import * as React from "react";
-import INotification from "common/notifications/definitions/INotification";
+import { INotification } from "common/notifications/definitions/INotification";
 import WindowConfig, { NotificationsConfig } from "../../../types/Notification-definitions/NotificationConfig";
 import IFilter from "common/notifications/definitions/IFilter";
 import { NotificationGroupList } from "../../../types/Notification-definitions/NotificationHookTypes";
-const _get = require("lodash/get");
 
 const { useReducer, useEffect } = React;
 

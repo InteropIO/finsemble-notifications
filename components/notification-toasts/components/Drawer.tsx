@@ -1,5 +1,5 @@
 import * as React from "react";
-import INotification from "common/notifications/definitions/INotification";
+import { INotification } from "common/notifications/definitions/INotification";
 import { SpawnParams } from "services/window/Launcher/launcher";
 
 interface Props {

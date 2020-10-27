@@ -24,21 +24,21 @@ const NotificationRow = (props: RowProps) => {
 	return (
 		<div
 			className="notification-center__notifications__rows"
-			key={notification.id}
+			key={notification?.id}
 			onClick={() => props.setActiveNotification(notification)}
 		>
 			<div
-				className={idClass}
-				title={notification.id}
+				className={idClass as string}
+				title={notification?.id}
 				onMouseOver={() => toggleIdField(!expandedField)}
 				onMouseLeave={() => toggleIdField(!expandedField)}
 			>
-				{notification.id}
+				{notification?.id}
 			</div>
-			<div>{notification.title} </div>
-			<div>{notification.headerText} </div>
-			<div>{format(parseISO(notification.issuedAt), "yyyy-MM-dd' at 'HH:mm:ss")}</div>
-			<div>{notification.type} </div>
+			<div>{notification?.title} </div>
+			<div>{notification?.headerText} </div>
+			<div>{format(parseISO(notification?.issuedAt as string), "yyyy-MM-dd' at 'HH:mm:ss")}</div>
+			<div>{notification?.type} </div>
 		</div>
 	);
 };

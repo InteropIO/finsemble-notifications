@@ -1,10 +1,9 @@
 import * as React from "react";
-import INotification from "../../../types/Notification-definitions/INotification";
-import IAction from "../../../types/Notification-definitions/IAction";
-import Meta from "../../../types/Notification-definitions/Meta";
-import IPerformedAction from "../../../types/Notification-definitions/IPerformedAction";
-import { ActionTypes } from "../../../types/Notification-definitions/ActionTypes";
 import { formatDistanceToNow } from "date-fns";
+import Meta from "common/notifications/definitions/Meta";
+import { INotification } from "common/notifications/definitions/INotification";
+import IAction from "common/notifications/definitions/IAction";
+import IPerformedAction from "common/notifications/definitions/IPerformedAction";
 
 interface NotificationHeaderProps {
 	issuedAt?: string;
@@ -166,6 +165,7 @@ const ContentArea = (props: NotificationContentProps) => {
 
 const ActionsArea = (props: NotificationActionsProps) => {
 	const { actions, doAction } = props;
+	const { ActionTypes } = FSBL.Clients.NotificationClient;
 	return (
 		<div className="details_footer">
 			<hr />

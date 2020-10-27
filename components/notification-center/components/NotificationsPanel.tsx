@@ -1,5 +1,5 @@
 import * as React from "react";
-import INotification from "../../../types/Notification-definitions/INotification";
+import { INotification } from "common/notifications/definitions/INotification";
 import { format, parseISO } from "date-fns";
 
 interface TableProps {

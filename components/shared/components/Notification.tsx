@@ -1,6 +1,6 @@
 import * as React from "react";
 import { formatDistanceToNow } from "date-fns";
-import INotification from "common/notifications/definitions/INotification";
+import { INotification } from "common/notifications/definitions/INotification";
 import IAction from "common/notifications/definitions/IAction";
 import { MouseEventHandler, useEffect, useState } from "react";
 

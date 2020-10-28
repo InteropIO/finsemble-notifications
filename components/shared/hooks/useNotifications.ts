@@ -96,8 +96,7 @@ export default function useNotifications(params: any = {}) {
 	 */
 	function markNotificationsUnread(notifications: INotification[]) {
 		try {
-			NOTIFICATION_CLIENT = new NotificationClient();
-			NOTIFICATION_CLIENT.markUnread(notifications).then(() => {
+			NotificationClient.markUnread(notifications).then(() => {
 				// NOTE: The request to perform the action has be sent to the notifications service successfully
 				// The action itself has not necessarily been perform successfully
 			});

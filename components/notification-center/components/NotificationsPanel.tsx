@@ -18,11 +18,13 @@ interface RowProps {
 
 const NotificationRow = (props: RowProps) => {
 	const { useState } = React;
-	const { notification } = props;
+	const notification = props.notification as INotification;
 
 	const [expandedField, toggleIdField] = useState(false);
 
 	const idClass = expandedField ? null : "id";
+
+	const notificationId = notification.id as string;
 
 	return (
 		<div
@@ -32,18 +34,18 @@ const NotificationRow = (props: RowProps) => {
 		>
 			<div>
 				<input
-					id={`check-${notification.id}`}
+					id={`check-${notificationId}`}
 					type="checkbox"
 					onChange={() => {
-						const checkbox = document.getElementById(`check-${notification.id}`) as HTMLInputElement;
+						const checkbox = document.getElementById(`check-${notificationId}`) as HTMLInputElement;
 						if (checkbox.checked) {
 							const ids = Object.keys(props.selected);
-							if (!ids.includes(notification.id)) {
-								props.selected[notification.id] = notification;
+							if (!ids.includes(notificationId)) {
+								props.selected[notificationId] = notification;
 							}
 						} else {
-							if (props.selected.hasOwnProperty(notification.id)) {
-								delete props.selected[notification.id];
+							if (props.selected.hasOwnProperty(notificationId)) {
+								delete props.selected[notificationId];
 							}
 						}
 					}}
@@ -71,6 +73,7 @@ const NotificationsPanel = (props: TableProps) => {
 	const { setActiveNotification, doAction, markUnread } = props;
 
 	const [selected] = useState({});
+	const { ActionTypes, Action } = FSBL.Clients.NotificationClient;
 
 	return (
 		<section id="notification-center__notifications">

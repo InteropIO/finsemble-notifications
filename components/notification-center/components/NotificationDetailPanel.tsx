@@ -35,6 +35,7 @@ interface NotificationPanelProps {
 	notification?: INotification;
 	clearActiveNotification?: Function;
 	doAction?: Function;
+	markUnread: Function;
 }
 
 interface NotificationHistoryProps {
@@ -215,9 +216,8 @@ const HistoryArea = (props: NotificationHistoryProps) => {
 };
 
 const NotificationsPanel = (props: NotificationPanelProps) => {
-	const { notification, doAction } = props;
-	const { actions } = notification as INotification;
-	const { id } = notification as INotification;
+	const { notification, doAction, markUnread } = props;
+	const { id, actions, isRead } = notification as INotification;
 
 	return (
 		<section id="notification-center__notification-detail">
@@ -240,6 +240,12 @@ const NotificationsPanel = (props: NotificationPanelProps) => {
 					<ActionsArea notification={notification} doAction={doAction} actions={actions} />
 				)}
 				<HistoryArea {...notification} />
+				{isRead && (
+					<>
+						<hr style={{ width: "100%" }} />
+						<button onClick={() => markUnread([notification])}>Mark Unread</button>
+					</>
+				)}
 			</div>
 		</section>
 	);

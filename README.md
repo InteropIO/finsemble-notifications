@@ -25,6 +25,7 @@ This project requires the [Finsemble Seed Project](https://github.com/ChartIQ/fi
 
 - [Sending Notifications](#sending-notifications)
 - [Receiving Notifications](#receiving-notifications)
+- [Muting Notifications](#muting-notifications)
 - [Custom Actions](#custom-actions)
 - [.Net Notifications client](#dot-net-client)
 
@@ -350,6 +351,103 @@ See the [notifier component example](components/notify)
 ### Receiving Notifications
 
 See the [Subscriber component example](components/subscriber)
+
+### Muting Notifications
+
+Notifications are designed to grab the user's attention and let them know something has occurred within the system.
+This most effective way of grabbing attention is when a Notification toast pops up from off-screen. If the information
+presented in the Toast is not important and this unimportant information grabs the user's attention too frequently, it
+can be distracting and may hindering the user in doing their actual task. There are two ways to control this behaviour.
+The first, for developers, is the via the Toast filter config, and the second is user controlled muting.
+
+#### Toast Config
+
+The toasts can be the main source of distraction for the user. It might be the case you wish to send a notification but
+not have it pop-up and grab the user's attention. In this case, the you are able to send a notification with a specific
+field defined internally with in your organisation identifying that this Notification is of low importance and configure
+the Toasts component not to show this Notification. See below for an example:
+
+**Define Your Notification:**
+```typescript
+// Creating the Notification
+const client = new NotificationClient();
+
+let notification = new Notification();
+notification.title = "Notify world";
+
+notification.source = "oms";
+notification.type = "oms-informational-low";
+
+client.notify(notification);
+``` 
+
+**Configure the Toasts to exclude the Notification**
+
+Modify your [Toasts config](components/notify/config.json) to exclude any notifications with the source and/or type 
+you defined earlier:
+
+```
+"notification-toasts": {
+    "window": {
+        ...
+        "data": {
+            "notifications": {
+                "applyMuteFilters": true,
+                "filter": {
+                    "include": [],
+                    "exclude": [{
+                        source: "oms",
+                        type: "oms-informational-low",
+                    }]
+                },
+                ...
+            }
+        },
+        ...
+    },
+    ...
+}
+```
+
+#### User Controlled Muting
+
+Users also have some ability to control what notifications are able to grab their attention. This is done via the
+Notification actions overflow menu through muting. Users are able to mute Notifications based on their type, source, or 
+type and source.
+
+![Overflow Menu with Mute Option](components/notification-overflow-menu/Screenshot-mute.png?raw=true "Overflow Menu with Mute Option")
+
+When a user mutes a notification, notifications that then pass through the System will then have the isMuted flag set to
+true. The isMuted flag allows a specific user interface to be configure to either respect or ignore the muted state. 
+This can be configured in the Notification UI config by changing the component's "applyMuteFilters" value to true. The
+default  configuration is for the mute filters to only be applied to the toasts component.
+
+
+Set the applyMuteFilters value.
+```
+"notification-toasts": {
+    "window": {
+        ...
+        "data": {
+            "notifications": {
+                "applyMuteFilters": true,
+                ...
+            }
+        },
+        ...
+    },
+    ...
+}
+```
+
+#### Muting preferences panel
+
+Once a user has added a mute filter, they may wish to remove this mute filter. This can be done by adding the
+Notification Preferences component to the User preferences component in your Finsemble Seed.
+
+This is a manual process that a developer would need to implement. See the [recipe in the seed](https://github.com/ChartIQ/finsemble-seed/compare/release/4.5.0...recipes/add-notification-mute-to-preferences-panel)
+for the code require to do this. 
+
 
 ### Custom Actions
 

@@ -3,6 +3,7 @@ import { formatDistanceToNow } from "date-fns";
 import { INotification } from "common/notifications/definitions/INotification";
 import IAction from "common/notifications/definitions/IAction";
 import { MouseEventHandler, useEffect, useState } from "react";
+import UIAction from "./UIAction";
 
 interface Props {
 	children?: React.PropsWithChildren<any>;
@@ -12,7 +13,7 @@ interface Props {
 	closeButton?: boolean;
 	onMouseLeave?: Function;
 	onMouseEnter?: Function;
-	OverflowMenu?: Function;
+	overflowMenuAction: (event: React.MouseEvent, data: any) => void;
 	overflowCount?: number;
 }
 
@@ -68,65 +69,44 @@ const ContentArea = (props: Props) => {
 const ActionArea = (props: Props) => {
 	const { notification, overflowCount } = props;
 
+	const { actions } = notification;
+
 	return (
 		<div className="action-area">
-			{notification.actions?.map((action: IAction, index: number) => {
+			{actions?.map((action: IAction, index: number) => {
 				if (!overflowCount || index + 1 <= overflowCount) {
 					return <UIAction key={index} {...props} action={action} />;
 				}
 			})}
-			{overflowCount && notification.actions && notification.actions.length > overflowCount && (
-				<OverflowMenu>
-					{notification.actions?.map((action: IAction, index: number) => {
-						if (index + 1 > overflowCount) {
-							return <UIAction key={index} {...props} action={action} />;
-						}
-					})}
-				</OverflowMenu>
+			{((overflowCount && actions && actions.length > overflowCount) || notification.source || notification.type) && (
+				<OverflowMenu {...props} />
 			)}
 		</div>
 	);
 };
 
 interface OverflowMenuProps {
-	children?: React.PropsWithChildren<any>;
+	notification: INotification;
+	overflowMenuAction: Function;
+	overflowCount?: number;
 }
 
 const OverflowMenu = (props: OverflowMenuProps) => {
 	const [isOpen, setIsOpen] = useState(false);
 
-	const toggle = () => {
-		setIsOpen(!isOpen);
+	const open = (event: any) => {
+		return props.overflowMenuAction(event, {
+			notification: props.notification,
+			overflowCount: props.overflowCount
+		});
 	};
 
 	return (
 		<div className={"action-overflow " + (isOpen ? "overflow-open" : "")}>
 			<div className="overflow-icon">
-				<span onClick={toggle}>...</span>
-				<div className="overflow-menu">{props.children}</div>
+				<span onClick={open}>...</span>
 			</div>
 		</div>
-	);
-};
-
-interface ActionUIProps {
-	action: IAction;
-	doAction: Function;
-	notification: INotification;
-}
-
-const UIAction = (props: ActionUIProps) => {
-	const { action, doAction, notification } = props;
-	return (
-		<button
-			key={action.buttonText}
-			onClick={e => {
-				e.preventDefault();
-				doAction(notification, action);
-			}}
-		>
-			{action.buttonText}
-		</button>
 	);
 };
 

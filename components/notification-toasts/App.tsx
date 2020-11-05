@@ -5,7 +5,7 @@ import useNotifications from "../shared/hooks/useNotifications";
 import { INotification } from "common/notifications/definitions/INotification";
 import Animate from "../shared/components/Animate";
 import { SpawnParams } from "services/window/Launcher/launcher";
-import { usePubSub } from "../shared/hooks/finsemble-hooks";
+import { overflowMenuClick, usePubSub } from "../shared/hooks/finsemble-hooks";
 import { useState } from "react";
 const { useEffect } = React;
 
@@ -24,7 +24,7 @@ function App(): React.ReactElement {
 	} = useNotifications();
 
 	const pubSubTopic = "notification-ui";
-	const [notificationSubscribeMessage] = usePubSub(pubSubTopic);
+	const [notificationSubscribeMessage, notificationsPublish] = usePubSub(pubSubTopic);
 
 	const config = getNotificationConfig();
 
@@ -65,6 +65,10 @@ function App(): React.ReactElement {
 				}
 			}
 		);
+	};
+
+	const overflowClick = (event: React.MouseEvent, data: any) => {
+		overflowMenuClick(event, { ...data, notificationSubscribeMessage, notificationsPublish });
 	};
 
 	useEffect(() => {
@@ -152,6 +156,7 @@ function App(): React.ReactElement {
 								animateOutComplete={() => removeNotification(notification)}
 							>
 								<Notification
+									overflowMenuAction={overflowClick}
 									key={notification.id}
 									notification={notification}
 									doAction={doAction}

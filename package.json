@@ -73,6 +73,7 @@
 		"prettier": "^1.19.1",
 		"react": "16.8.4",
 		"react-dom": "16.8.4",
+		"ts-lint": "^4.5.1",
 		"ts-node": "^8.6.2",
 		"typescript": "^3.9.3"
 	}

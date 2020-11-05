@@ -6,5 +6,6 @@
 	"components/notification-center/notification-center.js",
 	"components/notification-drawer/notification-drawer.js",
 	"components/notification-toasts/notification-toasts.js",
-	"components/notification-toaster/notification-toaster.js"
+	"components/notification-toaster/notification-toaster.js",
+	"components/notification-overflow-menu/overflow.js"
 ]

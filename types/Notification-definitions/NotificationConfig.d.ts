@@ -13,6 +13,7 @@ export interface NotificationsConfig {
 	};
 	isTransparent?: boolean;
 	notificationsHistory?: boolean;
+	applyMuteFilters?: boolean;
 }
 
 export default interface WindowConfig {

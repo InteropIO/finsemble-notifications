@@ -19,6 +19,14 @@ const sendNotifications = () => {
 	dismiss.buttonText = "Dismiss";
 	dismiss.type = NotificationClient.ActionTypes.DISMISS;
 
+	const dismiss2 = new NotificationClient.Action();
+	dismiss2.buttonText = "Dismiss";
+	dismiss2.type = NotificationClient.ActionTypes.DISMISS;
+
+	const dismiss3 = new NotificationClient.Action();
+	dismiss3.buttonText = "Dismiss";
+	dismiss3.type = NotificationClient.ActionTypes.DISMISS;
+
 	const snooze = new NotificationClient.Action();
 	snooze.buttonText = "Snooze";
 	snooze.type = NotificationClient.ActionTypes.SNOOZE;
@@ -29,7 +37,7 @@ const sendNotifications = () => {
 	welcome.type = NotificationClient.ActionTypes.SPAWN;
 	welcome.component = "Welcome Component";
 
-	not1.actions = [snooze, welcome, dismiss];
+	not1.actions = [snooze, welcome, dismiss, dismiss2, dismiss3];
 
 	const not2 = new NotificationClient.Notification();
 	not2.issuedAt = new Date().toISOString();
@@ -88,7 +96,7 @@ const timedNotification = () => {
 		const { NotificationClient } = FSBL.Clients;
 		const source = (document.getElementById("feed-source") as HTMLInputElement).value;
 
-		//notifiation custom
+		//notification custom
 		const customNot = new NotificationClient.Notification();
 		customNot.issuedAt = new Date().toISOString();
 		customNot.source = source;
@@ -110,12 +118,21 @@ const timedNotification = () => {
 	}, 20000);
 };
 
+const mute = async () => {
+	await FSBL.Clients.NotificationClient.mute({ type: "chat" });
+};
+const unmute = async () => {
+	await FSBL.Clients.NotificationClient.unmute({ type: "chat" });
+};
+
 function initialize() {
 	const { NotificationClient } = FSBL.Clients;
 	const n = new NotificationClient.Notification();
 	document.getElementById("send-notification")?.addEventListener("click", sendNotifications);
 	document.getElementById("send-timed")?.addEventListener("click", timedNotification);
 	document.getElementById("get-last-issued")?.addEventListener("click", getLastIssuedAt);
+	document.getElementById("mute")?.addEventListener("click", mute);
+	document.getElementById("unmute")?.addEventListener("click", unmute);
 }
 
 if (window.FSBL && (FSBL as any).addEventListener) {

@@ -25,10 +25,29 @@ function usePubSub(topic: string, initialMessage: object = {}): [{ [key: string]
 	return [message, pub];
 }
 
+const overflowMenuClick = (event: React.MouseEvent, params: any) => {
+	const { notification, notificationSubscribeMessage, notificationsPublish, overflowCount } = params;
+	event.persist();
+	finsembleWindow.getBounds({}, (err: any, data: any) => {
+		const clickCoordinates = {
+			left: data.left + event.clientX,
+			top: data.top + event.clientY
+		};
+
+		const publishValue = { ...notificationSubscribeMessage };
+		publishValue["overFlowMenu"] = {
+			notification,
+			clickCoordinates,
+			overflowCount
+		};
+		notificationsPublish(publishValue);
+	});
+};
+
 const getWindowSpawnData = () => WindowClient.getSpawnData();
 
 const bringWindowToFront: Function = () => WindowClient.bringWindowToFront();
 
-export { getWindowSpawnData, usePubSub, bringWindowToFront };
+export { getWindowSpawnData, usePubSub, bringWindowToFront, overflowMenuClick };
 
-export default { getWindowSpawnData, usePubSub, bringWindowToFront };
+export default { getWindowSpawnData, usePubSub, bringWindowToFront, overflowMenuClick };

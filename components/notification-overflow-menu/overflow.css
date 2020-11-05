@@ -1,0 +1,149 @@
+@import url("https://fonts.googleapis.com/css?family=Roboto+Condensed&display=swap");
+
+:root {
+	--notification-primary-color: #039cff;
+	--notification-secondary-color: black;
+	--notification-contrast-color: white;
+	--overflow-background-color: #0a8cf4;
+
+	--notification-background-color: var(--notification-primary-color);
+	--notification-font-family: "Roboto-Condensed", sans-serif;
+	--notification-font-color: var(--notification-contrast-color);
+}
+
+body {
+	margin: 0;
+	color: var(--notification-font-color);
+}
+
+.opaque #notifications-overflow-menu {
+	border-radius: 0;
+}
+
+#notifications-overflow-menu {
+	font-family: var(--notification-font-family);
+	box-sizing: border-box;
+	margin: 0;
+	padding: 5px;
+	display: flex;
+	overflow: hidden;
+	width: 100vw;
+	background-color: #3d4455;
+	flex-direction: column;
+	border-radius: 5px;
+}
+
+#notifications-overflow-menu button {
+	cursor: pointer;
+	background-color: #0a8cf4;
+	border: none;
+	height: 24px;
+	margin-bottom: 8px;
+	border-radius: 5px;
+	color: white;
+}
+
+#notifications-overflow-menu button:focus {
+	outline: none;
+}
+
+.inline-checkbox {
+	margin: 0 5px;
+	display: inline-flex;
+}
+
+.checkbox {
+	width: 8px;
+	height: 8px;
+	display: inline-flex;
+	align-content: center;
+	border-radius: 50%;
+	padding: 2px;
+	border: 1px solid #abc5aa;
+	cursor: pointer;
+	margin-right: 5px;
+}
+
+.checkbox-background {
+	background-color: rgb(91, 96, 111);
+	width: 100%;
+	height: 100%;
+	border-radius: 50%;
+}
+.checkbox.active > .checkbox-background,
+.checkbox:hover > .checkbox-background {
+	background-color: #0a8cf4;
+}
+
+img#close-icon {
+	height: 16px;
+	filter: invert(1);
+	margin-top: -4px;
+	cursor: pointer;
+}
+img#close-icon:hover {
+	filter: invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%);
+}
+
+.mute-option {
+	font-size: 12px;
+	margin-bottom: 8px;
+	display: flex;
+	align-items: center;
+}
+.mute-option input {
+	visibility: hidden;
+	position: absolute;
+	margin: -200px;
+	border: none;
+}
+
+hr {
+	width: 90%;
+	border: 1px solid #9fa5b3;
+}
+
+.notification-overflow-menu-header {
+	height: 25px;
+	width: 100%;
+	position: relative;
+}
+.notification-overflow-menu-header > .close {
+	display: inline-block;
+	cursor: pointer;
+	width: 100%;
+	position: absolute;
+	text-align: right;
+}
+
+.settings-icons,
+.settings-icons--active {
+	cursor: pointer;
+	float: right;
+}
+
+.settings-icons--active > path {
+	opacity: 1;
+}
+
+.notification-settings .icon.toaster-icons--active > path {
+	fill: var(--notification-primary-color);
+}
+.mute-container,
+.mute-container--active {
+	clear: both;
+}
+
+.mute-container {
+	clear: both;
+	display: none;
+}
+
+.mute-container--active {
+	display: flex;
+	flex-direction: column;
+}
+
+.mute-container label {
+	display: block;
+}

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-ignore */
 import * as React from "react";
 import useNotifications from "../shared/hooks/useNotifications";
-import INotification from "../../types/Notification-definitions/INotification";
+import { INotification } from "common/notifications/definitions/INotification";
 import "./notification-icon.css";
 import NotificationIcon from "../shared/components/icons/NotificationIcon";
 const { useState, useEffect } = React;
@@ -10,10 +10,8 @@ interface Props {
 }
 
 function App(props: Props): React.ReactElement {
-	const [activeNotifications, setActiveNotifications] = useState([]);
+	const [activeNotifications, setActiveNotifications] = useState() as [INotification[], Function];
 	const { notifications, groupNotificationsByType } = useNotifications();
-
-	const { action } = props;
 
 	useEffect(() => {
 		const currentNotifications = notifications.filter(

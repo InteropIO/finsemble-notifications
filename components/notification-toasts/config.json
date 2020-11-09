@@ -13,6 +13,7 @@
 				"position": "available",
 				"data": {
 					"notifications": {
+						"applyMuteFilters": true,
 						"filter": {
 							"include": [],
 							"exclude": []

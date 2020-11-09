@@ -2,11 +2,11 @@ import * as React from "react";
 import Drawer from "./components/Drawer";
 import Notification from "../shared/components/Notification";
 import useNotifications from "../shared/hooks/useNotifications";
-import INotification from "../../types/Notification-definitions/INotification";
+import { INotification } from "common/notifications/definitions/INotification";
 import Animate from "../shared/components/Animate";
 import { CSSTransition } from "react-transition-group";
 import CenterIcon from "../shared/components/icons/CenterIcon";
-import { usePubSub } from "../shared/hooks/finsemble-hooks";
+import { usePubSub, overflowMenuClick } from "../shared/hooks/finsemble-hooks";
 import ConditionalWrapper from "../shared/components/ConditionalWrapper";
 
 const { useState, useEffect } = React;
@@ -34,15 +34,19 @@ function App(): React.ReactElement {
 		setOpaqueClassName(!config.isTransparent);
 	}, []);
 
+	const overflowClick = (event: React.MouseEvent, data: any) => {
+		overflowMenuClick(event, { ...data, notificationSubscribeMessage, notificationsPublish });
+	};
+
 	const toggleDrawer = (show: boolean, isTransparent: boolean) => {
 		if (isTransparent) {
-			const rect = document.getElementById("notifications-drawer").getBoundingClientRect();
+			const rect = document.getElementById("notifications-drawer")?.getBoundingClientRect();
 			if (show) {
 				const roundedRect = {
-					x: Math.round(rect.x),
-					y: Math.round(rect.y),
-					width: Math.round(rect.width),
-					height: Math.round(rect.height)
+					x: Math.round(rect?.x as number),
+					y: Math.round(rect?.y as number),
+					width: Math.round(rect?.width as number),
+					height: Math.round(rect?.height as number)
 				};
 				FSBL.Clients.WindowClient.setShape([roundedRect]);
 			} else {
@@ -67,8 +71,8 @@ function App(): React.ReactElement {
 
 	useEffect(() => {
 		setShowDrawer(notificationSubscribeMessage.showDrawer);
-		toggleDrawer(notificationSubscribeMessage.showDrawer, config.isTransparent);
-	}, [notificationSubscribeMessage.showDrawer]);
+		toggleDrawer(notificationSubscribeMessage.showDrawer, config.isTransparent as boolean);
+	}, [notificationSubscribeMessage.showDrawer, config.isTransparent]);
 
 	const closeDrawerClick = () => {
 		const publishValue = { ...notificationSubscribeMessage };
@@ -84,7 +88,7 @@ function App(): React.ReactElement {
 
 	return (
 		<ConditionalWrapper
-			condition={config.isTransparent}
+			condition={config.isTransparent as boolean}
 			wrapper={children => (
 				<CSSTransition in={showDrawer} timeout={500} classNames="drawer" unmountOnExit>
 					{children}
@@ -102,7 +106,12 @@ function App(): React.ReactElement {
 							(notification: INotification) =>
 								notificationIsActive(notification) && (
 									<Animate animateIn="slide-in-fwd-bottom" animateOut="slide-out-right" key={notification.id}>
-										<Notification notification={notification} doAction={doAction} overflowCount={3} />
+										<Notification
+											notification={notification}
+											overflowMenuAction={overflowClick}
+											doAction={doAction}
+											overflowCount={3}
+										/>
 									</Animate>
 								)
 						)

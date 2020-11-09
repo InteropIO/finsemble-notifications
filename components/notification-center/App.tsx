@@ -6,16 +6,23 @@ import NotificationDetailPanel from "./components/NotificationDetailPanel";
 import { usePubSub } from "../shared/hooks/finsemble-hooks";
 
 import { useState, useEffect } from "react";
+import { INotification } from "common/notifications/definitions/INotification";
 
 const App = (): React.ReactElement => {
-	const { notifications, doAction } = useNotifications();
+	const { notifications, doAction, markNotificationsUnread, getNotificationConfig } = useNotifications();
 	const [activeNotification, setActiveNotification] = useState();
 	const pubSubTopic = "notification-ui";
 	const [notificationSubscribeMessage, notificationsPublish] = usePubSub(pubSubTopic);
 
+	const config = getNotificationConfig();
+	const applyMuteFilters = config?.applyMuteFilters ? config.applyMuteFilters : false;
+
+	const muteFilter = (notifications: INotification[]) =>
+		notifications.filter(notification => (applyMuteFilters ? !notification.isMuted : true));
+
 	useEffect(() => {
 		if ("showCenter" in notificationSubscribeMessage) {
-			notificationSubscribeMessage.showCenter ? finsembleWindow.show(null) : finsembleWindow.hide();
+			notificationSubscribeMessage.showCenter ? finsembleWindow.show({}) : finsembleWindow.hide();
 		}
 	}, [notificationSubscribeMessage]);
 
@@ -27,7 +34,7 @@ const App = (): React.ReactElement => {
 				notificationsPublish(publishValue);
 			});
 		}
-	}, []);
+	});
 
 	return (
 		<div id="app">
@@ -37,12 +44,18 @@ const App = (): React.ReactElement => {
 						<p>You do not have any notifications!</p>
 					) : (
 						<>
-							<NotificationsPanel notifications={notifications} setActiveNotification={setActiveNotification} />
+							<NotificationsPanel
+								notifications={muteFilter(notifications)}
+								setActiveNotification={setActiveNotification}
+								doAction={doAction}
+								markUnread={markNotificationsUnread}
+							/>
 							{activeNotification && (
 								<NotificationDetailPanel
 									notification={activeNotification}
 									clearActiveNotification={setActiveNotification}
 									doAction={doAction}
+									markUnread={markNotificationsUnread}
 								/>
 							)}
 						</>

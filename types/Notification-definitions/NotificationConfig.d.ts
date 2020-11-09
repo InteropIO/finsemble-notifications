@@ -1,4 +1,4 @@
-import { SpawnParams } from "@chartiq/finsemble/dist/types/services/window/Launcher/launcher";
+import { SpawnParams } from "services/window/Launcher/launcher";
 
 export interface NotificationsConfig {
 	filter?: {
@@ -13,11 +13,7 @@ export interface NotificationsConfig {
 	};
 	isTransparent?: boolean;
 	notificationsHistory?: boolean;
-}
-
-export interface PurgeConfig {
-	maxNotificationsToRetain: number;
-	maxNotificationRetentionPeriodSeconds: number | false;
+	applyMuteFilters?: boolean;
 }
 
 export default interface WindowConfig {

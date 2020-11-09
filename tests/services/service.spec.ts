@@ -9,6 +9,7 @@ import { ActionTypes } from "../../types/Notification-definitions/ActionTypes";
 import INotification from "../../types/Notification-definitions/INotification";
 import IPerformedAction from "../../types/Notification-definitions/IPerformedAction";
 import PerformedAction from "../../types/Notification-definitions/PerformedAction";
+import IMuteFilter from "../../types/Notification-definitions/IMuteFilter";
 
 describe("Configuration", () => {
 	let normalisedConfig: any;
@@ -112,6 +113,7 @@ describe("Configuration", () => {
 	});
 
 	it("Can pass null to normalise config", () => {
+		// @ts-ignore
 		const normalisedConfig = ServiceHelper.normaliseConfig(null);
 		expect(normalisedConfig).to.be.an("Object");
 		expect(normalisedConfig.hasOwnProperty("types")).to.equal(true);
@@ -120,6 +122,7 @@ describe("Configuration", () => {
 
 	it("Can get service defaults from the config", () => {
 		expect(() => {
+			// @ts-ignore
 			ServiceHelper.getTypes(null);
 		}).to.not.throw(Error);
 
@@ -140,6 +143,7 @@ describe("Configuration", () => {
 
 	it("Can get purge defaults if not set", () => {
 		expect(() => {
+			// @ts-ignore
 			ServiceHelper.getTypes(null);
 		}).to.not.throw(Error);
 
@@ -156,6 +160,7 @@ describe("Configuration", () => {
 
 	it("Can get types from the config", () => {
 		expect(() => {
+			// @ts-ignore
 			ServiceHelper.getTypes(null);
 		}).to.not.throw(Error);
 
@@ -179,6 +184,7 @@ describe("Configuration", () => {
 		expect(ServiceHelper.hasDismissAction(notification)).to.equal(false, "Has dismiss when it shouldn't");
 		const action = new Action();
 		action.type = ActionTypes.DISMISS;
+		// @ts-ignore
 		notification.actions.push(action);
 		expect(ServiceHelper.hasDismissAction(notification)).to.equal(true, "Does not have dismiss action when it should");
 	});
@@ -187,14 +193,21 @@ describe("Configuration", () => {
 		let notification = new Notification();
 
 		notification = ServiceHelper.addDismissActionToNotification(notification, "ButtonText");
+		// @ts-ignore
 		expect(notification.actions.length).to.equal(1);
+		// @ts-ignore
 		expect(notification.actions[0].type).to.equal(ActionTypes.DISMISS);
+		// @ts-ignore
 		expect(notification.actions[0].buttonText).to.equal("ButtonText");
 
 		notification = ServiceHelper.addDismissActionToNotification(notification, "Blah");
+		// @ts-ignore
 		expect(notification.actions.length).to.equal(1);
+		// @ts-ignore
 		expect(notification.actions[0].type).to.equal(ActionTypes.DISMISS);
+		// @ts-ignore
 		expect(notification.actions[0].buttonText).to.not.equal("Blah");
+		// @ts-ignore
 		expect(notification.actions[0].buttonText).to.equal("ButtonText");
 	});
 
@@ -202,6 +215,7 @@ describe("Configuration", () => {
 		let defaultNotification = new Notification();
 		defaultNotification.type = "should-apply-default";
 		defaultNotification = ServiceHelper.applyDefaults(normalisedConfig, defaultNotification);
+		// @ts-ignore
 		defaultNotification.meta.other = "already set";
 
 		expect(defaultNotification).to.be.an("object");
@@ -213,8 +227,10 @@ describe("Configuration", () => {
 		expect(defaultNotification.headerText).to.equal("defaultHeaderText", "Header text not set");
 		expect(defaultNotification.meta).to.be.an("Object", "Meta is not an object");
 		expect(defaultNotification.cssClassName).to.equal("cssClassName", "Css class name not set");
+		// @ts-ignore
 		expect(defaultNotification.meta.other).to.equal("already set", "Should not override sound");
 		expect(ServiceHelper.hasDismissAction(defaultNotification)).to.equal(true, "No dismiss action");
+		// @ts-ignore
 		expect(defaultNotification.actions[0].buttonText).to.equal("Default Button Text", "Button text not set correctly");
 
 		let type3 = new Notification();
@@ -223,6 +239,7 @@ describe("Configuration", () => {
 		type3 = ServiceHelper.applyDefaults(normalisedConfig, type3);
 
 		expect(ServiceHelper.hasDismissAction(type3)).to.equal(true, "No dismiss action");
+		// @ts-ignore
 		expect(type3.actions[0].buttonText).to.equal("Service Default Dismiss", "Button should default to service value'");
 
 		let toast = new Notification();
@@ -245,6 +262,7 @@ describe("Configuration", () => {
 		type3 = ServiceHelper.applyDefaults(normalisedConfig, type3);
 
 		expect(ServiceHelper.hasDismissAction(type3)).to.equal(true, "No dismiss action");
+		// @ts-ignore
 		expect(type3.actions[0].buttonText).to.equal("Dismiss", "Button should default to Helper value'");
 	});
 
@@ -269,6 +287,7 @@ describe("Filtering", () => {
 		// @ts-ignore
 		expect(ServiceHelper.filterMatches({}, cheese)).to.equal(true, "Empty filter should always return true");
 
+		// @ts-ignore
 		expect(ServiceHelper.filterMatches(null, cheese)).to.equal(true, "Empty filter should always return true");
 	});
 
@@ -379,6 +398,7 @@ describe("Filtering", () => {
 	it("Can match meta", () => {
 		const cheese = new Notification();
 		const filter = new Filter();
+		// @ts-ignore
 		cheese.meta["tomato"] = "yes";
 
 		filter.include.push({ "meta.tomato": "yes" });
@@ -390,6 +410,7 @@ describe("Filtering", () => {
 		const cheese = new Notification();
 		const filter = new Filter();
 
+		// @ts-ignore
 		cheese.meta["tomato"] = "yes";
 
 		filter.exclude.push({ source: "cheese" });
@@ -417,8 +438,8 @@ describe("Filtering", () => {
 				age = 0;
 			}
 
-			const performedAction: IPerformedAction = new PerformedAction();
-			performedAction.datePerformed = new Date(Date.now() - age).toISOString();
+			const performedAction: IPerformedAction = new PerformedAction("", "", new Date(Date.now() - age).toISOString());
+			// @ts-ignore
 			notification.actionsHistory.push(performedAction);
 
 			notifications.set(notification.id, notification);
@@ -464,5 +485,33 @@ describe("Filtering", () => {
 		});
 
 		expect(canPurge.length).to.equal(6);
+	});
+
+	it.only("Can can match mute filters", () => {
+		const not = new Notification();
+
+		expect(ServiceHelper.matchesMuteFilters(not, [])).to.equal(false, "No filters");
+
+		not.type = "type";
+
+		expect(ServiceHelper.matchesMuteFilters(not, [])).to.equal(false, "No filter with type set");
+
+		let filters: IMuteFilter[] = [{ source: "source" }];
+		expect(ServiceHelper.matchesMuteFilters(not, filters)).to.equal(false, "No match at all");
+
+		// 1 filter matches
+		filters = [{ type: "type" }];
+		expect(ServiceHelper.matchesMuteFilters(not, filters)).to.be.true;
+
+		//
+		filters = [{ type: "type", source: "source" }];
+		expect(ServiceHelper.matchesMuteFilters(not, filters)).to.equal(
+			false,
+			"Filter has both, Notification has 1, should not match"
+		);
+
+		filters = [{ type: "chat" }];
+
+		expect(ServiceHelper.matchesMuteFilters(not, filters)).to.be.true;
 	});
 });

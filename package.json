@@ -1,6 +1,6 @@
 {
 	"name": "finsemble-notifications",
-	"version": "4.3.0",
+	"version": "5.1.1",
 	"description": "Notifications services and UI",
 	"scripts": {
 		"watch": "nodemon --delay 1000ms -e js,ts,tsx,jsx,html,css,json,exe,dll copy.js",

@@ -1,5 +1,5 @@
-@import "~@finsemble/finsemble-ui/react/assets/css/finsemble.css";
-@import "/assets/css/theme.css";
+@import "../shared/styles/notification-theme.css";
+
 
 body {
 	margin: 0px;

@@ -15,15 +15,6 @@ function copyAll() {
 	});
 }
 
-if (envResource) {
-	const [, resource] = envResource.split("=");
-	console.log(`copying ${resource}`);
-	copy(path.join(source, resource), path.join(dest, resource));
-} else {
-	copyAll();
-	// copyWPF();
-}
-
 function copyWPF() {
 	const wpfSource = path.join(source, "dot-net-notifications");
 	const wpfDest = path.join(dest, "dot-net-examples");

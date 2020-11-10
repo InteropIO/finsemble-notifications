@@ -1,4 +1,4 @@
-@import "/assets/css/theme.css";
+@import "../../../assets/css/theme.css";
 :root {
 	--notification-primary-color: var(--core-primary);
 	--notification-secondary-color: var(--core-primary-5);

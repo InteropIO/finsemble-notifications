@@ -107,15 +107,14 @@ body {
 	color: var(--notification-font-color);
 }
 .action-area button {
-	border: 1px solid transparent;
 	margin-right: 10px;
-	background-color: rgba(255, 255, 255, 0);
-	border: 0;
-	color: var(--notification-contrast-color);
+	background: var(--secondary-button-color-hover);
+	border: 1px solid transparent;
+	color: var(--notification-font-color);
 	cursor: pointer;
 }
 .action-area button:hover {
-	border: 1px solid;
+	border: 1px solid transparent;
 }
 
 ::-webkit-scrollbar {

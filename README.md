@@ -1,8 +1,12 @@
 # Finsemble Notifications
 
-A client, service and UI Finsemble extension to allow for a fuller Notification feature set.
+A Finsemble UI extension used in conjunction with the Notifications Client and Service integrated into Finsemble 5.1.
 
 This project requires the [Finsemble Seed Project](https://github.com/ChartIQ/finsemble-seed) to run.
+
+**Note:** As of Finsemble 5.1, the Notification Client and Service have been integrated into the core. If you're
+upgrading to this version of notifications from an older one, be sure to remove your existing finsemble-notifications
+directory before using the copy command to clear out any references to the service and client.
 
 ## Table of Contents
 
@@ -39,12 +43,6 @@ This project requires the [Finsemble Seed Project](https://github.com/ChartIQ/fi
 
 Getting the Finsemble notification code running and transpiling in your Finsemble seed project.
 
-**Note: We suggest working directly with the source code. This effectively means checking out the notifications source
-code, getting it into your own project and building the source as part of your normal process. We're doing it this way
-as part of the initial release. As part of your feedback we'd like to know your thoughts on where you felt the need to
-customise or use only parts of the package. This will help us inform to better separate or distribute the package in
-future phases**
-
 ### Getting the Sourcecode
 
 1. git clone this project into the directory of your choice.
@@ -56,11 +54,10 @@ future phases**
       create the directory if one does not exist).
 1. You're now setup to copy. Running `npm run copy-files` should now have copied all the required files in your
    seed project.
-1. Your seed will likely be missing some of the required packages for this to run.
+1. Your seed might be missing some npm packages to run the UI. Install the required packages by running:
    `npm install date-fns react-transition-group @types/react`.
-1. Modify your typescript config by adding `"jsx": "react"`, `"allowJs": true` and `"esModuleInterop": true` to your
-   seed's `compilerOptions` in the `tsconfig.json`
-1. In the seed, edit _./build/webpack/defaultWebpackConfig.js_ in the section for the `ts-loader`, set `"test": /\.ts(x)?$/` if it's not already.
+1. Ensure your typescript config has the declarations `"jsx": "react"` and `"allowJs": true` added to the seed's
+   `compilerOptions` in the `tsconfig.json`
 
 ### Finsemble Config
 
@@ -74,7 +71,7 @@ Add the notification config your finsemble seed config file: `./finsemble-seed/c
 ]
 ```
 
-This line will add the Notifications Service, Notification Center, Toasts, toaster and drawer to your project.
+This line will add the Notification Center, Toasts, toaster and drawer to your project.
 
 ### Selective Finsemble Config
 
@@ -82,8 +79,6 @@ Alternatively, if you want to customise your experience and incorporate only som
 
 ```
 "importConfig": [
-    // This config is required for notifications to function.
-    "$applicationRoot/components/finsemble-notifications/services/notification/config.json"
     ...
     // Select from the configs below to customise the experience.
     "$applicationRoot/components/finsemble-notifications/components/notification-center/config.json",
@@ -176,8 +171,8 @@ By default, finsemble will store a maximum of 1000 notifications. If no new noti
 **maxNotificationRetentionPeriodSeconds** _[default: false]_ - The number of seconds the service should keep a
 notification in storage since that notification's last updated time.
 
-_**Note:** Notifications are not actively purged. Rather, as a new notification comes in the collection is evaluated for
-notifications to purge from storage_
+_**Note:** Notifications are not actively purged. Rather, as a new notification comes in, the collection is evaluated
+for notifications to purge from storage_
 
 ```
 {
@@ -215,7 +210,7 @@ notifications will use, set the appropriate value by adding the `finsemble.notif
 
 Using the config, you can also send your notifications to the OS. Do this by specifying the `proxyToWebApiFilter` on 
 the `notifications` object on the `servicesConfig` object in `./configs/application/config.json`. For more information 
-on filtering see the section on [Fetching and Receiving Notifications](/components/subscriber/Readme.md)
+on filtering, see the section on [Fetching and Receiving Notifications](/components/subscriber/Readme.md).
 
 Example filter:
 
@@ -234,7 +229,7 @@ Example filter:
 }
 ```
 
-#### Example Psuedo Config
+#### Example Pseudo Config
 
 ```
 {
@@ -318,9 +313,10 @@ Example filter:
 Some Notification component behaviours can be changed via configuration. To change this behaviour you will need to
 change the component configuration entry. The standard configuration provided lumps in all the configurations so if
 modifying the behaviour is what you are after, you will need to configure the components at an individual level. To do
-this, import the service and any components of which you DO NOT want to modify the behaviour using the method outlined
-in the in the [selective configuration method](#selective-finsemble-config). Following this, for any component configs
-you wish to modify, create and change your own component configs using the following as base:
+this, import any components which you DO NOT want to modify the behaviour of, using the method outlined
+in the [selective configuration method](#selective-finsemble-config). Following this, for any component configs
+you do want to modify, create a new config entry using any of configs listed following as base, to make changes
+you need:
 
 - [notification-center config](components/notification-center/config.json)
 - [notification-drawer config](components/notification-drawer/config.json)
@@ -329,8 +325,8 @@ you wish to modify, create and change your own component configs using the follo
 
 ## Using the Notifications API
 
-This package includes two example components and an example service to give an example how to send, receive and
-performing custom actions on notifications.
+This package includes two example components, and a skeleton example service on how to send, receive and
+perform custom actions on notifications.
 
 ### Running the examples
 
@@ -362,8 +358,8 @@ The first, for developers, is the via the Toast filter config, and the second is
 
 #### Toast Config
 
-The toasts can be the main source of distraction for the user. It might be the case you wish to send a notification but
-not have it pop-up and grab the user's attention. In this case, the you are able to send a notification with a specific
+The toasts can be the main source of distraction for the user. It might be the case you wish to send a notification and
+not have it pop-up and grab the user's attention. In this case, you are able to send a notification with a specific
 field defined internally with in your organisation identifying that this Notification is of low importance and configure
 the Toasts component not to show this Notification. See below for an example:
 

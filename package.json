@@ -34,20 +34,14 @@
 	"dependencies": {
 		"@types/react": "^16.9.11",
 		"date-fns": "^2.8.1",
-		"immutable": "^4.0.0-rc.12",
-		"lodash.get": "^4.4.2",
-		"react-transition-group": "^4.3.0",
-		"searchjs": "^1.0.2",
-		"uuid": "^3.3.3"
+		"react-transition-group": "^4.3.0"
 	},
 	"devDependencies": {
 		"@babel/register": "^7.8.3",
-		"@finsemble/finsemble-core": "^5.0.1",
+		"@finsemble/finsemble-core": "^5.1.1",
 		"@testing-library/react": "^9.4.0",
-		"@types/chai": "^4.2.7",
 		"@types/lodash": "^4.14.149",
 		"@types/lodash.get": "^4.4.6",
-		"@types/mocha": "^5.2.7",
 		"@types/node": "^12.19.1",
 		"@types/react-dom": "^16.9.3",
 		"@types/react-transition-group": "^4.2.4",
@@ -55,7 +49,6 @@
 		"@typescript-eslint/eslint-plugin": "^2.10.0",
 		"@typescript-eslint/parser": "^2.10.0",
 		"ansi-html": "0.0.7",
-		"chai": "^4.2.0",
 		"eslint": "7.1.0",
 		"eslint-plugin-import": "2.20.2",
 		"eslint-config-prettier": "6.11.0",

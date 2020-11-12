@@ -7,6 +7,7 @@ import { usePubSub } from "../shared/hooks/finsemble-hooks";
 import { INotification } from "common/notifications/definitions/INotification";
 import SettingsIcon from "../shared/components/icons/Settings";
 import IAction from "common/notifications/definitions/IAction";
+import CloseIcon from "../shared/components/icons/CloseIcon";
 
 type CheckboxProps = {
 	isActive: boolean;
@@ -188,7 +189,7 @@ function App(): React.ReactElement {
 		}
 	}, [JSON.stringify(notificationSubscribeMessage.overFlowMenu)]);
 
-	const { actions } = notification;
+	const actions = notification?.actions;
 
 	return (
 		<>
@@ -196,7 +197,7 @@ function App(): React.ReactElement {
 				<>
 					<div className="notification-overflow-menu-header">
 						<div className="close">
-							<img src="../shared/assets/close.svg" id="close-icon" onClick={() => hide()} alt="" />
+							<CloseIcon className="close-icon" onClick={() => hide()} />
 						</div>
 					</div>
 					{actions &&

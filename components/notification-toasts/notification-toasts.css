@@ -3,7 +3,7 @@
 @import "../shared/styles/notification-theme.css";
 
 .opaque body {
-	background-color: rgba(0, 0, 0, 0);
+	background-color: var(--notification-drawer-background-color);
 }
 
 body {
@@ -12,6 +12,7 @@ body {
 	bottom: 0;
 	overflow: hidden;
 	width: 100%;
+	background-color: rgba(0, 0, 0, 0);
 }
 #toasts-drawer {
 	display: flex;

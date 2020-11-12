@@ -6,6 +6,7 @@ export default function SVGBase({
 	width = "24",
 	height = "24",
 	className = "",
+	children,
 	viewBox = "0 0 24 24",
 	d = "",
 	opacity = "",
@@ -29,7 +30,7 @@ export default function SVGBase({
 			className={`svg-icon ${className || ""}`}
 			xmlns="http://www.w3.org/2000/svg"
 		>
-			<path opacity={opacity} fillRule={fillRule} clipRule={clipRule} d={d} fill={fill} />
+			{d.length ? <path opacity={opacity} fillRule={fillRule} clipRule={clipRule} d={d} fill={fill} /> : children}
 		</svg>
 	);
 }

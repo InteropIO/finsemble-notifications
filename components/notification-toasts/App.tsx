@@ -7,8 +7,6 @@ import Animate from "../shared/components/Animate";
 import { SpawnParams } from "services/window/Launcher/launcher";
 import { usePubSub } from "../shared/hooks/finsemble-hooks";
 import { useState } from "react";
-/* eslint-disable @typescript-eslint/no-var-requires */
-const _get = require("lodash.get");
 const { useEffect } = React;
 
 const WINDOW_NAME_TOASTER = "notification-toaster";
@@ -30,11 +28,11 @@ function App(): React.ReactElement {
 
 	const config = getNotificationConfig();
 
-	const windowShowParams: SpawnParams = _get(config, "config.position", {
+	const windowShowParams: SpawnParams = config?.position || {
 		bottom: 0,
 		right: 0,
 		monitor: 0
-	});
+	};
 
 	// ensure the config and notifications have loaded before rendering the DOM
 	const ready = config && notifications;

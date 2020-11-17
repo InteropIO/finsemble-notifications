@@ -1,19 +1,15 @@
 @import url("https://fonts.googleapis.com/css?family=Roboto+Condensed&display=swap");
 
-:root {
-	--notification-primary-color: #039cff;
-	--notification-secondary-color: black;
-	--notification-contrast-color: white;
-	--overflow-background-color: #0a8cf4;
-
-	--notification-background-color: var(--notification-primary-color);
-	--notification-font-family: "Roboto-Condensed", sans-serif;
-	--notification-font-color: var(--notification-contrast-color);
-}
+@import "../shared/styles/notification-theme.css";
 
 body {
 	margin: 0;
+	background-color: rgba(0, 0, 0, 0);
 	color: var(--notification-font-color);
+}
+
+body .opaque {
+	background-color: var(--notification-drawer-background-color);
 }
 
 .opaque #notifications-overflow-menu {
@@ -28,19 +24,20 @@ body {
 	display: flex;
 	overflow: hidden;
 	width: 100vw;
-	background-color: #3d4455;
+	background-color: var(--notification-drawer-background-color);
+	border: 1px solid var(--notification-background-color);
 	flex-direction: column;
 	border-radius: 5px;
 }
 
 #notifications-overflow-menu button {
 	cursor: pointer;
-	background-color: #0a8cf4;
+	color: var(--notification-font-color);
+	background-color: var(--notification-contrast-color);
 	border: none;
 	height: 24px;
 	margin-bottom: 8px;
 	border-radius: 5px;
-	color: white;
 }
 
 #notifications-overflow-menu button:focus {
@@ -72,17 +69,17 @@ body {
 }
 .checkbox.active > .checkbox-background,
 .checkbox:hover > .checkbox-background {
-	background-color: #0a8cf4;
+	background-color: var(--notification-contrast-color);
 }
 
-img#close-icon {
-	height: 16px;
-	filter: invert(1);
-	margin-top: -4px;
+.close-icon {
+	height: 18px;
+	margin-top: -2px;
 	cursor: pointer;
 }
-img#close-icon:hover {
-	filter: invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%);
+
+.close-icon:hover {
+	fill: var(--notification-contrast-color);
 }
 
 .mute-option {

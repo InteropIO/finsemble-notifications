@@ -1,0 +1,15 @@
+@import "./../../../../../assets/css/finsemble.css";
+@import "../../../../../../assets/css/theme.css";
+:root {
+	--notification-primary-color: var(--core-primary);
+	--notification-secondary-color: var(--core-primary-5);
+
+	--notification-contrast-color: var(--accent-primary);
+	--notification-secondary-contrast-color: var(--core-primary-4);
+
+	--notification-background-color: var(--notification-primary-color);
+	--notification-drawer-background-color: var(--notification-secondary-contrast-color);
+
+	--notification-font-family: var(--font-family);
+	--notification-font-color: var(--font-color);
+}

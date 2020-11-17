@@ -1,6 +1,6 @@
 {
 	"name": "finsemble-notifications",
-	"version": "5.1.1",
+	"version": "5.1.2",
 	"description": "Notifications services and UI",
 	"scripts": {
 		"watch": "nodemon --delay 1000ms -e js,ts,tsx,jsx,html,css,json,exe,dll copy.js",
@@ -8,6 +8,7 @@
 		"lint": "eslint services/** components/** ",
 		"lint:fix": "eslint services/** components/** tests/** --fix --quiet",
 		"prettier:fix": "prettier services/** components/** --write",
+		"lintTS": "tsc --noemit && eslint . --ext .ts,.tsx",
 		"test": "mocha --color --bail",
 		"test:watch": "nodemon --delay 500ms -e ts --exec \"mocha --color --bail\""
 	},

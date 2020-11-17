@@ -2,14 +2,15 @@ import * as React from "react";
 import { formatDistanceToNow } from "date-fns";
 import { INotification } from "common/notifications/definitions/INotification";
 import IAction from "common/notifications/definitions/IAction";
-import { MouseEventHandler, useEffect, useState } from "react";
+import CloseIcon from "../components/icons/CloseIcon";
+import { useEffect, useState } from "react";
 import UIAction from "./UIAction";
 
 interface Props {
 	children?: React.PropsWithChildren<any>;
 	notification: INotification;
 	doAction: Function;
-	closeAction?: MouseEventHandler;
+	closeAction?: Function;
 	closeButton?: boolean;
 	onMouseLeave?: Function;
 	onMouseEnter?: Function;
@@ -45,7 +46,7 @@ const HeaderArea = (props: Props) => {
 			</div>
 			<div className="detail-area_type">{notification.headerText}</div>
 			<div className="detail-area_time">{time} ago</div>
-			{closeButton && <img src="../shared/assets/close.svg" id="close-icon" onClick={closeAction} />}
+			{closeButton && <CloseIcon className="close-icon" onClick={() => closeAction && closeAction()} />}
 		</div>
 	);
 };
@@ -73,7 +74,7 @@ const ActionArea = (props: Props) => {
 
 	return (
 		<div className="action-area">
-			{actions?.map((action: IAction, index: number) => {
+			{notification.actions?.map((action: IAction, index) => {
 				if (!overflowCount || index + 1 <= overflowCount) {
 					return <UIAction key={index} {...props} action={action} />;
 				}

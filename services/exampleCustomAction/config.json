@@ -1,8 +1,6 @@
 {
 	"services": {
 		"exampleCustomActionService": {
-			"useWindow": true,
-			"active": true,
 			"name": "exampleCustomActionService",
 			"visible": false,
 			"html": "$applicationRoot/components/finsemble-notifications/services/exampleCustomAction/exampleCustomAction.html"

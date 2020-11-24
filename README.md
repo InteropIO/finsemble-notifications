@@ -172,7 +172,7 @@ By default, finsemble will store a maximum of 1000 notifications. If no new noti
 notification in storage since that notification's last updated time.
 
 _**Note:** Notifications are not actively purged. Rather, as a new notification comes in, the collection is evaluated
-for notifications to purge from storage_
+for notifications to purge from storage._
 
 ```
 {

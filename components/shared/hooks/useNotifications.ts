@@ -138,6 +138,23 @@ export default function useNotifications(params: any = {}) {
 	}
 
 	/**
+	 * Deletes a notification
+	 *
+	 * @param {INotification[]} notifications
+	 */
+	function deleteNotification(notifications: INotification[]) {
+		try {
+			NotificationClient.deleteNotification(notifications).then(() => {
+				// NOTE: The request to perform the action has been sent to the notifications service successfully
+				// The action itself has not necessarily been performed successfully
+			});
+		} catch (e) {
+			console.error("Error deleting a notification: ", e);
+			FSBL.Clients.Logger.error("Could not delete notification", e);
+		}
+	}
+
+	/**
 	 * Group Notifications by Type
 	 * @param notifications
 	 */
@@ -268,6 +285,7 @@ export default function useNotifications(params: any = {}) {
 		notificationIsActive,
 		doAction,
 		markNotificationsUnread,
+		deleteNotification,
 		mute,
 		unmute,
 		getNotificationHistory,

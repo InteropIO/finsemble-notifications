@@ -8,6 +8,7 @@ interface TableProps {
 	setActiveNotification: Function;
 	doAction: Function;
 	markUnread: Function;
+	deleteNotification: Function;
 }
 
 interface RowProps {
@@ -70,7 +71,7 @@ const NotificationRow = (props: RowProps) => {
 
 const NotificationsPanel = (props: TableProps) => {
 	const { useState } = React;
-	const { setActiveNotification, doAction, markUnread } = props;
+	const { setActiveNotification, doAction, markUnread, deleteNotification } = props;
 
 	const [selected] = useState({});
 	const { ActionTypes, Action } = FSBL.Clients.NotificationClient;
@@ -98,6 +99,14 @@ const NotificationsPanel = (props: TableProps) => {
 					}}
 				>
 					Mark Read
+				</div>
+				<div
+					title="Delete"
+					onClick={() => {
+						deleteNotification(Object.values(selected));
+					}}
+				>
+					Delete
 				</div>
 			</div>
 			<div className="notification-center__notifications__rows">

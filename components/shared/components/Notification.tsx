@@ -41,9 +41,11 @@ const HeaderArea = (props: Props) => {
 
 	return (
 		<div className="detail-area">
-			<div>
-				<img src={notification.headerLogo} />
-			</div>
+			{notification.headerLogo && (
+				<div>
+					<img src={notification.headerLogo} />
+				</div>
+			)}
 			<div className="detail-area_type">{notification.headerText}</div>
 			<div className="detail-area_time">{time} ago</div>
 			{closeButton && <CloseIcon className="close-icon" onClick={() => closeAction && closeAction()} />}
@@ -54,11 +56,15 @@ const HeaderArea = (props: Props) => {
 const ContentArea = (props: Props) => {
 	const { notification } = props;
 
+	console.log("notification: ", notification);
+
 	return (
 		<div className="content-area">
-			<div>
-				<img src={notification.contentLogo} />
-			</div>
+			{notification.contentLogo && (
+				<div>
+					<img src={notification.contentLogo} />
+				</div>
+			)}
 			<div>
 				<h2>{notification.title}</h2>
 				<p>{notification.details}</p>

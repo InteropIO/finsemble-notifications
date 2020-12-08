@@ -56,7 +56,6 @@ const HeaderArea = (props: Props) => {
 const ContentArea = (props: Props) => {
 	const { notification } = props;
 
-	console.log("notification: ", notification);
 
 	return (
 		<div className="content-area">

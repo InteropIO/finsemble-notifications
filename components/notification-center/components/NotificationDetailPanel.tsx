@@ -80,7 +80,7 @@ const HeaderArea = (props: NotificationHeaderProps) => {
 	return (
 		<div className="card_header">
 			<div className="notification_logo">
-				<img src={headerLogo} />
+				{headerLogo && <img src={headerLogo} />}
 				<div>{headerText}</div>
 			</div>
 			<br />
@@ -98,7 +98,7 @@ const ContentArea = (props: NotificationContentProps) => {
 		<div className="details">
 			<h4 className="title">{title}</h4>
 			<div className="notification_content">
-				<img src={contentLogo} />
+				{contentLogo && <img src={contentLogo} />}
 				<div>{details}</div>
 			</div>
 			<div className="meta-details">

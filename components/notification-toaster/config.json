@@ -27,7 +27,8 @@
 			"component": {
 				"preload": false,
 				"spawnOnStartup": true,
-				"singleton": true
+				"singleton": true,
+				"category": "system"
 			},
 			"foreign": {
 				"services": {

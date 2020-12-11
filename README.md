@@ -71,7 +71,8 @@ Add the notification config your finsemble seed config file: `./finsemble-seed/c
 ]
 ```
 
-This line will add the Notification Center, Toasts, toaster and drawer to your project.
+This line will add the Notification Center, Toasts, toaster and drawer to your project. Please note that each of the individual component configs set `component.category = "system` (as do other Finsemble system UI components), which ensures that Finsemble does not drop them from the configuration if a component configuration is imported dynamically.
+
 
 ### Selective Finsemble Config
 

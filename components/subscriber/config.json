@@ -14,7 +14,8 @@
 			},
 			"component": {
 				"inject": false,
-				"spawnOnStartup": false
+				"spawnOnStartup": false,
+				"category": "system"
 			},
 			"foreign": {
 				"services": {

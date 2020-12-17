@@ -138,7 +138,6 @@ body {
 .notification_card .details .notification_content {
 	display: flex;
 	flex-direction: row;
-	justify-content: space-between;
 	padding-top: 10px;
 	padding-bottom: 10px;
 }
@@ -199,7 +198,6 @@ body {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	display: flex;
-	justify-content: center;
 }
 
 .notification_card .details .meta-details .timeout span {
@@ -266,10 +264,23 @@ body {
 	margin-top: 0em;
 }
 
+#notification-center__notifications .action_buttons {
+	display: flex;
+	flex-direction: row;
+	width: 150px;
+	justify-content: space-between;
+}
+
+#notification-center__notifications .action_buttons div {
+	border: 1px solid white;
+	padding: 5px;
+	cursor: pointer;
+}
+
 .notification-center__notifications__rows {
 	display: grid;
 	padding: 4px;
-	grid-template-columns: repeat(5, minmax(20px, 1fr));
+	grid-template-columns: repeat(7, minmax(20px, 1fr));
 	overflow-wrap: break-word;
 	grid-column-gap: 12px;
 	border: 1px solid #5a5a5a7a;

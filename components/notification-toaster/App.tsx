@@ -90,7 +90,10 @@ function App(): React.ReactElement {
 				className={notificationSubscribeMessage.showDrawer ? "toaster-icons--active" : "toaster-icons"}
 				onClick={() => toggleDrawer()}
 			/>
-			<CenterIcon className="toaster-icons" onClick={toggleCenter} />
+			<CenterIcon
+				className={notificationSubscribeMessage.showCenter ? "toaster-icons--active" : "toaster-icons"}
+				onClick={toggleCenter}
+			/>
 		</>
 	);
 }

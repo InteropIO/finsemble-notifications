@@ -7,7 +7,9 @@ using ChartIQ.Finsemble;
 using log4net;
 using Newtonsoft.Json.Linq;
 using ChartIQ.Finsemble.Notifications;
-using NAction = ChartIQ.Finsemble.Notifications.Action;
+using NAction = ChartIQ.Finsemble.Notifications.Models.Action;
+using ChartIQ.Finsemble.Notifications.Models;
+using ChartIQ.Finsemble.Models;
 
 namespace NotifyComponent
 {
@@ -22,7 +24,6 @@ namespace NotifyComponent
 		private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		private Finsemble FSBL;
-		private ChartIQ.Finsemble.Notifications.NotificationClient notifier;
 
 		//Internal state for a single subscription - note that the client supports multiple subscriptions, we're just using a single one in this component.
 		private Subscription subscription = null;
@@ -45,36 +46,36 @@ namespace NotifyComponent
 		private void Notification_1_Click(object sender, RoutedEventArgs e)
 		{
 			Notification not1 = new Notification();
-			not1.issuedAt = DateTime.Now;
-			not1.source = "WPF NotifyComponent";
-			not1.headerText = "WPF Internal Actions (No Id)";
-			not1.title = "test notification 1";
-			not1.details = "Should create a new notification in UI every time it's sent (from WPF)";
-			not1.type = "email";
-			not1.headerLogo = "http://localhost:3375/components/finsemble-notifications/components/shared/assets/email.svg";
-			not1.contentLogo = "http://localhost:3375/components/finsemble-notifications/components/shared/assets/graph.png";
+			not1.IssuedAt = DateTime.Now;
+			not1.Source = "WPF NotifyComponent";
+			not1.HeaderText = "WPF Internal Actions (No Id)";
+			not1.Title = "test notification 1";
+			not1.Details = "Should create a new notification in UI every time it's sent (from WPF)";
+			not1.Type = "email";
+			not1.HeaderLogo = "http://localhost:3375/components/finsemble-notifications/components/shared/assets/email.svg";
+			not1.ContentLogo = "http://localhost:3375/components/finsemble-notifications/components/shared/assets/graph.png";
 
 			NAction dismiss = new NAction();
-			dismiss.buttonText = "Dismiss";
-			dismiss.type = ActionTypes.DISMISS;
+			dismiss.ButtonText = "Dismiss";
+			dismiss.Type = ActionTypes.DISMISS;
 
 			NAction snooze = new NAction();
-			snooze.buttonText = "Snooze";
-			snooze.type = ActionTypes.SNOOZE;
-			snooze.milliseconds = 10000;
+			snooze.ButtonText = "Snooze";
+			snooze.Type = ActionTypes.SNOOZE;
+			snooze.Milliseconds = 10000;
 
 			NAction welcome = new NAction();
-			welcome.buttonText = "Welcome";
-			welcome.type = ActionTypes.SPAWN;
-			welcome.component = "Welcome Component";
+			welcome.ButtonText = "Welcome";
+			welcome.Type = ActionTypes.SPAWN;
+			welcome.Component = "Welcome Component";
 
-			not1.actions.Add(snooze);
-			not1.actions.Add(welcome);
-			not1.actions.Add(dismiss);
+			not1.Actions.Add(snooze);
+			not1.Actions.Add(welcome);
+			not1.Actions.Add(dismiss);
 
-			notifier.notify((new[] { not1 }), (s, r) => {
+			FSBL.NotificationClient.Notify((new[] { not1 }), (s, r) => {
 
-				FSBL.RPC("Logger.log", new List<JToken> {
+				FSBL.Logger.Log(new JToken[] {
 					"Notification sent,\nnotification: " + not1.ToString() 
 					+ "\nresponse: " + (r.response != null ? r.response.ToString() : "null") 
 					+ "\nerror: " + (r.error != null ? r.error.ToString() : "null")
@@ -88,45 +89,45 @@ namespace NotifyComponent
 		private void Notification_2_Click(object sender, RoutedEventArgs e)
 		{
 			Notification not2 = new Notification();
-			not2.issuedAt = DateTime.Now;
-			not2.id = "wpf_notification_456";
-			not2.source = "WPF NotifyComponent";
-			not2.title = "test notification 2";
-			not2.headerText = "WPF Notification Same Id";
-			not2.details = "Should only be in UI once (WPF)";
-			not2.type = "chat";
-			not2.headerLogo = "http://localhost:3375/components/finsemble-notifications/components/shared/assets/chat.svg";
-			not2.contentLogo = "http://localhost:3375/components/finsemble-notifications/components/shared/assets/sheild.png";
+			not2.IssuedAt = DateTime.Now;
+			not2.Id = "wpf_notification_456";
+			not2.Source = "WPF NotifyComponent";
+			not2.Title = "test notification 2";
+			not2.HeaderText = "WPF Notification Same Id";
+			not2.Details = "Should only be in UI once (WPF)";
+			not2.Type = "chat";
+			not2.HeaderLogo = "http://localhost:3375/components/finsemble-notifications/components/shared/assets/chat.svg";
+			not2.ContentLogo = "http://localhost:3375/components/finsemble-notifications/components/shared/assets/sheild.png";
 
 			NAction query = new NAction();
-			query.buttonText = "Send Query";
-			query.type = ActionTypes.QUERY;
-			query.channel = "query-channel";
-			query.payload = new JObject();
-			query.payload.Add("hello", new JValue("world"));
+			query.ButtonText = "Send Query";
+			query.Type = ActionTypes.QUERY;
+			query.Channel = "query-channel";
+			query.Payload = new JObject();
+			query.Payload.Add("hello", new JValue("world"));
 
 		
 			NAction transmit = new NAction();
-			transmit.buttonText = "Send Transmit";
-			transmit.type = ActionTypes.TRANSMIT;
-			transmit.channel = "transmit-channel";
-			transmit.payload = new JObject { };
-			transmit.payload.Add("foo", new JValue("bar"));
+			transmit.ButtonText = "Send Transmit";
+			transmit.Type = ActionTypes.TRANSMIT;
+			transmit.Channel = "transmit-channel";
+			transmit.Payload = new JObject { };
+			transmit.Payload.Add("foo", new JValue("bar"));
 
 			NAction publish = new NAction();
-			publish.buttonText = "Send Publish";
-			publish.type = ActionTypes.PUBLISH;
-			publish.channel = "publish-channel";
-			publish.payload = new JObject { };
-			publish.payload.Add("xyzzy", new JValue("moo"));
+			publish.ButtonText = "Send Publish";
+			publish.Type = ActionTypes.PUBLISH;
+			publish.Channel = "publish-channel";
+			publish.Payload = new JObject { };
+			publish.Payload.Add("xyzzy", new JValue("moo"));
 
-			not2.actions.Add(query);
-			not2.actions.Add(transmit);
-			not2.actions.Add(publish);
+			not2.Actions.Add(query);
+			not2.Actions.Add(transmit);
+			not2.Actions.Add(publish);
 
-			notifier.notify((new[] { not2 }), (s, r) => {
+			FSBL.NotificationClient.Notify((new[] { not2 }), (s, r) => {
 
-				FSBL.RPC("Logger.log", new List<JToken> {
+				FSBL.Logger.Log(new JToken[] {
 					"Notification sent,\nnotification: " + not2.ToString()
 					+ "\nresponse: " + (r.response != null ? r.response.ToString() : "null")
 					+ "\nerror: " + (r.error != null ? r.error.ToString() : "null")
@@ -140,18 +141,18 @@ namespace NotifyComponent
 		private void Notification_3_Click(object sender, RoutedEventArgs e)
 		{
 			Notification not3 = new Notification();
-			not3.issuedAt = DateTime.Now;
-			not3.source = "WPF NotifyComponent";
-			not3.headerText = "WPF minimal notification";
-			not3.title = "test notification 3";
-			not3.details = "Should create a new notification in UI every time it's sent (from WPF)";
-			not3.type = "email";
-			not3.headerLogo = "http://localhost:3375/components/finsemble-notifications/components/shared/assets/email.svg";
-			not3.contentLogo = "http://localhost:3375/components/finsemble-notifications/components/shared/assets/graph.png";
+			not3.IssuedAt = DateTime.Now;
+			not3.Source = "WPF NotifyComponent";
+			not3.HeaderText = "WPF minimal notification";
+			not3.Title = "test notification 3";
+			not3.Details = "Should create a new notification in UI every time it's sent (from WPF)";
+			not3.Type = "email";
+			not3.HeaderLogo = "http://localhost:3375/components/finsemble-notifications/components/shared/assets/email.svg";
+			not3.ContentLogo = "http://localhost:3375/components/finsemble-notifications/components/shared/assets/graph.png";
 
-			notifier.notify((new[] { not3 }), (s, r) => {
+			FSBL.NotificationClient.Notify((new[] { not3 }), (s, r) => {
 
-				FSBL.RPC("Logger.log", new List<JToken> {
+				FSBL.Logger.Log(new JToken[] {
 					"Notification sent,\nnotification: " + not3.ToString()
 					+ "\nresponse: " + (r.response != null ? r.response.ToString() : "null")
 					+ "\nerror: " + (r.error != null ? r.error.ToString() : "null")
@@ -163,13 +164,13 @@ namespace NotifyComponent
 		private void Subscribe_Click(object sender, RoutedEventArgs e)
 		{
 			Subscription sub = new Subscription();
-			sub.filter = new Filter();
+			sub.Filter = new Filter();
 			//sub.filter.include = new Dictionary<String, Object>();
 			//sub.filter.include.Add("type", "email");
 
 			EventHandler<FinsembleEventArgs> onSubHandler = (s, r) =>
 			{
-				FSBL.RPC("Logger.log", new List<JToken> {
+				FSBL.Logger.Log(new JToken[] {
 					"Subscription request sent,\nSubscription: " + sub.ToString()
 					+ "\nresponse: " + (r.response != null ? r.response.ToString() : "null")
 					+ "\nerror: " + (r.error != null ? r.error.ToString() : "null")
@@ -187,7 +188,7 @@ namespace NotifyComponent
 
 			EventHandler<Notification> onNotifyHandler = (s, r) =>
 			{
-				FSBL.RPC("Logger.log", new List<JToken> {
+				FSBL.Logger.Log(new JToken[] {
 					"Received Notification,\nnotification: " + r.ToString()
 				});
 
@@ -197,7 +198,7 @@ namespace NotifyComponent
 				});
 			};
 
-			notifier.subscribe(sub, onSubHandler, onNotifyHandler);
+			FSBL.NotificationClient.Subscribe(sub, onSubHandler, onNotifyHandler);
 		}
 
 		private void Unsubscribe_Click(object sender, RoutedEventArgs e)
@@ -206,8 +207,8 @@ namespace NotifyComponent
 			{
 				EventHandler<FinsembleEventArgs> onUnsubHandler = (s, r) =>
 				{
-					FSBL.RPC("Logger.log", new List<JToken> {
-						"Unsubscribe request sent,\nSubscription id: " + subscription.id
+					FSBL.Logger.Log(new JToken[] {
+						"Unsubscribe request sent,\nSubscription id: " + subscription.Id
 						+ "\nresponse: " + (r.response != null ? r.response.ToString() : "null")
 						+ "\nerror: " + (r.error != null ? r.error.ToString() : "null")
 					});
@@ -220,11 +221,11 @@ namespace NotifyComponent
 					});
 				};
 
-				notifier.unsubscribe(subscription.id, onUnsubHandler);
+				FSBL.NotificationClient.Unsubscribe(subscription.Id, onUnsubHandler);
 			}
 			else
 			{
-				FSBL.RPC("Logger.log", new List<JToken> {
+				FSBL.Logger.Log(new JToken[] {
 					"No subscription Id to unsubscribe!"
 				});
 			}
@@ -239,49 +240,36 @@ namespace NotifyComponent
 				FinsembleHeader.SetBridge(FSBL); // The Header Control needs a connected finsemble instance
 
 				//Styling the Finsemble Header
-				FinsembleHeader.SetActiveBackground(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#22262F")));
-				FinsembleHeader.SetInactiveBackground(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#22262F")));
-				FinsembleHeader.SetButtonHoverBackground(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0A8CF4")));
-				FinsembleHeader.SetInactiveButtonHoverBackground(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0A8CF4")));
-				FinsembleHeader.SetCloseButtonHoverBackground(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F26666")));
-				FinsembleHeader.SetInactiveCloseButtonHoverBackground(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F26666")));
-				FinsembleHeader.SetDockingButtonDockedBackground(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0A8CF4")));
-				FinsembleHeader.SetTitleForeground(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#ACB2C0")));
-                FinsembleHeader.SetButtonForeground(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#ACB2C0")));
+				FinsembleHeader.GetHandlingService().ActiveBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#22262F"));
+				FinsembleHeader.GetHandlingService().InactiveBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#22262F"));
+				FinsembleHeader.GetHandlingService().ButtonHoverBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0A8CF4"));
+				FinsembleHeader.GetHandlingService().InactiveButtonHoverBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0A8CF4"));
+				FinsembleHeader.GetHandlingService().CloseButtonHoverBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F26666"));
+				FinsembleHeader.GetHandlingService().InactiveCloseButtonHoverBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F26666"));
+				FinsembleHeader.GetHandlingService().DockingButtonDockedBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0A8CF4"));
+				FinsembleHeader.GetHandlingService().TitleForeground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#ACB2C0"));
+				FinsembleHeader.GetHandlingService().ButtonForeground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#ACB2C0"));
 
-                FinsembleHeader.SetButtonFont(null, 8, FontStyles.Normal, FontWeights.Normal);
-				FinsembleHeader.SetTitleFont(null, 12, FontStyles.Normal, FontWeights.SemiBold);
+				FinsembleHeader.GetHandlingService().ButtonFont = new TitlebarFontConfiguration()
+				{
+					FontFamily = null,
+					FontSize = 8,
+					FontStyle = FontStyles.Normal,
+					FontWeight = FontWeights.Normal
+				};
+				FinsembleHeader.GetHandlingService().TitleFont = new TitlebarFontConfiguration()
+				{
+					FontFamily = null,
+					FontSize = 12,
+					FontStyle = FontStyles.Normal,
+					FontWeight = FontWeights.SemiBold
+				};
 
 				//Set window title
-				FinsembleHeader.SetTitle("Notify Example Component");
-
-				notifier = new NotificationClient(FSBL);
+				FinsembleHeader.GetHandlingService().Title = "Notify Example Component";
 
 				this.Show();
 			});
-
-			// Logging to the Finsemble Central Console
-			/*FSBL.RPC("Logger.error", new List<JToken> {
-				"Error Test"
-			});
-
-			FSBL.RPC("Logger.log", new List<JToken> {
-				"Log Test"
-			});
-
-			FSBL.RPC("Logger.debug", new List<JToken> {
-				"Debug Test"
-			});
-
-			FSBL.RPC("Logger.info", new List<JToken> {
-				"Info Test"
-			});
-
-			FSBL.RPC("Logger.verbose", new List<JToken> {
-				"Verbose Test"
-			});
-			*/
-
 		}
 
 		/// <summary>

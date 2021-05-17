@@ -1,7 +1,6 @@
 {
 	"importConfig": [
 		"$applicationRoot/components/finsemble-notifications/components/notify/config.json",
-		"$applicationRoot/components/finsemble-notifications/components/QANotificationTest/config.json",
 		"$applicationRoot/components/finsemble-notifications/services/exampleCustomAction/config.json",
 		"$applicationRoot/components/finsemble-notifications/components/subscriber/config.json"
 	]

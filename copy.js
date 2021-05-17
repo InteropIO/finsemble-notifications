@@ -9,7 +9,7 @@ const source = path.resolve(__dirname, config.source);
 const dest = path.resolve(__dirname, config.destination);
 
 function copyAll() {
-	const resources = ["components", "services", "types", "config.json", "sample.config.json", "finsemble.webpack.json"];
+	const resources = ["components", "services", "sample.config.json", "finsemble.webpack.json"];
 	resources.forEach(resource => {
 		copy(path.join(source, resource), path.join(dest, resource));
 	});

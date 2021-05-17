@@ -1,1 +1,0 @@
-# QA Automation Test Component
